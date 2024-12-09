@@ -8,13 +8,19 @@ The open-source nature of the project not only fosters rapid iteration and innov
 
 Join us and let the AI Knowledge Base become the cornerstone of your next intelligent application, helping to elevate AI technology to new heights.
 
-## System Introduction
-
 ## Architecture
 
 ## Self Hosting
 
-### Docker Needed
+We are very excited for you to deploy our application!
+
+### Jar Deploy
+
+### Docker Deploy
+
+noticed that `seata-server` folder contains seata server config file which you need mound to your seata docker container use `-v` and here for more [seata docker deploy](https://seata.apache.org/docs/ops/deploy-by-docker).
+noticed that `mysql` need use latest version for this project because we use `JSON`, `ENUM` ... futures in this project.
+noticed that `it's a dev branck now`, do not use in production env.
 
 - mysql
 - zookeeper
