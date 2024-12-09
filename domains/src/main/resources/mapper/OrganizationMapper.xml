@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fastx.ai.llm.domains.mapper.OrganizationMapper">
+
+    <select id="findByUserId" resultType="com.fastx.ai.llm.domains.entity.Organization">
+        select
+            o.id as id,
+            o.create_time as create_time,
+            o.update_time as update_time,
+            o.name as name,
+            o.deleted as deleted
+            from t_organization_user ou
+            left join t_organization o on o.id = ou.organization_id
+        where ou.user_id = #{userId}
+    </select>
+
+</mapper>

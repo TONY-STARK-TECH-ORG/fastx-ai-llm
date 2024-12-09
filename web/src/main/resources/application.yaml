@@ -1,0 +1,15 @@
+
+spring:
+  profiles:
+    active: default, dubbo
+  application:
+    name: fast-llm-web
+#  ai:
+#    openai:
+#      api-key: sk-02dOKWbd6R3oZ9CoBCbxELB348OnjJ6iFePyPqzQBm9lLv7x
+#      base-url: https://open.xiaojingai.com/v1
+#    stabilityai:
+#      api-key: sk-QhpBqElSrrAnNRbA1aB9211bE4F64bC5A1E74b773017Ea81
+server:
+  port: 8082
+#      base-url: https://goapi.gptnb.ai/

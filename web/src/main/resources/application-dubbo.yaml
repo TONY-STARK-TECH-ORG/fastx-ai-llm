@@ -1,0 +1,10 @@
+dubbo:
+  registry:
+    address: zookeeper://127.0.0.1:2181
+  protocol:
+    name: tri
+    port: 50053
+  application:
+    name: fastx-llm-web
+    logger: slf4j
+    qos-port: 22223

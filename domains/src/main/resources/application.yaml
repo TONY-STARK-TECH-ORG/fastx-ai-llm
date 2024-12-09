@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    active: default, db, dubbo, redisson
+  application:
+    name: fast-llm-domain
+logging:
+  level:
+    root: info
+  pattern:
+    console: '[%X{traceId:-}, %X{spanId:-}] %date %green(%level) %yellow([%thread]) %cyan(%logger{10}) [%file:%line] %msg%n'
+  file:
+    path: ./logs

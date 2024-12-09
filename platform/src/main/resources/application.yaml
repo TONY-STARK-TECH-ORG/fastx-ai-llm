@@ -1,0 +1,32 @@
+spring:
+  profiles:
+    active: default, dubbo
+  application:
+    name: fast-llm-platform
+server:
+  port: 8081
+logging:
+  level:
+    root: info
+  pattern:
+    console: '[%X{traceId:-}, %X{spanId:-}] %date %green(%level) %yellow([%thread]) %cyan(%logger{10}) [%file:%line] %msg%n'
+  file:
+    path: ./logs
+
+seata:
+  enabled: true
+  application-id: fastx-ai-llm-platform
+  tx-service-group: default_tx_group
+  service:
+    default:
+      grouplist:
+        default: 127.0.0.1:8091
+    grouplist:
+      default: 127.0.0.1:8091
+    # 事务分组与集群映射关系
+    vgroup-mapping:
+      default_tx_group: default
+  registry:
+    type: file
+  config:
+    type: file

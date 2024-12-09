@@ -1,0 +1,22 @@
+package com.fastx.ai.llm.domains;
+
+import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+/**
+ * @author stark
+ */
+@SpringBootApplication(scanBasePackages = "com.fastx.ai.llm")
+@EnableDubbo
+@EnableCaching
+@EnableTransactionManagement
+public class FastLlmDomainApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(FastLlmDomainApplication.class, args);
+    }
+
+}

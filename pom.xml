@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.4.0</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>com.fastx.ai</groupId>
+    <artifactId>llm</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+    <name>fast-llm</name>
+    <description>fast-llm</description>
+
+    <modules>
+        <module>domains</module>
+        <module>common</module>
+        <module>platform</module>
+        <module>web</module>
+        <module>platform-api</module>
+        <module>domains-api</module>
+        <module>platform-plugin-pom</module>
+        <module>platform-tool</module>
+    </modules>
+
+    <properties>
+        <java.version>23</java.version>
+        <spring-ai.version>1.0.0-SNAPSHOT</spring-ai.version>
+        <fast.llm.version>0.0.1-SNAPSHOT</fast.llm.version>
+        <lombok.version>1.18.36</lombok.version>
+        <logover.version>2.0.16</logover.version>
+        <protobuf.version>4.29.1</protobuf.version>
+        <netty.version>4.1.115.Final</netty.version>
+        <lang3.version>3.17.0</lang3.version>
+        <collections4.version>4.5.0-M2</collections4.version>
+        <validator.version>1.9.0</validator.version>
+        <guava.version>33.3.1-jre</guava.version>
+        <milvus.version>2.5.1</milvus.version>
+        <fury.version>0.9.0</fury.version>
+        <dubbo.version>3.3.2</dubbo.version>
+        <zk-client.version>5.7.1</zk-client.version>
+        <redission.version>3.40.0</redission.version>
+        <sentinel.version>1.8.8</sentinel.version>
+        <seata.version>2.2.0</seata.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastx.ai.llm</groupId>
+                <artifactId>common</artifactId>
+                <version>${fast.llm.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastx.ai.llm</groupId>
+                <artifactId>domains</artifactId>
+                <version>${fast.llm.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastx.ai.llm</groupId>
+                <artifactId>domains-api</artifactId>
+                <version>${fast.llm.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastx.ai.llm</groupId>
+                <artifactId>platform</artifactId>
+                <version>${fast.llm.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastx.ai.llm</groupId>
+                <artifactId>platform-api</artifactId>
+                <version>${fast.llm.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastx.ai.llm</groupId>
+                <artifactId>platform-plugin-pom</artifactId>
+                <version>${fast.llm.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastx.ai.llm</groupId>
+                <artifactId>platform-tool</artifactId>
+                <version>${fast.llm.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fastx.ai.llm</groupId>
+                <artifactId>web</artifactId>
+                <version>${fast.llm.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>log4j-over-slf4j</artifactId>
+                <version>${logover.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-resolver-dns-native-macos</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${lang3.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${collections4.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>${validator.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.milvus</groupId>
+                <artifactId>milvus-sdk-java</artifactId>
+                <version>${milvus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-spring-boot-starter</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-zookeeper-spring-boot-starter</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-client</artifactId>
+                <version>${zk-client.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.csp</groupId>
+                <artifactId>sentinel-apache-dubbo3-adapter</artifactId>
+                <version>${sentinel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.csp</groupId>
+                <artifactId>sentinel-core</artifactId>
+                <version>${sentinel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.csp</groupId>
+                <artifactId>sentinel-annotation-aspectj</artifactId>
+                <version>${sentinel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redission.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.seata</groupId>
+                <artifactId>seata-spring-boot-starter</artifactId>
+                <version>${seata.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>spring-snapshots</id>
+            <name>Spring Snapshots</name>
+            <url>https://repo.spring.io/snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+</project>

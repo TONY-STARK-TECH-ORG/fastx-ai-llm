@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/fast-llm?useSSL=false&serverTimezone=UTC
+    hikari:
+      username: root
+      password: 123456
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      minimum-idle: 5
+      maximum-pool-size: 15
+      connection-timeout: 20000
+      idle-timeout: 300000
+      leak-detection-threshold: 15000
+      max-lifetime: 1800000
+      connection-test-query: select 1
+# config logic delete
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-not-delete-value: 0
+      logic-delete-value: 1
+# p6spy sql printer
+decorator:
+  datasource:
+    p6spy:
+      # 日志格式
+      log-format: "\ntime:%(executionTime) || sql:%(sql)\n"
+      logging: custom
+      custom-appender-class: com.fastx.ai.llm.domains.config.SqlDebugLogger
