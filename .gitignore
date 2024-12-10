@@ -38,3 +38,6 @@ mvnw
 mvnw.cmd
 
 milvus/milvus_local.db
+web-ui/node_modules
+web-ui/.next
+web-ui/.env
