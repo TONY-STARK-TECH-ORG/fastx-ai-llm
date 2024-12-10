@@ -1,83 +1,91 @@
+# Application configuration for Seata Server
 server:
-  port: 7091
+  port: 7091 # Port on which the server will listen
 
 spring:
   application:
-    name: seata-server
+    name: seata-server # Name of the Spring Boot application
 
 logging:
   file:
-    path: ${log.home:${user.home}/logs/seata}
+    path: ${log.home:${user.home}/logs/seata} # Path to store logs, defaults to user home directory if not set
+
 console:
   user:
-    username: seata
-    password: seata
+    username: seata # Username for console access
+    password: seata # Password for console access
+
 seata:
   security:
-    secretKey: fast
-    tokenValidityInMilliseconds: 30000000
+    secretKey: fast # Secret key for security
+    tokenValidityInMilliseconds: 30000000 # Token validity period in milliseconds
+
   config:
-    type: zk
+    type: zk # Configuration type, using Zookeeper
     zk:
-      server-addr: 172.17.0.3:2181
-      session-timeout: 6000
-      connect-timeout: 2000
-      username:
-      password:
-      node-path: /seata/seata.properties
+      server-addr: 172.17.0.3:2181 # Address of the Zookeeper server
+      session-timeout: 6000 # Session timeout in milliseconds
+      connect-timeout: 2000 # Connection timeout in milliseconds
+      username: # Username for Zookeeper (if required)
+      password: # Password for Zookeeper (if required)
+      node-path: /seata/seata.properties # Path to the configuration node in Zookeeper
+
   registry:
-    type: zk
+    type: zk # Registry type, using Zookeeper
     zk:
-      cluster: default
-      server-addr: 172.17.0.3:2181
-      session-timeout: 6000
-      connect-timeout: 2000
-      username:
-      password:
+      cluster: default # Cluster name
+      server-addr: 172.17.0.3:2181 # Address of the Zookeeper server
+      session-timeout: 6000 # Session timeout in milliseconds
+      connect-timeout: 2000 # Connection timeout in milliseconds
+      username: # Username for Zookeeper (if required)
+      password: # Password for Zookeeper (if required)
+
   server:
-    service-port: 8091 #If not configured, the default is '${server.port} + 1000'
-    max-commit-retry-timeout: -1
-    max-rollback-retry-timeout: -1
-    rollback-failed-unlock-enable: false
-    enable-check-auth: true
-    enable-parallel-request-handle: true
-    retry-dead-threshold: 130000
-    xaer-nota-retry-timeout: 60000
-    enableParallelRequestHandle: true
+    service-port: 8091 # Service port, defaults to server port + 1000 if not set
+    max-commit-retry-timeout: -1 # Maximum commit retry timeout in milliseconds, -1 means no limit
+    max-rollback-retry-timeout: -1 # Maximum rollback retry timeout in milliseconds, -1 means no limit
+    rollback-failed-unlock-enable: false # Enable or disable unlocking after failed rollback
+    enable-check-auth: true # Enable or disable authentication check
+    enable-parallel-request-handle: true # Enable or disable parallel request handling
+    retry-dead-threshold: 130000 # Threshold for retry dead status in milliseconds
+    xaer-nota-retry-timeout: 60000 # Retry timeout for XAER_NOTA in milliseconds
+    enableParallelRequestHandle: true # Alias for enable-parallel-request-handle
     recovery:
-      committing-retry-period: 1000
-      async-committing-retry-period: 1000
-      rollbacking-retry-period: 1000
-      timeout-retry-period: 1000
+      committing-retry-period: 1000 # Period for committing retry in milliseconds
+      async-committing-retry-period: 1000 # Period for async committing retry in milliseconds
+      rollbacking-retry-period: 1000 # Period for rollbacking retry in milliseconds
+      timeout-retry-period: 1000 # Period for timeout retry in milliseconds
     undo:
-      log-save-days: 7
-      log-delete-period: 86400000
+      log-save-days: 7 # Number of days to save undo logs
+      log-delete-period: 86400000 # Period to delete undo logs in milliseconds
     session:
-      branch-async-queue-size: 5000 #branch async remove queue size
-      enable-branch-async-remove: false #enable to asynchronous remove branchSession
+      branch-async-queue-size: 5000 # Size of the branch async remove queue
+      enable-branch-async-remove: false # Enable or disable asynchronous removal of branch sessions
+
   store:
-    mode: redis
+    mode: redis # Storage mode, using Redis
     session:
-      mode: redis
+      mode: redis # Session storage mode, using Redis
     lock:
-      mode: redis
+      mode: redis # Lock storage mode, using Redis
     redis:
-      mode: single
-      database: 0
-      min-conn: 10
-      max-conn: 100
-      password:
-      max-total: 100
-      query-limit: 1000
+      mode: single # Redis mode, single instance
+      database: 0 # Database index
+      min-conn: 10 # Minimum number of connections
+      max-conn: 100 # Maximum number of connections
+      password: # Password for Redis (if required)
+      max-total: 100 # Maximum total number of connections
+      query-limit: 1000 # Query limit
       single:
-        host: 172.17.0.4
-        port: 6379
+        host: 172.17.0.4 # Host address of the Redis server
+        port: 6379 # Port of the Redis server
+
   transport:
-    rpc-tc-request-timeout: 15000
-    enable-tc-server-batch-send-response: false
+    rpc-tc-request-timeout: 15000 # RPC request timeout in milliseconds
+    enable-tc-server-batch-send-response: false # Enable or disable batch sending of responses by TC server
     shutdown:
-      wait: 3
+      wait: 3 # Wait time for shutdown in seconds
     thread-factory:
-      boss-thread-prefix: NettyBoss
-      worker-thread-prefix: NettyServerNIOWorker
-      boss-thread-size: 1
+      boss-thread-prefix: NettyBoss # Prefix for boss threads
+      worker-thread-prefix: NettyServerNIOWorker # Prefix for worker threads
+      boss-thread-size: 1 # Number of boss threads
