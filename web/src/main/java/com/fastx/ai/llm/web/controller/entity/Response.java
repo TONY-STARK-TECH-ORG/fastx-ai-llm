@@ -5,6 +5,10 @@ package com.fastx.ai.llm.web.controller.entity;
  */
 public class Response<T> {
 
+    /**
+     * indicate that request or visit limited state
+     * warning: do not use this as a biz field.
+     */
     private int code;
     private String msg;
     private T data;
