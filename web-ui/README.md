@@ -1,5 +1,11 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+We use `React 19` And `Next 15`, you need install this project with: 
+
+```shell
+pnpm install --force
+```
+
 ## Getting Started
 
 First, run the development server:
