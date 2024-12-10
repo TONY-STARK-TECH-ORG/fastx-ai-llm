@@ -36,3 +36,5 @@ logs/
 
 mvnw
 mvnw.cmd
+
+milvus/milvus_local.db
