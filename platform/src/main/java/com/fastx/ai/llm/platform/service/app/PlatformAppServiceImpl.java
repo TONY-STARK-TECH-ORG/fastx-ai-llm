@@ -104,8 +104,7 @@ public class PlatformAppServiceImpl implements IPlatformAppService {
         applicationDTO.setOrganizationId(appDTO.getOrganizationId());
         applicationDTO.setStatus(appDTO.getStatus());
         // update
-        Assert.isTrue(dubboApplicationService.updateApplication(applicationDTO), "update app failed");
-        return true;
+        return dubboApplicationService.updateApplication(applicationDTO);
     }
 
     @Override
@@ -129,10 +128,7 @@ public class PlatformAppServiceImpl implements IPlatformAppService {
 
         // @TODO (stark) assemble data to db.version data
         String versionData = "";
-        Assert.isTrue(
-                dubboApplicationService.updateVersionData(appVersionDTO.getId(), versionData),
-                "update app version failed");
-        return true;
+        return dubboApplicationService.updateVersionData(appVersionDTO.getId(), versionData);
     }
 
     @Override
@@ -141,11 +137,7 @@ public class PlatformAppServiceImpl implements IPlatformAppService {
         Assert.notNull(appVersionDTO, "appVersion is null");
         Assert.notNull(appVersionDTO.getId(), "appVersion is null");
         // active current version and in active other version
-        Assert.isTrue(
-                dubboApplicationService.activeVersion(appVersionDTO.getId()),
-                "activate app version failed"
-        );
-        return true;
+        return dubboApplicationService.activeVersion(appVersionDTO.getId());
     }
 
     @Override
@@ -154,33 +146,21 @@ public class PlatformAppServiceImpl implements IPlatformAppService {
         Assert.notNull(appVersionDTO, "appVersion is null");
         Assert.notNull(appVersionDTO.getId(), "appVersion is null");
         // only de active current version
-        Assert.isTrue(
-                dubboApplicationService.inactiveVersion(appVersionDTO.getId()),
-                "activate app version failed"
-        );
-        return true;
+        return dubboApplicationService.inactiveVersion(appVersionDTO.getId());
     }
 
     @Override
     @SentinelResource("platform.app.delete")
     public Boolean deleteApp(Long appId) {
         Assert.notNull(appId, "appId is null");
-        Assert.isTrue(
-                dubboApplicationService.deleteApplication(appId),
-                "delete app failed"
-        );
-        return true;
+        return dubboApplicationService.deleteApplication(appId);
     }
 
     @Override
     @SentinelResource("platform.app.version.delete")
     public Boolean deleteAppVersion(Long appVersionId) {
         Assert.notNull(appVersionId, "appVersionId is null");
-        Assert.isTrue(
-                dubboApplicationService.deleteVersion(appVersionId),
-                "delete app version failed"
-        );
-        return true;
+        return dubboApplicationService.deleteVersion(appVersionId);
     }
 
     @Override

@@ -231,3 +231,22 @@ alter table t_user
 
 alter table t_user
     modify username varchar(50) null;
+
+create table if not exists `t_knowledge_base_file`(
+    `id` bigint not null auto_increment primary key,
+    knowledge_base_id bigint not null,
+
+    name varchar(255) not null ,
+    extension varchar(64) not null ,
+    download_url text not null ,
+    vec_collection_name varchar(64) not null ,
+    vec_collection_id varchar(64) not null ,
+    vec_partition_key varchar(64) not null ,
+    vec_partition_value varchar(64) not null ,
+
+    status enum('active', 'process', 'wait') not null default 'wait',
+
+    deleted TINYINT(1) NOT NULL DEFAULT 0,   -- 删除标识，逻辑删除
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 账号创建时间，默认当前时间
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- 自动更新
+);
