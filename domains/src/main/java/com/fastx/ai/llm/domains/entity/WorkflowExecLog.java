@@ -2,8 +2,10 @@ package com.fastx.ai.llm.domains.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fastx.ai.llm.domains.base.BaseDO;
+import com.fastx.ai.llm.domains.dto.WorkflowExecLogDTO;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.BeanUtils;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -33,4 +35,16 @@ public class WorkflowExecLog extends BaseDO implements Serializable {
     private String execData;
 
     private String extraData;
+
+    public static WorkflowExecLog of(WorkflowExecLogDTO workflowExecLogDTO) {
+        WorkflowExecLog execLog = new WorkflowExecLog();
+        BeanUtils.copyProperties(workflowExecLogDTO, execLog);
+        return execLog;
+    }
+
+    public WorkflowExecLogDTO to() {
+        WorkflowExecLogDTO dto = new WorkflowExecLogDTO();
+        BeanUtils.copyProperties(this, dto);
+        return dto;
+    }
 }

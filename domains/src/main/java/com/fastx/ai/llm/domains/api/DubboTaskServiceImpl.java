@@ -12,6 +12,7 @@ import com.fastx.ai.llm.domains.service.ITaskLogService;
 import com.fastx.ai.llm.domains.service.ITaskService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -55,9 +56,12 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
 
     @Override
     @SentinelResource("task.delete")
+    @Transactional(rollbackFor = Exception.class)
     public boolean deleteTask(Long taskId) {
         Assert.notNull(taskId, "taskId is null");
-        return taskService.removeById(taskId);
+        Assert.isTrue(taskService.removeById(taskId), "delete task failed!");
+        Assert.isTrue(taskLogService.removeLogsByTaskId(taskId), "delete log failed!");
+        return true;
     }
 
     @Override

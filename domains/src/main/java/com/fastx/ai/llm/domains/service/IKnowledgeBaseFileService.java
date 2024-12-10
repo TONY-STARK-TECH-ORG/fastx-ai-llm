@@ -21,4 +21,11 @@ public interface IKnowledgeBaseFileService extends IService<KnowledgeBaseFile> {
      * @return file list
      */
     List<KnowledgeBaseFile> getKnowledgeBaseFileByKnowledgeBaseId(Long knowledgeBaseId);
+
+    /**
+     * remove files by Knowledge id
+     * @param knowledgeId knowledge id
+     * @return true or false
+     */
+    boolean removeFilesByKnowledgeBaseId(Long knowledgeId);
 }

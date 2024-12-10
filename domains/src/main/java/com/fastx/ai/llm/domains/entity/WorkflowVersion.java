@@ -2,8 +2,10 @@ package com.fastx.ai.llm.domains.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fastx.ai.llm.domains.base.BaseDO;
+import com.fastx.ai.llm.domains.dto.WorkflowVersionDTO;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.BeanUtils;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -31,4 +33,16 @@ public class WorkflowVersion extends BaseDO implements Serializable {
     private String status;
 
     private String versionData;
+
+    public static WorkflowVersion of(WorkflowVersionDTO workflowVersionDTO) {
+        WorkflowVersion version = new WorkflowVersion();
+        BeanUtils.copyProperties(workflowVersionDTO, version);
+        return version;
+    }
+
+    public WorkflowVersionDTO to() {
+        WorkflowVersionDTO workflowVersionDTO = new WorkflowVersionDTO();
+        BeanUtils.copyProperties(this, workflowVersionDTO);
+        return workflowVersionDTO;
+    }
 }

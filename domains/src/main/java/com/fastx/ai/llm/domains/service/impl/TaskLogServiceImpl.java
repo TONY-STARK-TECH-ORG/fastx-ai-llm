@@ -37,4 +37,14 @@ public class TaskLogServiceImpl extends ServiceImpl<TaskLogMapper, TaskLog> impl
         }
         return paged;
     }
+
+    @Override
+    public boolean removeLogsByTaskId(Long taskId) {
+        LambdaQueryWrapper<TaskLog> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(TaskLog::getTaskId, taskId);
+        if (count(wrapper) > 0) {
+            return this.remove(wrapper);
+        }
+        return true;
+    }
 }

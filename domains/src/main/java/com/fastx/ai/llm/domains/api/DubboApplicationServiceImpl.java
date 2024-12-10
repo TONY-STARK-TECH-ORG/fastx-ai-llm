@@ -10,12 +10,14 @@ import com.fastx.ai.llm.domains.entity.OrganizationUser;
 import com.fastx.ai.llm.domains.service.IApplicationService;
 import com.fastx.ai.llm.domains.service.IApplicationVersionService;
 import com.fastx.ai.llm.domains.service.IOrganizationUserService;
+import com.rometools.utils.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.apache.seata.core.context.RootContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +85,17 @@ public class DubboApplicationServiceImpl extends DubboBaseDomainService implemen
     @SentinelResource("application.delete")
     @Override
     public boolean deleteApplication(Long applicationId) {
-        return applicationService.removeById(applicationId);
+        AssertUtil.notNull(applicationId, "application id is null");
+        Assert.isTrue(applicationService.removeById(applicationId), "application delete failed");
+        List<ApplicationVersionDTO> applicationVersions = getApplicationVersions(applicationId);
+        if (CollectionUtils.isNotEmpty(applicationVersions)) {
+            Assert.isTrue(
+                    applicationVersionService.removeByIds(
+                            Lists.emptyToNull(applicationVersions).stream().map(ApplicationVersionDTO::getId)
+                                    .collect(Collectors.toList())),
+                    "delete application version failed");
+        }
+        return true;
     }
 
     @SentinelResource("application.version.list")

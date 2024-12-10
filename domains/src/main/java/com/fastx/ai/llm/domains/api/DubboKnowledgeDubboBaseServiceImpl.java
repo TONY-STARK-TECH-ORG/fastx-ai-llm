@@ -9,9 +9,9 @@ import com.fastx.ai.llm.domains.entity.KnowledgeBase;
 import com.fastx.ai.llm.domains.entity.KnowledgeBaseFile;
 import com.fastx.ai.llm.domains.service.IKnowledgeBaseFileService;
 import com.fastx.ai.llm.domains.service.IKnowledgeBaseService;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -72,17 +72,12 @@ public class DubboKnowledgeDubboBaseServiceImpl extends DubboBaseDomainService i
 
     @Override
     @SentinelResource("kb.delete")
+    @Transactional(rollbackFor = Exception.class)
     public boolean deleteKnowledgeBase(Long id) {
         Assert.notNull(id, "id is null");
         Assert.isTrue(knowledgeBaseService.removeById(id), "delete knowledge failed");
         // remove all files;
-        List<KnowledgeBaseFileDTO> files = getKnowledgeBaseFileByKnowledgeBaseId(id);
-        if (CollectionUtils.isNotEmpty(files)) {
-            Assert.isTrue(
-                    knowledgeBaseFileService.removeByIds(
-                            files.stream().map(KnowledgeBaseFileDTO::getId).collect(Collectors.toList())),
-                    "delete knowledge files failed");
-        }
+        Assert.isTrue(knowledgeBaseFileService.removeFilesByKnowledgeBaseId(id), "delete knowledge files failed");
         return true;
     }
 

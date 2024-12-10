@@ -37,7 +37,7 @@ public interface IDubboApplicationService {
     boolean updateApplication(ApplicationDTO applicationDTO);
 
     /**
-     * delete a application
+     * delete a application, will remove all versions in application
      * @param applicationId
      * @return
      */

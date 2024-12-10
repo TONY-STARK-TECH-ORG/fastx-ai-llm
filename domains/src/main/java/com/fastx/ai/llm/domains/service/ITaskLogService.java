@@ -23,4 +23,11 @@ public interface ITaskLogService extends IService<TaskLog> {
      * @return list with page info
      */
     Page<TaskLog> getTaskLogsByTaskId(Long taskId, Long page, Long size, String status);
+
+    /**
+     * remote logs under a task
+     * @param taskId task id
+     * @return true or false
+     */
+    boolean removeLogsByTaskId(Long taskId);
 }

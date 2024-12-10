@@ -103,4 +103,102 @@ public interface IPlatformOrgService {
      * @return task list with page info
      */
     PlatformPagaDTO<OrgTaskLogDTO> getTaskLogsByTaskId(Long taskId, Long page, Long size, String status);
+
+    //-----------------------------------------------------------------------------------------
+    // flow
+    //-----------------------------------------------------------------------------------------
+
+    /**
+     * create workflow
+     * @param orgWorkflowDTO workflow info
+     * @return workflow obj
+     */
+    OrgWorkflowDTO createWorkflow(OrgWorkflowDTO orgWorkflowDTO);
+
+    /**
+     * update work flow
+     * @param orgWorkflowDTO workflow info
+     * @return true or false
+     */
+    boolean updateWorkflow(OrgWorkflowDTO orgWorkflowDTO);
+
+    /**
+     * delete workflow, will delete all versions, version logs
+     * @param orgWorkflowId id
+     * @return true or false
+     */
+    boolean deleteWorkflow(Long orgWorkflowId);
+
+    /**
+     * get workflows by organization id
+     * @param orgId id
+     * @return workflows
+     */
+    List<OrgWorkflowDTO> getWorkflowsByOrgId(Long orgId);
+
+    //-----------------------------------------------------------------------------------------
+    // version
+    //-----------------------------------------------------------------------------------------
+
+    /**
+     * create workflow version
+     * @param orgWorkflowVersionDTO version info
+     * @return version obj
+     */
+    OrgWorkflowVersionDTO createWorkflowVersion(OrgWorkflowVersionDTO orgWorkflowVersionDTO);
+
+    /**
+     * update workflow version
+     * @param orgWorkflowVersionDTO version info
+     * @return true or false
+     */
+    boolean updateWorkflowVersion(OrgWorkflowVersionDTO orgWorkflowVersionDTO);
+
+    /**
+     * delete workflow version, will delete all version logs.
+     * @param orgWorkflowVersionId id
+     * @return true or false
+     */
+    boolean deleteWorkflowVersion(Long orgWorkflowVersionId);
+
+    /**
+     * get workflow version
+     * @param orgWorkflowVersionId id
+     * @return version obj
+     */
+    OrgWorkflowVersionDTO getWorkflowVersion(Long orgWorkflowVersionId);
+
+    /**
+     * get workflow versions by workflow id
+     * @param orgWorkFlowId id
+     * @return versions
+     */
+    List<OrgWorkflowVersionDTO> getWorkflowVersionsByWorkflowId(Long orgWorkFlowId);
+
+    //-----------------------------------------------------------------------------------------
+    // exec log
+    //-----------------------------------------------------------------------------------------
+
+    /**
+     * create workflow exec log info
+     * @param orgWorkflowExecLogDTO exec log info
+     * @return exec log obj
+     */
+    OrgWorkflowExecLogDTO createWorkflowExecLog(OrgWorkflowExecLogDTO orgWorkflowExecLogDTO);
+
+    /**
+     * get workflow exec log
+     * @param orgWorkflowExecLogId id
+     * @return exec log obj
+     */
+    OrgWorkflowExecLogDTO getWorkflowExecLog(Long orgWorkflowExecLogId);
+
+    /**
+     * get workflow exec logs by workflow version id
+     * @param orgWorkflowVersionId id
+     * @param page page
+     * @param size size
+     * @return page
+     */
+    PlatformPagaDTO<OrgWorkflowExecLogDTO> getWorkflowExecLogsByWorkflowVersionId(Long orgWorkflowVersionId, Long page, Long size);
 }

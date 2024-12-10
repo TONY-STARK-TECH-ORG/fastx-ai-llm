@@ -4,6 +4,7 @@ import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.fastx.ai.llm.domains.api.IDubboOrganizationService;
 import com.fastx.ai.llm.domains.api.IDubboTaskService;
 import com.fastx.ai.llm.domains.api.IDubboToolService;
+import com.fastx.ai.llm.domains.api.IDubboWorkflowService;
 import com.fastx.ai.llm.domains.dto.*;
 import com.fastx.ai.llm.platform.api.IPlatformOrgService;
 import com.fastx.ai.llm.platform.dto.*;
@@ -30,6 +31,9 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
 
     @DubboReference
     IDubboTaskService taskService;
+
+    @DubboReference
+    IDubboWorkflowService workflowService;
 
     @Override
     @SentinelResource("org.getBy.id")
@@ -158,6 +162,135 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
             OrgTaskLogDTO orgTaskLog = new OrgTaskLogDTO();
             BeanUtils.copyProperties(t, orgTaskLog);
             return orgTaskLog;
+        }).collect(Collectors.toList()));
+    }
+
+    @Override
+    @SentinelResource("org.workflow.create")
+    public OrgWorkflowDTO createWorkflow(OrgWorkflowDTO orgWorkflowDTO) {
+        Assert.notNull(orgWorkflowDTO, "orgWorkflowDTO is null");
+        WorkflowDTO workflowDTO = new WorkflowDTO();
+        BeanUtils.copyProperties(orgWorkflowDTO, workflowDTO);
+        // create and return new
+        OrgWorkflowDTO dto = new OrgWorkflowDTO();
+        BeanUtils.copyProperties(workflowService.createWorkflow(workflowDTO), dto);
+        return dto;
+    }
+
+    @Override
+    @SentinelResource("org.workflow.update")
+    public boolean updateWorkflow(OrgWorkflowDTO orgWorkflowDTO) {
+        Assert.notNull(orgWorkflowDTO, "orgWorkflowDTO is null");
+        WorkflowDTO workflowDTO = new WorkflowDTO();
+        BeanUtils.copyProperties(orgWorkflowDTO, workflowDTO);
+        return workflowService.updateWorkflow(workflowDTO);
+    }
+
+    @Override
+    @SentinelResource("org.workflow.delete")
+    public boolean deleteWorkflow(Long orgWorkflowId) {
+        Assert.notNull(orgWorkflowId, "orgWorkflowId is null");
+        return workflowService.deleteWorkflow(orgWorkflowId);
+    }
+
+    @Override
+    @SentinelResource("org.workflow.get")
+    public List<OrgWorkflowDTO> getWorkflowsByOrgId(Long orgId) {
+        Assert.notNull(orgId, "orgId is null");
+        List<WorkflowDTO> workflows = workflowService.getWorkflowsByOrganizationId(orgId);
+        return Lists.emptyToNull(workflows).stream().map(w -> {
+            OrgWorkflowDTO orgWorkflow = new OrgWorkflowDTO();
+            BeanUtils.copyProperties(w, orgWorkflow);
+            return orgWorkflow;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    @SentinelResource("org.workflow.version.create")
+    public OrgWorkflowVersionDTO createWorkflowVersion(OrgWorkflowVersionDTO orgWorkflowVersionDTO) {
+        Assert.notNull(orgWorkflowVersionDTO, "orgWorkflowVersionDTO is null");
+        WorkflowVersionDTO workflowVersionDTO = new WorkflowVersionDTO();
+        BeanUtils.copyProperties(orgWorkflowVersionDTO, workflowVersionDTO);
+        // create and return new
+        OrgWorkflowVersionDTO dto = new OrgWorkflowVersionDTO();
+        BeanUtils.copyProperties(workflowService.createWorkflowVersion(workflowVersionDTO), dto);
+        return dto;
+    }
+
+    @Override
+    @SentinelResource("org.workflow.version.update")
+    public boolean updateWorkflowVersion(OrgWorkflowVersionDTO orgWorkflowVersionDTO) {
+        Assert.notNull(orgWorkflowVersionDTO, "orgWorkflowVersionDTO is null");
+        WorkflowVersionDTO workflowVersionDTO = new WorkflowVersionDTO();
+        BeanUtils.copyProperties(orgWorkflowVersionDTO, workflowVersionDTO);
+        return workflowService.updateWorkflowVersion(workflowVersionDTO);
+    }
+
+    @Override
+    @SentinelResource("org.workflow.version.delete")
+    public boolean deleteWorkflowVersion(Long orgWorkflowVersionId) {
+        Assert.notNull(orgWorkflowVersionId, "orgWorkflowVersionId is null");
+        return workflowService.deleteWorkflowVersion(orgWorkflowVersionId);
+    }
+
+    @Override
+    @SentinelResource("org.workflow.version.get")
+    public OrgWorkflowVersionDTO getWorkflowVersion(Long orgWorkflowVersionId) {
+        Assert.notNull(orgWorkflowVersionId, "orgWorkflowVersionId is null");
+        // create and return dto
+        OrgWorkflowVersionDTO orgWorkflowVersion = new OrgWorkflowVersionDTO();
+        BeanUtils.copyProperties(workflowService.getWorkflowVersion(orgWorkflowVersionId), orgWorkflowVersion);
+        return orgWorkflowVersion;
+    }
+
+    @Override
+    @SentinelResource("org.workflow.version.get")
+    public List<OrgWorkflowVersionDTO> getWorkflowVersionsByWorkflowId(Long orgWorkFlowId) {
+        Assert.notNull(orgWorkFlowId, "orgWorkFlowId is null");
+        List<WorkflowVersionDTO> workflowVersions = workflowService.getWorkflowVersionsByWorkflowId(orgWorkFlowId);
+        return Lists.emptyToNull(workflowVersions).stream().map(w -> {
+            OrgWorkflowVersionDTO orgWorkflowVersion = new OrgWorkflowVersionDTO();
+            BeanUtils.copyProperties(w, orgWorkflowVersion);
+            return orgWorkflowVersion;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    @SentinelResource("org.workflow.exec.log.create")
+    public OrgWorkflowExecLogDTO createWorkflowExecLog(OrgWorkflowExecLogDTO orgWorkflowExecLogDTO) {
+        Assert.notNull(orgWorkflowExecLogDTO, "orgWorkflowExecLogDTO is null");
+        WorkflowExecLogDTO workflowExecLogDTO = new WorkflowExecLogDTO();
+        BeanUtils.copyProperties(orgWorkflowExecLogDTO, workflowExecLogDTO);
+        // create and return new
+        OrgWorkflowExecLogDTO dto = new OrgWorkflowExecLogDTO();
+        BeanUtils.copyProperties(workflowService.createWorkflowExecLog(workflowExecLogDTO), dto);
+        return dto;
+    }
+
+    @Override
+    @SentinelResource("org.workflow.exec.log.get")
+    public OrgWorkflowExecLogDTO getWorkflowExecLog(Long orgWorkflowExecLogId) {
+        Assert.notNull(orgWorkflowExecLogId, "orgWorkflowExecLogId is null");
+        OrgWorkflowExecLogDTO dto = new OrgWorkflowExecLogDTO();
+        BeanUtils.copyProperties(workflowService.getWorkflowExecLog(orgWorkflowExecLogId), dto);
+        return dto;
+    }
+
+    @Override
+    @SentinelResource("org.workflow.exec.log.get")
+    public PlatformPagaDTO<OrgWorkflowExecLogDTO> getWorkflowExecLogsByWorkflowVersionId(
+            Long orgWorkflowVersionId, Long page, Long size) {
+        Assert.notNull(orgWorkflowVersionId, "orgWorkflowVersionId is null");
+        Assert.notNull(page, "page is null");
+        Assert.notNull(size, "size is null");
+
+        PageDTO<WorkflowExecLogDTO> execLogs =
+                workflowService.getWorkflowExecLogsByWorkflowVersionId(orgWorkflowVersionId, page, size);
+        return PlatformPagaDTO.of(execLogs.getPage(), execLogs.getSize(), execLogs.getTotal(),
+                execLogs.getList().stream().map(w -> {
+                    OrgWorkflowExecLogDTO orgWorkflowExecLog = new OrgWorkflowExecLogDTO();
+                    BeanUtils.copyProperties(w, orgWorkflowExecLog);
+                    return orgWorkflowExecLog;
         }).collect(Collectors.toList()));
     }
 

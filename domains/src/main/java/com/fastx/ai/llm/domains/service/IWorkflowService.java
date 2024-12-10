@@ -1,7 +1,9 @@
 package com.fastx.ai.llm.domains.service;
 
-import com.fastx.ai.llm.domains.entity.Workflow;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fastx.ai.llm.domains.entity.Workflow;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +15,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IWorkflowService extends IService<Workflow> {
 
+    /**
+     * get workflow list under org id
+     * @param organizationId org id
+     * @return workflow list
+     */
+    List<Workflow> getWorkflowsByOrganizationId(Long organizationId);
 }

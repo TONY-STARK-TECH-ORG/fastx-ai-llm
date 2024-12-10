@@ -1,7 +1,9 @@
 package com.fastx.ai.llm.domains.service;
 
-import com.fastx.ai.llm.domains.entity.WorkflowVersion;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fastx.ai.llm.domains.entity.WorkflowVersion;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +14,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2024-12-07
  */
 public interface IWorkflowVersionService extends IService<WorkflowVersion> {
+
+    /**
+     * get workflow version by workflow id
+     * @param workflowId workflow id
+     * @return List<WorkflowVersion>
+     */
+    List<WorkflowVersion> getWorkflowVersionByWorkflowId(Long workflowId);
 
 }

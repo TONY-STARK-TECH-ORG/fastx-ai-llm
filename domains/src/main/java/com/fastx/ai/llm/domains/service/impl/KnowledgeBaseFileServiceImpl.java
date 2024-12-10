@@ -29,4 +29,14 @@ public class KnowledgeBaseFileServiceImpl extends ServiceImpl<KnowledgeBaseFileM
         return Lists.emptyToNull(this.list(queryWrapper));
     }
 
+    @Override
+    public boolean removeFilesByKnowledgeBaseId(Long knowledgeId) {
+        LambdaQueryWrapper<KnowledgeBaseFile> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(KnowledgeBaseFile::getKnowledgeBaseId, knowledgeId);
+        if (count(wrapper) > 0) {
+            return this.remove(wrapper);
+        }
+        return true;
+    }
+
 }
