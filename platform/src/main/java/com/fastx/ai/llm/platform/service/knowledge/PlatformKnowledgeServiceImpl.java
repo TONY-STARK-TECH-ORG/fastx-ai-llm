@@ -51,10 +51,10 @@ public class PlatformKnowledgeServiceImpl implements IPlatformKnowledgeService {
     @SentinelResource("kb.create")
     public KnowledgeDTO createKnowledge(KnowledgeDTO knowledge) {
         KnowledgeBaseDTO knowledgeBaseDTO = new KnowledgeBaseDTO();
-
+        // create
         BeanUtils.copyProperties(knowledge, knowledgeBaseDTO);
         knowledgeBaseDTO = dubboKnowledgeBaseService.createKnowledgeBase(knowledgeBaseDTO);
-
+        // convert
         KnowledgeDTO knowledgeDTO = new KnowledgeDTO();
         BeanUtils.copyProperties(knowledgeBaseDTO, knowledgeDTO);
         return knowledgeDTO;

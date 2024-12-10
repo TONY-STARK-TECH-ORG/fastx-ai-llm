@@ -9,6 +9,8 @@ public class LLMOutput implements IPlatformToolOutput {
 
     private String data;
 
+    private String error;
+
     public void setData(String data) {
         this.data = data;
     }
@@ -16,5 +18,27 @@ public class LLMOutput implements IPlatformToolOutput {
     @Override
     public String getData() {
         return data;
+    }
+
+    @Override
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public LLMOutput() {
+    }
+
+    public static LLMOutput empty() {
+        return new LLMOutput();
+    }
+
+    public static LLMOutput of(String data) {
+        LLMOutput output = empty();
+        output.setData(data);
+        return output;
     }
 }

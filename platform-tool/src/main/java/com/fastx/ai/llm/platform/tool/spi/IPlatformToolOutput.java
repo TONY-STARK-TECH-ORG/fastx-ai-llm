@@ -11,4 +11,11 @@ public interface IPlatformToolOutput {
      */
     String getData();
 
+    /**
+     * if with error
+     * @return err message
+     */
+    String getError();
+
+
 }

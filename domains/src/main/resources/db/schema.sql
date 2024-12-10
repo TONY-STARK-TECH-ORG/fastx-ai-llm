@@ -145,14 +145,22 @@ create table if not exists t_tools_exec_log (
 create table if not exists t_organization_tools (
     id bigint auto_increment primary key,
     organization_id bigint not null,
-    tool_id bigint not null,
 
+    tool_code varchar(128) not null,
+    tool_version varchar(64) not null ,
     config_data JSON, -- input values exec tool needed.
+
+    custom tinyint(1) default 0, -- is custom tool for org.
+    custom_code text, -- custom code exec with lua, groovy or spel.
 
     deleted TINYINT(1) NOT NULL DEFAULT 0,   -- 删除标识，逻辑删除
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 账号创建时间，默认当前时间
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- 自动更新
 );
+
+alter table t_organization_tools
+    add constraint t_organization_tools_pk
+        unique (organization_id, tool_code, tool_version);
 
 create table if not exists t_knowledge_base (
     id bigint auto_increment primary key,

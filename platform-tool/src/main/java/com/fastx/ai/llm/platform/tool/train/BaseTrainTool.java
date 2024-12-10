@@ -5,7 +5,7 @@ import com.fastx.ai.llm.platform.tool.spi.IPlatformTool;
 /**
  * @author stark
  */
-public abstract class BaseTrainTool implements IPlatformTool<TraiinInput, TrainOutput> {
+public abstract class BaseTrainTool implements IPlatformTool<TrainInput, TrainOutput> {
 
     @Override
     public String getVersion() {
@@ -23,7 +23,7 @@ public abstract class BaseTrainTool implements IPlatformTool<TraiinInput, TrainO
     }
 
     @Override
-    public TrainOutput exec(TraiinInput input) {
+    public TrainOutput exec(TrainInput input) {
         throw new UnsupportedOperationException();
     }
 }
