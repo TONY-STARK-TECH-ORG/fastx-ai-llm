@@ -7,6 +7,7 @@ import com.fastx.ai.llm.domains.dto.KnowledgeBaseFileDTO;
 import com.fastx.ai.llm.platform.api.IPlatformKnowledgeService;
 import com.fastx.ai.llm.platform.dto.KnowledgeDTO;
 import com.fastx.ai.llm.platform.dto.KnowledgeFileDTO;
+import com.rometools.utils.Lists;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.BeanUtils;
@@ -28,7 +29,7 @@ public class PlatformKnowledgeServiceImpl implements IPlatformKnowledgeService {
     @SentinelResource("kb.get")
     public List<KnowledgeDTO> getKnowledgesByOrgId(Long orgId) {
         List<KnowledgeBaseDTO> knowledgeBases = dubboKnowledgeBaseService.getKnowledgeBaseByOrganizationId(orgId);
-        return knowledgeBases.stream().map(knowledgeBaseDTO -> {
+        return Lists.emptyToNull(knowledgeBases).stream().map(knowledgeBaseDTO -> {
             KnowledgeDTO knowledgeDTO = new KnowledgeDTO();
             BeanUtils.copyProperties(knowledgeBaseDTO, knowledgeDTO);
             return knowledgeDTO;
@@ -40,7 +41,7 @@ public class PlatformKnowledgeServiceImpl implements IPlatformKnowledgeService {
     public List<KnowledgeFileDTO> getKnowledgeFilesByKnowledgeId(Long knowledgeId) {
         List<KnowledgeBaseFileDTO> knowledgeBaseFiles =
                 dubboKnowledgeBaseService.getKnowledgeBaseFileByKnowledgeBaseId(knowledgeId);
-        return knowledgeBaseFiles.stream().map(knowledgeBaseFileDTO -> {
+        return Lists.emptyToNull(knowledgeBaseFiles).stream().map(knowledgeBaseFileDTO -> {
             KnowledgeFileDTO knowledgeFileDTO = new KnowledgeFileDTO();
             BeanUtils.copyProperties(knowledgeBaseFileDTO, knowledgeFileDTO);
             return knowledgeFileDTO;
@@ -50,13 +51,13 @@ public class PlatformKnowledgeServiceImpl implements IPlatformKnowledgeService {
     @Override
     @SentinelResource("kb.create")
     public KnowledgeDTO createKnowledge(KnowledgeDTO knowledge) {
-        KnowledgeBaseDTO knowledgeBaseDTO = new KnowledgeBaseDTO();
+        Assert.notNull(knowledge, "knowledge must not be null");
         // create
+        KnowledgeBaseDTO knowledgeBaseDTO = new KnowledgeBaseDTO();
         BeanUtils.copyProperties(knowledge, knowledgeBaseDTO);
-        knowledgeBaseDTO = dubboKnowledgeBaseService.createKnowledgeBase(knowledgeBaseDTO);
         // convert
         KnowledgeDTO knowledgeDTO = new KnowledgeDTO();
-        BeanUtils.copyProperties(knowledgeBaseDTO, knowledgeDTO);
+        BeanUtils.copyProperties(dubboKnowledgeBaseService.createKnowledgeBase(knowledgeBaseDTO), knowledgeDTO);
         return knowledgeDTO;
     }
 
@@ -73,7 +74,7 @@ public class PlatformKnowledgeServiceImpl implements IPlatformKnowledgeService {
         List<KnowledgeBaseFileDTO> knowledgeBaseFileDTOS =
                 dubboKnowledgeBaseService.batchCreateKnowledgeBaseFiles(collect);
         // return create result
-        return knowledgeBaseFileDTOS.stream().map(kbf -> {
+        return Lists.emptyToNull(knowledgeBaseFileDTOS).stream().map(kbf -> {
             KnowledgeFileDTO knowledgeFileDTO = new KnowledgeFileDTO();
             BeanUtils.copyProperties(kbf, knowledgeFileDTO);
             return knowledgeFileDTO;
@@ -83,6 +84,7 @@ public class PlatformKnowledgeServiceImpl implements IPlatformKnowledgeService {
     @Override
     @SentinelResource("kb.update")
     public boolean updateKnowledge(KnowledgeDTO knowledge) {
+        Assert.notNull(knowledge, "knowledge must not be null");
         KnowledgeBaseDTO knowledgeBaseDTO = new KnowledgeBaseDTO();
         BeanUtils.copyProperties(knowledge, knowledgeBaseDTO);
         return dubboKnowledgeBaseService.updateKnowledgeBase(knowledgeBaseDTO);
@@ -91,12 +93,14 @@ public class PlatformKnowledgeServiceImpl implements IPlatformKnowledgeService {
     @Override
     @SentinelResource("kb.delete")
     public boolean deleteKnowledge(Long knowledgeId) {
+        Assert.notNull(knowledgeId, "knowledgeId must not be null");
         return dubboKnowledgeBaseService.deleteKnowledgeBase(knowledgeId);
     }
 
     @Override
     @SentinelResource("kb.f.delete")
     public boolean deleteKnowledgeFile(List<Long> knowledgeFileIds) {
+        Assert.notNull(knowledgeFileIds, "knowledgeFileIds must not be null");
         return dubboKnowledgeBaseService.batchDeleteKnowledgeBaseFiles(knowledgeFileIds);
     }
 }

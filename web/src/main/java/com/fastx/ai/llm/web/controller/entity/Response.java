@@ -1,9 +1,15 @@
 package com.fastx.ai.llm.web.controller.entity;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * @author stark
  */
-public class Response<T> {
+public class Response<T> implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * indicate that request or visit limited state

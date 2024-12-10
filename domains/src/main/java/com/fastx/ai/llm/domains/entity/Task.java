@@ -2,8 +2,10 @@ package com.fastx.ai.llm.domains.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fastx.ai.llm.domains.base.BaseDO;
+import com.fastx.ai.llm.domains.dto.TaskDTO;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.BeanUtils;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -35,4 +37,16 @@ public class Task extends BaseDO implements Serializable {
     private Long workflowId;
 
     private String status;
+
+    public static Task of(TaskDTO taskDTO) {
+        Task task = new Task();
+        BeanUtils.copyProperties(taskDTO, task);
+        return task;
+    }
+
+    public TaskDTO to() {
+        TaskDTO taskDTO = new TaskDTO();
+        BeanUtils.copyProperties(this, taskDTO);
+        return taskDTO;
+    }
 }

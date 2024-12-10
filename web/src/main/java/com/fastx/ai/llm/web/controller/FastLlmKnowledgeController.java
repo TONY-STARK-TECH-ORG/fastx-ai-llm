@@ -23,7 +23,6 @@ public class FastLlmKnowledgeController {
 
     @PostMapping("/create")
     public Response<KnowledgeDTO> create(@RequestBody KnowledgeDTO knowledgeDTO) {
-        // create application
         return Response.success(platformKnowledgeService.createKnowledge(knowledgeDTO));
     }
 

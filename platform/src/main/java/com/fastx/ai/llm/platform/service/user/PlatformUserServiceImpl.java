@@ -8,7 +8,6 @@ import com.fastx.ai.llm.platform.dto.UserInfoDTO;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.util.Assert;
 
 /**
  * @author stark
@@ -24,12 +23,9 @@ public class PlatformUserServiceImpl implements IPlatformUserService {
     public UserInfoDTO createUser(String type, UserInfoDTO user) {
         UserDTO userDTO = new UserDTO();
         BeanUtils.copyProperties(user, userDTO);
-        // create user.
-        UserDTO createdUser = userService.createUser(type, userDTO);
-        Assert.notNull(createdUser, "user create failed");
-
+        // return new user
         UserInfoDTO userInfoDTO = new UserInfoDTO();
-        BeanUtils.copyProperties(createdUser, userInfoDTO);
+        BeanUtils.copyProperties(userService.createUser(type, userDTO), userInfoDTO);
         return userInfoDTO;
     }
 

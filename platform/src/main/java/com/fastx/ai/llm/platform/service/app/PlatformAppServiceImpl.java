@@ -10,6 +10,7 @@ import com.fastx.ai.llm.platform.api.IPlatformAppService;
 import com.fastx.ai.llm.platform.dto.AppDTO;
 import com.fastx.ai.llm.platform.dto.AppVersionDTO;
 import com.fastx.ai.llm.platform.dto.OrgDTO;
+import com.rometools.utils.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -77,10 +78,8 @@ public class PlatformAppServiceImpl implements IPlatformAppService {
         applicationDTO.setIconUrl(app.getIconUrl());
         applicationDTO.setType(app.getType());
         applicationDTO.setOrganizationId(app.getOrganizationId());
-        // create application
-        ApplicationDTO application = dubboApplicationService.createApplication(applicationDTO);
         // set app basic info
-        BeanUtils.copyProperties(application, app);
+        BeanUtils.copyProperties(dubboApplicationService.createApplication(applicationDTO), app);
         // set organization
         OrgDTO orgDTO = new OrgDTO();
         BeanUtils.copyProperties(organizationDTO, orgDTO);
@@ -166,17 +165,15 @@ public class PlatformAppServiceImpl implements IPlatformAppService {
     @Override
     @SentinelResource("platform.app.version.get")
     public List<AppVersionDTO> getAppVersionList(Long appId) {
+        Assert.notNull(appId, "appId is null");
         List<ApplicationVersionDTO> applicationVersions = dubboApplicationService.getApplicationVersions(appId);
-        if (CollectionUtils.isNotEmpty(applicationVersions)) {
-            return applicationVersions.stream().map(av -> {
-                String versionData = av.getVersionData();
-                // @TODO (stark) parse version to appVersion DTO
-                AppVersionDTO appVersionDTO = new AppVersionDTO();
-                BeanUtils.copyProperties(av, appVersionDTO);
-                return appVersionDTO;
-            }).collect(Collectors.toList());
-        }
-        return List.of();
+        return Lists.emptyToNull(applicationVersions).stream().map(av -> {
+            String versionData = av.getVersionData();
+            // @TODO (stark) parse version to appVersion DTO
+            AppVersionDTO appVersionDTO = new AppVersionDTO();
+            BeanUtils.copyProperties(av, appVersionDTO);
+            return appVersionDTO;
+        }).collect(Collectors.toList());
     }
 
     private OrganizationDTO isValidatedOrganization(Long organizationId) {

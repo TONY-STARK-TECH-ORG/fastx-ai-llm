@@ -25,7 +25,6 @@ public class FastLlmToolController {
 
     @PostMapping("/org/tool/create")
     public Response<OrgToolDTO> create(@RequestBody OrgToolDTO orgToolDTO) {
-        // create application
         return Response.success(platformOrgService.createOrgTools(orgToolDTO));
     }
 
