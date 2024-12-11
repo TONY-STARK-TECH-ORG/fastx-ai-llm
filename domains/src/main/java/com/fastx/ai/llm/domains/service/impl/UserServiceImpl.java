@@ -28,6 +28,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         wrapper.in(User::getStatus, IConstant.ACTIVE, IConstant.WAIT);
         User user = this.getOne(wrapper);
         AssertUtil.notNull(user, "can't find user with email and password!");
+        user.setPassword("");
         return user;
     }
 
@@ -36,9 +37,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<>();
         wrapper.eq(User::getAuthOpenId, authOpenId);
         wrapper.eq(User::getAuthProvider, authProvider);
-        wrapper.eq(User::getStatus, IConstant.ACTIVE);
+        wrapper.in(User::getStatus, IConstant.ACTIVE, IConstant.WAIT);
         User user = this.getOne(wrapper);
         AssertUtil.notNull(user, "can't find user with email and password!");
+        user.setPassword("");
+        return user;
+    }
+
+    @Override
+    public User loadUserByEmail(String email) {
+        LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.eq(User::getEmail, email);
+        wrapper.in(User::getStatus, IConstant.ACTIVE, IConstant.WAIT);
+        User user = this.getOne(wrapper);
+        AssertUtil.notNull(user, "can't find user with email!");
+        user.setPassword("");
         return user;
     }
 }

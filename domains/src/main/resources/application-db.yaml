@@ -46,7 +46,8 @@ seata:
     type: file
 domain:
   milvus:
-    host: /Users/stark/Desktop/workspace/fast-llm/milvus/milvus_local.db
-    token: username:password
-    username: username
-    password: password
+    # just for demo usage. do not use in production env.
+    host: https://in03-099d4d04797b236.serverless.gcp-us-west1.cloud.zilliz.com
+    token: 31e9ebc8e5f562f78924dd7f06c652afe52bed46b2b4a123bcb395f5b27e9b71a450727e7b31da71187dffccc3a87a26b89dcf65
+    username: db_099d4d04797b236
+    password: Et2|(>)/g)6cd-fp

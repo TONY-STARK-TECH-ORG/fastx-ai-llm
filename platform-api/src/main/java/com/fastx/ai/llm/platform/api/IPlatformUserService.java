@@ -31,4 +31,10 @@ public interface IPlatformUserService {
      */
     UserInfoDTO loginByAuth(String authProvider, String authOpenId);
 
+    /**
+     * load userinfo by email
+     * @param email username (email)
+     * @return user info
+     */
+    UserInfoDTO loadUserByEmail(String email);
 }

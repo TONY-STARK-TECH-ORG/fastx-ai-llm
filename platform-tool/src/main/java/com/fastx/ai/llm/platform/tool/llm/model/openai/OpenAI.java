@@ -10,6 +10,8 @@ import com.fastx.ai.llm.platform.tool.llm.LLMInput;
 import com.fastx.ai.llm.platform.tool.llm.LLMOutput;
 import com.fastx.ai.llm.platform.tool.llm.model.BaseLlmModel;
 import com.fastx.ai.llm.platform.tool.llm.model.openai.types.*;
+import com.fastx.ai.llm.platform.tool.spi.IPlatformTool;
+import com.google.auto.service.AutoService;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.core.ObjectMappers;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 /**
  * @author stark
  */
+@AutoService(IPlatformTool.class)
 public class OpenAI extends BaseLlmModel {
 
     public static Prototype _prototype = new Prototype();

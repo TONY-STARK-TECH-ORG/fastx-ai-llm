@@ -32,18 +32,23 @@ public class PlatformUserServiceImpl implements IPlatformUserService {
     @Override
     @SentinelResource("user.login")
     public UserInfoDTO login(String email, String password) {
-        UserDTO user = userService.login(email, password);
         UserInfoDTO userInfoDTO = new UserInfoDTO();
-        BeanUtils.copyProperties(user, userInfoDTO);
+        BeanUtils.copyProperties(userService.login(email, password), userInfoDTO);
         return userInfoDTO;
     }
 
     @Override
     @SentinelResource("user.login.auth")
     public UserInfoDTO loginByAuth(String authProvider, String authOpenId) {
-        UserDTO user = userService.login(authProvider, authOpenId);
         UserInfoDTO userInfoDTO = new UserInfoDTO();
-        BeanUtils.copyProperties(user, userInfoDTO);
+        BeanUtils.copyProperties(userService.login(authProvider, authOpenId), userInfoDTO);
+        return userInfoDTO;
+    }
+
+    @Override
+    public UserInfoDTO loadUserByEmail(String email) {
+        UserInfoDTO userInfoDTO = new UserInfoDTO();
+        BeanUtils.copyProperties(userService.loadUserByEmail(email), userInfoDTO);
         return userInfoDTO;
     }
 

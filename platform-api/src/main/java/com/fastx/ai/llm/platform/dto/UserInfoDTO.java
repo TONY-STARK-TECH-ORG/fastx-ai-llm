@@ -43,6 +43,8 @@ public class UserInfoDTO extends BaseDTO implements Serializable {
 
     private String authOpenId;
 
+    private String token;
+
     public String getEmail() {
         return email;
     }
@@ -145,5 +147,13 @@ public class UserInfoDTO extends BaseDTO implements Serializable {
 
     public void setAuthOpenId(String authOpenId) {
         this.authOpenId = authOpenId;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

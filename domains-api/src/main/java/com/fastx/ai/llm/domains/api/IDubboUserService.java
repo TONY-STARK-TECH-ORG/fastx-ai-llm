@@ -36,4 +36,10 @@ public interface IDubboUserService {
      */
     UserDTO loginWithOAuth(String authProvider, String authOpenId);
 
+    /**
+     * load user info by email
+     * @param email emial
+     * @return userInfo
+     */
+    UserDTO loadUserByEmail(String email);
 }

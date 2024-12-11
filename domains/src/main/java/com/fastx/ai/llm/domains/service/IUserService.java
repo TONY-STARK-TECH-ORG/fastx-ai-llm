@@ -28,4 +28,11 @@ public interface IUserService extends IService<User> {
      * @return user or exception
      */
     User loginWithOAuth(String authProvider, String authOpenId);
+
+    /**
+     * load user info by email
+     * @param email email
+     * @return userinfo
+     */
+    User loadUserByEmail(String email);
 }

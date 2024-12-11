@@ -14,6 +14,7 @@ import org.apache.dubbo.common.utils.MD5Utils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 /**
  * <p>
@@ -59,8 +60,6 @@ public class DubboUserServiceImpl extends DubboBaseDomainService implements IDub
 
         User user = User.of(userDTO);
         AssertUtil.isTrue(userService.save(user), "save user failed!");
-        // clean password field
-        user.setPassword("");
         // create same organization for user
         Organization organization = new Organization();
         organization.setName(user.getEmail());
@@ -84,6 +83,13 @@ public class DubboUserServiceImpl extends DubboBaseDomainService implements IDub
     @SentinelResource("user.login.auth")
     public UserDTO loginWithOAuth(String authProvider, String authOpenId) {
         return userService.loginWithOAuth(authProvider, authOpenId).to();
+    }
+
+    @Override
+    public UserDTO loadUserByEmail(String email) {
+        User user = userService.loadUserByEmail(email);
+        Assert.notNull(user, "can't find user with email!");
+        return user.to();
     }
 
     private void isValidated(UserDTO userDTO) {

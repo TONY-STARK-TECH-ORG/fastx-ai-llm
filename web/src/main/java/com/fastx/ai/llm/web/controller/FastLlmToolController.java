@@ -47,7 +47,7 @@ public class FastLlmToolController {
         );
     }
 
-    @PostMapping("/platform/tool/list")
+    @GetMapping("/platform/tool/list")
     public Response<List<ToolDTO>> list() {
         return Response.success(
                 platformToolService.getPlatformTools()
