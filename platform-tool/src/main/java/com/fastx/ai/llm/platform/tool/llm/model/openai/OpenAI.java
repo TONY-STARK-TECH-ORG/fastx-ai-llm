@@ -2,6 +2,7 @@ package com.fastx.ai.llm.platform.tool.llm.model.openai;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONPath;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fastx.ai.llm.platform.tool.entity.Fields;
 import com.fastx.ai.llm.platform.tool.entity.Prototype;
 import com.fastx.ai.llm.platform.tool.exception.ToolExecException;
@@ -11,6 +12,7 @@ import com.fastx.ai.llm.platform.tool.llm.model.BaseLlmModel;
 import com.fastx.ai.llm.platform.tool.llm.model.openai.types.*;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.core.ObjectMappers;
 import com.openai.core.http.StreamResponse;
 import com.openai.models.*;
 import org.apache.commons.lang3.StringUtils;
@@ -173,8 +175,9 @@ public class OpenAI extends BaseLlmModel {
                 long created = chatCompletion.created();
                 List<ChatCompletion.Choice> choices = chatCompletion.choices();
                 CompletionUsage usage = chatCompletion.usage().isPresent() ? chatCompletion.usage().get() : null;
+                JsonMapper jsonMapper = ObjectMappers.jsonMapper();
                 return LLMOutput.of(
-                        JSON.toJSONString(OpenAIResponse.of(id, created, OpenAIChoices.of(choices), OpenAIUsage.of(usage)))
+                        jsonMapper.writeValueAsString(chatCompletion)
                 );
             }
         } catch (Exception e) {
