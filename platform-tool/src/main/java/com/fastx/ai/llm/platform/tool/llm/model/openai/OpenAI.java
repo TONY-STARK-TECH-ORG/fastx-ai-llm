@@ -18,10 +18,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -115,6 +112,7 @@ public class OpenAI extends BaseLlmModel {
                                             .content(ChatCompletionUserMessageParam.Content.ofTextContent(openAIMessage.getContent()))
                                             .build()
                             )).collect(Collectors.toList()))
+                    .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
                     .build();
             if (config.isStreaming()) {
                 LLMOutput output = new LLMOutput();
@@ -122,19 +120,33 @@ public class OpenAI extends BaseLlmModel {
                 // send streaming to output
                 AtomicReference<String> id = new AtomicReference<>("");
                 AtomicReference<Long> created = new AtomicReference<>(0L);
+                AtomicReference<OpenAIUsage> usage = new AtomicReference<>(null);
+                AtomicReference<StringBuilder> returned = new AtomicReference<>(new StringBuilder());
+                AtomicReference<Set<String>> role = new AtomicReference<>(new HashSet<>());
+                // create streaming
                 try (StreamResponse<ChatCompletionChunk> messageStreamResponse = client.chat().completions().createStreaming(completionCreateParams)) {
                     messageStreamResponse.stream()
                             .map(m -> {
                                 id.set(m.id());
                                 created.set(m.created());
-                                // @TODO (stark) usage was null, how to do?
-                                // issue: https://github.com/openai/openai-java/issues/32
+                                Optional<CompletionUsage> u = m.usage();
+                                if (u.isPresent()) {
+                                    usage.set(OpenAIUsage.of(u.get()));
+                                }
                                 return m;
                             })
                             .flatMap(completion -> completion.choices().stream())
+                            .map(choice -> {
+                                Optional<ChatCompletionChunk.Choice.Delta.Role> r = choice.delta().role();
+                                if (r.isPresent()) {
+                                    role.get().add(r.get().toString());
+                                }
+                                return choice;
+                            })
                             .flatMap(choice -> choice.delta().content().stream())
                             .forEach(str -> {
                                 try {
+                                    returned.get().append(str);
                                     writer.write(str);
                                     writer.flush();
                                 } catch (IOException e) {
@@ -147,7 +159,12 @@ public class OpenAI extends BaseLlmModel {
                     writer.close();
                     input.getStream().close();
                 }
-                output.setData(JSON.toJSONString(OpenAIResponse.of(id.get(), created.get(), null, null)));
+                OpenAIChoices choices = new OpenAIChoices();
+                OpenAIMessage message = new OpenAIMessage();
+                message.setRole(StringUtils.join(role.get(), ","));
+                message.setContent(returned.get().toString());
+                choices.setMessage(message);
+                output.setData(JSON.toJSONString(OpenAIResponse.of(id.get(), created.get(), List.of(choices), usage.get())));
                 return output;
             } else {
                 // send full response to output
