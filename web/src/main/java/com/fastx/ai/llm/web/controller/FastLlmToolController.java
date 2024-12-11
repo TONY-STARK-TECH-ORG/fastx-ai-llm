@@ -9,6 +9,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author stark
@@ -51,6 +52,17 @@ public class FastLlmToolController {
     public Response<List<ToolDTO>> list() {
         return Response.success(
                 platformToolService.getPlatformTools()
+        );
+    }
+
+    @PostMapping("platform/tool/exec")
+    public Response<Map<String, Object>> execTool(@RequestBody Map<String, Object> params) {
+        String toolCode = (String) params.get("toolCode");
+        String toolVersion = (String) params.get("toolVersion");
+        String type = (String) params.get("type");
+        Map<String, Object> input = (Map<String, Object>) params.get("input");
+        return Response.success(
+                platformToolService.execTool(toolCode, toolVersion, type, input)
         );
     }
 

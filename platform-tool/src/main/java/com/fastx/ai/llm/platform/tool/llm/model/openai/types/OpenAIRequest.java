@@ -14,7 +14,7 @@ public class OpenAIRequest implements Serializable {
 
     private String modelId;
 
-    private List<OpenAIMessage> openAIMessages;
+    private List<OpenAIMessage> messages;
 
     public String getModelId() {
         return modelId;
@@ -25,10 +25,10 @@ public class OpenAIRequest implements Serializable {
     }
 
     public List<OpenAIMessage> getMessages() {
-        return openAIMessages;
+        return messages;
     }
 
     public void setMessages(List<OpenAIMessage> openAIMessages) {
-        this.openAIMessages = openAIMessages;
+        this.messages = openAIMessages;
     }
 }

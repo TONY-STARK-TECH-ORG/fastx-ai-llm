@@ -76,3 +76,62 @@ We would like to extend our gratitude to the following projects for their invalu
 - **AutoService/Annotation**
 
 Join us and let the Fastx-AI LLM RAG System become the cornerstone of your next intelligent application, helping to elevate AI technology to new heights.
+
+## API Reference
+
+The Fastx-AI LLM RAG System provides a RESTful API for seamless integration with other systems. The API endpoints are documented using Swagger, allowing developers to easily explore and interact with the system.
+
+```shell
+###
+GET http://localhost:8082/info/all
+
+###
+POST http://localhost:8082/auth/user/createWithEmail
+Content-Type: application/json
+
+{
+  "email": "x.stark.dylan@gmail.com",
+  "password": "123456",
+  "username": "starkdylan",
+  "profileImageUrl": ""
+}
+
+###
+POST http://localhost:8082/auth/user/loginWithEmail
+Content-Type: application/json
+
+{
+  "email": "x.stark.dylan@gmail.com",
+  "password": "e10adc3949ba59abbe56e057f20f883e"
+}
+
+###
+POST http://localhost:8082/tool/platform/tool/exec
+Authorization: Bearer x.y.z.jwt.token generate by login or auth
+Content-Type: application/json
+
+{
+  "toolCode": "openai.chat",
+  "toolVersion": "1.0.0",
+  "type": "llm-model",
+  "input": {
+    "config": {
+      "apiKey": "sk-",
+      "baseUrl": "https://x.com/v1"
+    },
+    "data": {
+      "modelId": "gpt-4o-mini",
+      "messages": [
+        {
+          "role": "user",
+          "content": "hi"
+        },
+        {
+          "role": "system",
+          "content": "please answer in Chinese"
+        }
+      ]
+    }
+  }
+}
+```

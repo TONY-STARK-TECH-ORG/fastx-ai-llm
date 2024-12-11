@@ -19,14 +19,21 @@ public class TrainInput implements IPlatformToolInput {
     }
 
     @Override
+    public void setStream(OutputStream stream) {
+        // ignored
+    }
+
+    @Override
     public OutputStream getStream() {
         return null;
     }
 
+    @Override
     public void setConfig(String config) {
         this.config = config;
     }
 
+    @Override
     public void setData(String data) {
         this.data = data;
     }

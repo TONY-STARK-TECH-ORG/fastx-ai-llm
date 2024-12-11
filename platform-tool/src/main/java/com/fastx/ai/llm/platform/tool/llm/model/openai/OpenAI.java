@@ -46,7 +46,7 @@ public class OpenAI extends BaseLlmModel {
         // build prototype to openAI
         List<Fields> config = new ArrayList<>();
         config.add(Fields.of(API_KEY, String.class));
-        config.add(Fields.of(API_BASE_URL, String.class, "https://api.openai.com/v1/chat/completions"));
+        config.add(Fields.of(API_BASE_URL, String.class, "https://api.openai.com/v1"));
         config.add(Fields.of(STREAMING, Boolean.class));
 
         List<Fields> inputs = new ArrayList<>();
@@ -92,13 +92,6 @@ public class OpenAI extends BaseLlmModel {
         try {
             Prototype _pr = new Prototype();
             BeanUtils.copyProperties(_prototype, _pr);
-            // validated fields
-            _pr.getConfig().forEach(c -> {
-                c.setExecValue(parseFields(_jsonPathCache, CONFIG, input.getConfig(), c));
-            });
-            _pr.getInputs().forEach(i -> {
-                i.setExecValue(parseFields(_jsonPathCache, INPUTS, input.getData(), i));
-            });
             // send request
             OpenAIConfig config = JSON.parseObject(input.getConfig(), OpenAIConfig.class);
             OpenAIRequest request = JSON.parseObject(input.getData(), OpenAIRequest.class);
