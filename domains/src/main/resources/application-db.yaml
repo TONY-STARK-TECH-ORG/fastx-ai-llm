@@ -1,5 +1,6 @@
 spring:
   datasource:
+    type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://localhost:3306/fast-llm?useSSL=false&serverTimezone=UTC
     hikari:
       username: root

@@ -61,6 +61,13 @@ public class FastLlmUserController {
         return Response.success(user);
     }
 
+    @GetMapping("/getUserinfo")
+    public Response<UserInfoDTO> getUserinfo(Long userId) {
+        return Response.success(
+                platformUserService.getUserinfo(userId)
+        );
+    }
+
     @GetMapping("getOrganizationsByUserId")
     public Response<List<OrgDTO>> getOrganizationsByUserId(Long userId) {
         return Response.success(

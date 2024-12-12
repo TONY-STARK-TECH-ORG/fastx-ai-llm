@@ -37,4 +37,11 @@ public interface IPlatformUserService {
      * @return user info
      */
     UserInfoDTO loadUserByEmail(String email);
+
+    /**
+     * get user info by user id
+     * @param userId user id
+     * @return user info
+     */
+    UserInfoDTO getUserinfo(Long userId);
 }

@@ -42,4 +42,11 @@ public interface IDubboUserService {
      * @return userInfo
      */
     UserDTO loadUserByEmail(String email);
+
+    /**
+     * load user info by userId
+     * @param userId user id
+     * @return userInfo
+     */
+    UserDTO loadUserByUserId(Long userId);
 }

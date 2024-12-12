@@ -52,4 +52,11 @@ public class PlatformUserServiceImpl implements IPlatformUserService {
         return userInfoDTO;
     }
 
+    @Override
+    public UserInfoDTO getUserinfo(Long userId) {
+        UserInfoDTO userInfoDTO = new UserInfoDTO();
+        BeanUtils.copyProperties(userService.loadUserByUserId(userId), userInfoDTO);
+        return userInfoDTO;
+    }
+
 }

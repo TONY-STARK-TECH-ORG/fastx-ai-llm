@@ -10,7 +10,6 @@ import com.fastx.ai.llm.domains.entity.User;
 import com.fastx.ai.llm.domains.service.IOrganizationService;
 import com.fastx.ai.llm.domains.service.IOrganizationUserService;
 import com.fastx.ai.llm.domains.service.IUserService;
-import org.apache.dubbo.common.utils.MD5Utils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,12 +46,6 @@ public class DubboUserServiceImpl extends DubboBaseDomainService implements IDub
         } else {
             AssertUtil.assertNotBlank(userDTO.getEmail(), "email not found!");
             AssertUtil.assertNotBlank(userDTO.getPassword(), "password not found!");
-
-            // password need md5
-            MD5Utils utils = new MD5Utils();
-            String md5Password = utils.getMd5(userDTO.getPassword());
-            // rewrite with md5 password
-            userDTO.setPassword(md5Password);
         }
 
         userDTO.setRole(IConstant.NORMAL);
@@ -86,9 +79,19 @@ public class DubboUserServiceImpl extends DubboBaseDomainService implements IDub
     }
 
     @Override
+    @SentinelResource("user.login.info")
     public UserDTO loadUserByEmail(String email) {
         User user = userService.loadUserByEmail(email);
         Assert.notNull(user, "can't find user with email!");
+        return user.to();
+    }
+
+    @Override
+    @SentinelResource("user.login.info")
+    public UserDTO loadUserByUserId(Long userId) {
+        User user = userService.getById(userId);
+        Assert.notNull(user, "can't find user with email!");
+        user.setPassword("");
         return user.to();
     }
 

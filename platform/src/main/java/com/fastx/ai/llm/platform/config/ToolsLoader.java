@@ -38,6 +38,7 @@ public class ToolsLoader {
                 : providers) {
 
             IPlatformTool<IPlatformToolInput, IPlatformToolOutput> iPlatformTool = iPlatformToolProvider.get();
+            log.info("load tool: {} {} {}", iPlatformTool.getCode(), iPlatformTool.getVersion(), iPlatformTool.getVersion());
             add(iPlatformTool);
         }
     }
