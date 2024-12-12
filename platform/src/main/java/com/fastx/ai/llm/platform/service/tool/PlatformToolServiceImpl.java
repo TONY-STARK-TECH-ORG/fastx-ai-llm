@@ -11,11 +11,16 @@ import com.fastx.ai.llm.platform.tool.spi.IPlatformToolInput;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformToolOutput;
 import com.fastx.ai.llm.platform.tool.train.TrainInput;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.dubbo.common.stream.StreamObserver;
 import org.apache.dubbo.common.utils.ConcurrentHashSet;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +56,7 @@ public class PlatformToolServiceImpl implements IPlatformToolService {
     public Map<String, Object> execTool(String toolCode, String toolVersion, String type, Map<String, Object> input) {
         // get tool by code and version
         IPlatformTool<IPlatformToolInput, IPlatformToolOutput> tool = getTool(toolCode, toolVersion, type);
+        Assert.notNull(tool, "tool not found!");
         IPlatformToolInput in;
         if ("llm-model".equals(type)) {
             in = new LLMInput();
@@ -63,12 +69,53 @@ public class PlatformToolServiceImpl implements IPlatformToolService {
         if (input.containsKey("data")) {
             in.setData(JSON.toJSONString(input.get("data")));
         }
-        if (input.containsKey("stream")) {
-            // TODO (stark): support stream, use dubbo stream, and new thread to exec tool.
-            in.setStream(null);
-        }
         IPlatformToolOutput exec = tool.exec(in);
-        return Map.of("data", ObjectUtils.defaultIfNull(exec.getData(), new HashMap<>()), "error", ObjectUtils.defaultIfNull(exec.getError(), ""));
+        return Map.of("data",
+                ObjectUtils.defaultIfNull(exec.getData(), new HashMap<>()), "error", ObjectUtils.defaultIfNull(exec.getError(), ""));
+    }
+
+    @Override
+    @SentinelResource("platform.tool.exec")
+    public void streamExecTool(String request, StreamObserver<String> response) throws IOException {
+        Map<String, Object> params = JSON.parseObject(request, Map.class);
+
+        String toolCode = (String) params.get("toolCode");
+        String toolVersion = (String) params.get("toolVersion");
+        String type = (String) params.get("type");
+        Map<String, Object> input = (Map<String, Object>) params.get("input");
+
+        Assert.isTrue("llm-model".equals(type), "only support llm-model stream exec");
+        IPlatformTool<IPlatformToolInput, IPlatformToolOutput> tool = getTool(toolCode, toolVersion, type);
+        Assert.notNull(tool, "tool not found!");
+
+        LLMInput in = new LLMInput();
+        in.setConfig(JSON.toJSONString(input.get("config")));
+        in.setData(JSON.toJSONString(input.get("data")));
+
+        PipedOutputStream stream = new PipedOutputStream();
+        in.setStream(stream);
+
+        PipedInputStream inputStream = new PipedInputStream(stream);
+        InputStreamReader reader = new InputStreamReader(inputStream);
+
+        new Thread(() -> {
+            IPlatformToolOutput exec = tool.exec(in);
+        }).start();
+
+        try {
+            int data;
+            while ((data = reader.read()) != -1) {
+                response.onNext(String.valueOf((char) data));
+            }
+        } finally {
+            try {
+                reader.close();
+                inputStream.close();
+            } finally {
+                // ignored
+            }
+        }
+        response.onCompleted();
     }
 
     private IPlatformTool getTool(String code, String version, String type) {

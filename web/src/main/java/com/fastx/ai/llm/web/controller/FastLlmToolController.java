@@ -1,19 +1,28 @@
 package com.fastx.ai.llm.web.controller;
 
+import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.platform.api.IPlatformOrgService;
 import com.fastx.ai.llm.platform.api.IPlatformToolService;
 import com.fastx.ai.llm.platform.dto.OrgToolDTO;
 import com.fastx.ai.llm.platform.dto.ToolDTO;
+import com.fastx.ai.llm.web.controller.entity.LLMResponse;
 import com.fastx.ai.llm.web.controller.entity.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author stark
  */
+@Slf4j
 @RestController
 @RequestMapping("/tool")
 public class FastLlmToolController {
@@ -66,4 +75,15 @@ public class FastLlmToolController {
         );
     }
 
+    @PostMapping("platform/tool/stream-exec")
+    public ResponseEntity<StreamingResponseBody> execToolWithStreaming(@RequestBody Map<String, Object> params) throws IOException {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        LLMResponse res = new LLMResponse(countDownLatch);
+
+        platformToolService.streamExecTool(JSON.toJSONString(params), res.getStreamObserver());
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_NDJSON)
+                .body(res);
+    }
 }

@@ -20,11 +20,13 @@ public class LLMInput implements IPlatformToolInput {
         return stream;
     }
 
+    @Override
     public void setStream(OutputStream stream) {
         this.stream = stream;
     }
 
 
+    @Override
     public void setData(String data) {
         this.data = data;
     }
@@ -39,6 +41,7 @@ public class LLMInput implements IPlatformToolInput {
         return config;
     }
 
+    @Override
     public void setConfig(String config) {
         this.config = config;
     }
