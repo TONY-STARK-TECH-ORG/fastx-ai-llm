@@ -1,0 +1,8 @@
+file:
+  oss:
+    domain: https://
+    endpoint: https://
+    bucket: fastx-ai-llm
+    region: cn-hangzhou
+    access-key: 1
+    access-secret: 2

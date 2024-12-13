@@ -18,6 +18,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jwt.version>0.12.6</jwt.version>
         <tio.version>3.8.6.v20240801-RELEASE</tio.version>
+        <oss.version>3.18.1</oss.version>
     </properties>
 
     <dependencies>
@@ -70,6 +71,11 @@
             <artifactId>tio-websocket-server</artifactId>
             <version>${tio.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+            <version>${oss.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -82,6 +88,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>

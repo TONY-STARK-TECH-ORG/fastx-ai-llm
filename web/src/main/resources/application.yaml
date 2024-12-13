@@ -1,7 +1,7 @@
 
 spring:
   profiles:
-    active: default, dubbo
+    active: default, dubbo, upload
   application:
     name: fast-llm-web
 #  ai:
