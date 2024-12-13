@@ -80,6 +80,20 @@ class Http {
             'Authorization': 'Bearer ' + userState.state.token!!
         }
     }
+
+    uploadHeaders() {
+        const userStorage = localStorage.getItem("user-storage")
+        if (!userStorage) {
+            return {
+                'Authorization': ''
+            }
+        }
+
+        const userState = JSON.parse(userStorage);
+        return {
+            'Authorization': 'Bearer ' + userState.state.token!!
+        }
+    }
 }
 
 export const http = new Http();

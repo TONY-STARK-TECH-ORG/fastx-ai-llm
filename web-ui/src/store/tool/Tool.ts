@@ -6,6 +6,8 @@ export interface Tool {
     type: string;
     author: string;
     status: string;
+
+    key?: string;
 }
 
 export interface ToolAction {

@@ -135,3 +135,27 @@ Content-Type: application/json
   }
 }
 ```
+
+## Others
+
+1. if you meet git ignored file not worked, please try
+
+```shell
+git rm -r --cached .
+git add .
+```
+
+2. now we only support storage with S3 protocol, so you need to config your minio or s3 server with the following:
+
+```yaml
+file:
+  oss:
+    domain: https://
+    endpoint: https://
+    bucket: 
+    region: 
+    access-key: 1
+    access-secret: 2
+```
+
+and modified `web/src/main/resources/application-upload-example.yaml` to `application-upload.yaml`.

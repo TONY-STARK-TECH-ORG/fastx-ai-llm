@@ -33,7 +33,13 @@ export default function Tools() {
         },
     ]
     useEffect(() => {
-        http.get<Tool[]>('tool/platform/tool/list').then(resp => setDataSource(resp.data))
+        http.get<Tool[]>('tool/platform/tool/list').then(resp => {
+            resp.data?.forEach(item => {
+                item.status = item.status === 'active' ? '可用' : '不可用';
+                item.key = item.code + "|" + item.version + "|" + item.type;
+            })
+            setDataSource(resp.data)
+        })
     }, [])
     return (
         <div className="w-full">
