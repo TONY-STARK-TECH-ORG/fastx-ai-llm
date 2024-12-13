@@ -1,16 +1,35 @@
-import { Button } from 'antd';
-import {useUserStore} from "../store/UserStore.ts";
-import {useNavigate} from "react-router";
+import Header from "../components/ui/header.tsx";
+import Footer from "../components/ui/footer.tsx";
+import Hero from "../components/hero-home.tsx";
+import BusinessCategories from "../components/business-categories.tsx";
+import FeaturesPlanet from "../components/features-planet.tsx";
+import LargeTestimonial from "../components/large-testimonial";
+import Cta from "../components/cta";
+
+import { useEffect } from "react";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 export default function HomePage() {
-    const [isLogin, logout] = useUserStore((state) => [state.isLogin, state.logout])
-    const navigate = useNavigate();
-
+    useEffect(() => {
+        AOS.init({
+            once: true,
+            disable: "phone",
+            duration: 700,
+            easing: "ease-out-cubic",
+        });
+    }, []);
     return (
-        <div className="flex flex-col items-center justify-center bg-black w-full h-full">
-            {isLogin() && <Button type="primary" onClick={()=>{ navigate("/dashboard") }}>已登录，去仪表盘</Button>}
-            {isLogin() && <Button className="mt-2" onClick={logout}>退出</Button>}
-            {!isLogin() && <Button className="mt-2" onClick={()=>{ navigate("/login") }}>去登录</Button>}
-        </div>
-    )
+        <>
+            <Header />
+            <main className="grow">
+                <Hero />
+                <BusinessCategories />
+                <FeaturesPlanet />
+                <LargeTestimonial />
+                <Cta />
+            </main>
+            <Footer border={true} />
+        </>
+    );
 }

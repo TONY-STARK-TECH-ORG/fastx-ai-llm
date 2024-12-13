@@ -34,7 +34,7 @@ export default function DashboardPage () {
     }, [])
 
     return (
-        <Layout className="w-full h-full">
+        <Layout className="w-screen h-screen">
             <Sider
                 width={150}
                 className="bg-white"
