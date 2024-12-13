@@ -1,8 +1,0 @@
-file:
-  oss:
-    domain: https://oss.fastx-ai.com
-    endpoint: "https://oss-cn-beijing.aliyuncs.com"
-    bucket: fastxai
-    region: "cn-hangzhou"
-    access-key:
-    access-secret:
