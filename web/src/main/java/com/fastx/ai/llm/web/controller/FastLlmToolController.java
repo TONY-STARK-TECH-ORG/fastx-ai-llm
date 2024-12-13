@@ -76,7 +76,7 @@ public class FastLlmToolController {
     }
 
     @PostMapping("platform/tool/stream-exec")
-    public ResponseEntity<StreamingResponseBody> execToolWithStreaming(@RequestBody Map<String, Object> params) throws IOException {
+    public ResponseEntity<StreamingResponseBody> execToolWithStreaming(@RequestBody Map<String, Object> params) throws IOException, InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         LLMResponse res = new LLMResponse(countDownLatch);
 

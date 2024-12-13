@@ -34,5 +34,5 @@ public interface IPlatformToolService {
      * @param response resp
      * @throws IOException pipe io exception
      */
-    void streamExecTool(String request, StreamObserver<String> response) throws IOException;
+    void streamExecTool(String request, StreamObserver<String> response) throws IOException, InterruptedException;
 }

@@ -1,7 +1,6 @@
 package com.fastx.ai.llm.platform.tool.llm.model.openai;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONPath;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fastx.ai.llm.platform.tool.entity.Fields;
 import com.fastx.ai.llm.platform.tool.entity.Prototype;
@@ -18,7 +17,6 @@ import com.openai.core.ObjectMappers;
 import com.openai.core.http.StreamResponse;
 import com.openai.models.*;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -33,7 +31,6 @@ import java.util.stream.Collectors;
 public class OpenAI extends BaseLlmModel {
 
     public static Prototype _prototype = new Prototype();
-    private static Map<String, Map<String, JSONPath>> _jsonPathCache = new HashMap<>();
 
     private static String API_BASE_URL = "baseURL";
     private static String API_KEY = "apiKey";
@@ -62,10 +59,6 @@ public class OpenAI extends BaseLlmModel {
         _prototype.setConfig(config);
         _prototype.setInputs(inputs);
         _prototype.setOutputs(outputs);
-
-        // create cache
-        _jsonPathCache.put(CONFIG, new HashMap<>());
-        _jsonPathCache.put(INPUTS, new HashMap<>());
     }
 
     @Override
@@ -90,8 +83,6 @@ public class OpenAI extends BaseLlmModel {
         }
 
         try {
-            Prototype _pr = new Prototype();
-            BeanUtils.copyProperties(_prototype, _pr);
             // send request
             OpenAIConfig config = JSON.parseObject(input.getConfig(), OpenAIConfig.class);
             OpenAIRequest request = JSON.parseObject(input.getData(), OpenAIRequest.class);
@@ -151,18 +142,27 @@ public class OpenAI extends BaseLlmModel {
                                     throw new RuntimeException(e);
                                 }
                             });
+                    // complete stream response.
+                    writer.write("|<FASTX-EOF>|");
                 } catch (Exception e) {
+                    writer.write(e.getMessage());
                     output.setError(e.getMessage());
                 } finally {
+                    // build response.
+                    OpenAIChoices choices = new OpenAIChoices();
+                    OpenAIMessage message = new OpenAIMessage();
+                    message.setRole(StringUtils.join(role.get(), ","));
+                    message.setContent(returned.get().toString());
+                    choices.setMessage(message);
+                    // to json result.
+                    String jsonString = JSON.toJSONString(OpenAIResponse.of(id.get(), created.get(), List.of(choices), usage.get()));
+                    output.setData(jsonString);
+                    writer.write(jsonString);
+
+                    // close writer and stream.
                     writer.close();
                     input.getStream().close();
                 }
-                OpenAIChoices choices = new OpenAIChoices();
-                OpenAIMessage message = new OpenAIMessage();
-                message.setRole(StringUtils.join(role.get(), ","));
-                message.setContent(returned.get().toString());
-                choices.setMessage(message);
-                output.setData(JSON.toJSONString(OpenAIResponse.of(id.get(), created.get(), List.of(choices), usage.get())));
                 return output;
             } else {
                 // send full response to output

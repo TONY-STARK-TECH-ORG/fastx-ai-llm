@@ -65,4 +65,11 @@ public class ToolsLoader {
         TOOL_LIST.add(iPlatformTool);
     }
 
+    public static IPlatformTool getTool(String code, String version, String type) {
+        String codeIdentifier = code + "|" + version + "|" + type;
+        IPlatformTool<IPlatformToolInput, IPlatformToolOutput> tool = ToolsLoader.TOOLS.get(codeIdentifier);
+        org.springframework.util.Assert.notNull(tool, "tool not found!");
+        return tool;
+    }
+
 }

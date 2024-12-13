@@ -5,6 +5,9 @@ import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.platform.api.IPlatformToolService;
 import com.fastx.ai.llm.platform.config.ToolsLoader;
 import com.fastx.ai.llm.platform.dto.ToolDTO;
+import com.fastx.ai.llm.platform.exec.PlatformToolExecutor;
+import com.fastx.ai.llm.platform.exec.ToolContext;
+import com.fastx.ai.llm.platform.exec.ToolRunner;
 import com.fastx.ai.llm.platform.tool.llm.LLMInput;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformTool;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformToolInput;
@@ -14,13 +17,12 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.dubbo.common.stream.StreamObserver;
 import org.apache.dubbo.common.utils.ConcurrentHashSet;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +34,13 @@ import java.util.stream.Collectors;
 @DubboService
 public class PlatformToolServiceImpl implements IPlatformToolService {
 
+    private Logger logger = LoggerFactory.getLogger(PlatformToolServiceImpl.class);
+
     @Autowired
     ToolsLoader toolsLoader;
+
+    @Autowired
+    PlatformToolExecutor toolExecutor;
 
     @Override
     @SentinelResource("platform.tool.get")
@@ -55,7 +62,7 @@ public class PlatformToolServiceImpl implements IPlatformToolService {
     @SentinelResource("platform.tool.exec")
     public Map<String, Object> execTool(String toolCode, String toolVersion, String type, Map<String, Object> input) {
         // get tool by code and version
-        IPlatformTool<IPlatformToolInput, IPlatformToolOutput> tool = getTool(toolCode, toolVersion, type);
+        IPlatformTool<IPlatformToolInput, IPlatformToolOutput> tool = ToolsLoader.getTool(toolCode, toolVersion, type);
         Assert.notNull(tool, "tool not found!");
         IPlatformToolInput in;
         if ("llm-model".equals(type)) {
@@ -76,52 +83,15 @@ public class PlatformToolServiceImpl implements IPlatformToolService {
 
     @Override
     @SentinelResource("platform.tool.exec")
-    public void streamExecTool(String request, StreamObserver<String> response) throws IOException {
-        Map<String, Object> params = JSON.parseObject(request, Map.class);
-
-        String toolCode = (String) params.get("toolCode");
-        String toolVersion = (String) params.get("toolVersion");
-        String type = (String) params.get("type");
-        Map<String, Object> input = (Map<String, Object>) params.get("input");
-
-        Assert.isTrue("llm-model".equals(type), "only support llm-model stream exec");
-        IPlatformTool<IPlatformToolInput, IPlatformToolOutput> tool = getTool(toolCode, toolVersion, type);
-        Assert.notNull(tool, "tool not found!");
-
-        LLMInput in = new LLMInput();
-        in.setConfig(JSON.toJSONString(input.get("config")));
-        in.setData(JSON.toJSONString(input.get("data")));
-
-        PipedOutputStream stream = new PipedOutputStream();
-        in.setStream(stream);
-
-        PipedInputStream inputStream = new PipedInputStream(stream);
-        InputStreamReader reader = new InputStreamReader(inputStream);
-
-        new Thread(() -> {
-            IPlatformToolOutput exec = tool.exec(in);
-        }).start();
-
-        try {
-            int data;
-            while ((data = reader.read()) != -1) {
-                response.onNext(String.valueOf((char) data));
-            }
-        } finally {
-            try {
-                reader.close();
-                inputStream.close();
-            } finally {
-                // ignored
-            }
-        }
+    public void streamExecTool(String request, StreamObserver<String> response) throws IOException, InterruptedException {
+        ToolContext context = ToolContext.of(JSON.parseObject(request, Map.class));
+        // set context and execute tool.
+        toolExecutor.setContext(context);
+        toolExecutor.execute(new ToolRunner());
+        // read to stream
+        context.readTo(response, logger);
+        context.clean();
+        // complete stream
         response.onCompleted();
-    }
-
-    private IPlatformTool getTool(String code, String version, String type) {
-        String codeIdentifier = code + "|" + version + "|" + type;
-        IPlatformTool<IPlatformToolInput, IPlatformToolOutput> tool = ToolsLoader.TOOLS.get(codeIdentifier);
-        Assert.notNull(tool, "tool not found!");
-        return tool;
     }
 }

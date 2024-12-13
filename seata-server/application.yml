@@ -23,7 +23,7 @@ seata:
   config:
     type: zk # Configuration type, using Zookeeper
     zk:
-      server-addr: 172.17.0.3:2181 # Address of the Zookeeper server
+      server-addr: 172.17.0.4:2181 # Address of the Zookeeper server
       session-timeout: 6000 # Session timeout in milliseconds
       connect-timeout: 2000 # Connection timeout in milliseconds
       username: # Username for Zookeeper (if required)
@@ -34,7 +34,7 @@ seata:
     type: zk # Registry type, using Zookeeper
     zk:
       cluster: default # Cluster name
-      server-addr: 172.17.0.3:2181 # Address of the Zookeeper server
+      server-addr: 172.17.0.4:2181 # Address of the Zookeeper server
       session-timeout: 6000 # Session timeout in milliseconds
       connect-timeout: 2000 # Connection timeout in milliseconds
       username: # Username for Zookeeper (if required)
@@ -77,7 +77,7 @@ seata:
       max-total: 100 # Maximum total number of connections
       query-limit: 1000 # Query limit
       single:
-        host: 172.17.0.4 # Host address of the Redis server
+        host: 172.17.0.2 # Host address of the Redis server
         port: 6379 # Port of the Redis server
 
   transport:
