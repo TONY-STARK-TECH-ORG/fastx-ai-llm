@@ -6,9 +6,7 @@ interface IQueue<T> {
 
 class Queue<T> implements IQueue<T> {
     private storage: T[] = [];
-
     constructor(private capacity: number = Infinity) {}
-
     enqueue(item: T): void {
         if (this.size() === this.capacity) {
             throw Error("Queue has reached max capacity, you cannot add more items");
@@ -45,9 +43,7 @@ export class SlidingWindow {
                 onAfterMarker(s)
                 continue ;
             }
-
             this.queue.enqueue(s);
-            console.log(this.queue.getStorage())
             if (this.queue.size() === this.marker.length) {
                 // queue size is equal to marker length, check;
                 this.foundMarker = this.queue.getStorage().join('') === this.marker;
