@@ -36,10 +36,10 @@ public interface IDubboToolService {
     boolean deleteOrganizationTools(Long id);
 
     /**
-     * list all tools in organization
-     * @param organizationId org id
+     * list all tools under user (all orgs user joined)
+     * @param userId user id
      * @return tool list
      */
-    List<OrganizationToolsDTO> getOrganizationTools(Long organizationId);
+    List<OrganizationToolsDTO> getTools(Long userId);
 
 }

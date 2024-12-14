@@ -72,3 +72,12 @@ export interface KnowledgeBaseFile extends Base {
     vecPartitionValue: string;
     status: string;
 }
+
+export interface OrgTool extends Base {
+    organizationId: string;
+    toolCode: string;
+    toolVersion: string;
+    configData: string;
+    custom: boolean;
+    customCode: string;
+}

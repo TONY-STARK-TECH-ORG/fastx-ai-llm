@@ -65,6 +65,25 @@ class Http {
         }
     }
 
+    async stream(path: string, body: any, onData: (value: string | undefined, stop: boolean | undefined)=>void) {
+        const apiURL = api(path);
+        const res = await fetch(apiURL, {
+            method: 'POST',
+            headers: this.headers(),
+            body: JSON.stringify(body)
+        });
+        const reader = res?.body?.getReader();
+        while (true) {
+            const r = await reader?.read();
+            if (r?.done) {
+                onData(new TextDecoder().decode(r?.value), true)
+                break;
+            }
+            onData(new TextDecoder().decode(r?.value), false)
+        }
+        return res;
+    }
+
     headers() {
         const userStorage = localStorage.getItem("user-storage")
         if (!userStorage) {

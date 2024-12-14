@@ -44,9 +44,9 @@ public class FastLlmToolController {
     }
 
     @GetMapping("org/tool/list")
-    public Response<List<OrgToolDTO>> listApp(Long orgId) {
+    public Response<List<OrgToolDTO>> listApp(Long userId) {
         return Response.success(
-                platformOrgService.getOrgTools(orgId)
+                platformOrgService.getOrgTools(userId)
         );
     }
 

@@ -54,6 +54,9 @@ public class PlatformToolServiceImpl implements IPlatformToolService {
             toolDTO.setVersion(tool.getVersion());
             toolDTO.setPrototype(tool.getPrototype());
             toolDTO.setStatus(tool.getStatus());
+            toolDTO.setName(tool.getName());
+            toolDTO.setDescription(tool.getDescription());
+            toolDTO.setIcon(tool.getIcon());
             return toolDTO;
         }).collect(Collectors.toList());
     }

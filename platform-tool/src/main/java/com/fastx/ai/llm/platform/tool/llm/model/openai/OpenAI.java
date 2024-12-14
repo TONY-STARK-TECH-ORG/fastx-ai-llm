@@ -32,9 +32,9 @@ public class OpenAI extends BaseLlmModel {
 
     public static Prototype _prototype = new Prototype();
 
-    private static String API_BASE_URL = "baseURL";
+    private static String API_BASE_URL = "baseUrl";
     private static String API_KEY = "apiKey";
-    private static String STREAMING = "isStreaming";
+    private static String STREAMING = "streaming";
 
     private static String MODEL_ID = "modelId";
     private static String MESSAGES = "messages";
@@ -59,6 +59,21 @@ public class OpenAI extends BaseLlmModel {
         _prototype.setConfig(config);
         _prototype.setInputs(inputs);
         _prototype.setOutputs(outputs);
+    }
+
+    @Override
+    public String getIcon() {
+        return "https://oss.fastx-ai.com/fastx-ai-llm/123/logo.png";
+    }
+
+    @Override
+    public String getName() {
+        return "OpenAI";
+    }
+
+    @Override
+    public String getDescription() {
+        return "OpenAI Chat工具，支持流、非流调用全部会话模型接口。";
     }
 
     @Override
@@ -143,7 +158,7 @@ public class OpenAI extends BaseLlmModel {
                                 }
                             });
                     // complete stream response.
-                    writer.write("|<FASTX-EOF>|");
+                    writer.write("<FASTX-EOF>");
                 } catch (Exception e) {
                     writer.write(e.getMessage());
                     output.setError(e.getMessage());

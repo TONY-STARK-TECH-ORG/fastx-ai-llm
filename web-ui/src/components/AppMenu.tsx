@@ -74,7 +74,15 @@ export default function AppMenu(){
     }
 
     const location = useLocation()
-    setCurrentMenu(location.pathname)
+    if (location.pathname.startsWith("/dashboard/tool")) {
+        setCurrentMenu("/dashboard/tool")
+    } else if (location.pathname.startsWith("/dashboard/task")) {
+        setCurrentMenu("/dashboard/task")
+    } else if (location.pathname.startsWith("/dashboard/log")) {
+        setCurrentMenu("/dashboard/log")
+    } else {
+        setCurrentMenu(location.pathname)
+    }
 
     return (
         <div style={{ width: 50 }}>

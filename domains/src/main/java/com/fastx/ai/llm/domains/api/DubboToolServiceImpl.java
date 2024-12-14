@@ -2,7 +2,9 @@ package com.fastx.ai.llm.domains.api;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.fastx.ai.llm.domains.dto.OrganizationToolsDTO;
+import com.fastx.ai.llm.domains.entity.Organization;
 import com.fastx.ai.llm.domains.entity.OrganizationTools;
+import com.fastx.ai.llm.domains.service.IOrganizationService;
 import com.fastx.ai.llm.domains.service.IOrganizationToolsService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ public class DubboToolServiceImpl implements IDubboToolService {
 
     @Autowired
     IOrganizationToolsService organizationToolsService;
+
+    @Autowired
+    IOrganizationService organizationService;
 
     @Override
     @SentinelResource("org.tool.create")
@@ -47,10 +52,13 @@ public class DubboToolServiceImpl implements IDubboToolService {
 
     @Override
     @SentinelResource("org.tool.get")
-    public List<OrganizationToolsDTO> getOrganizationTools(Long organizationId) {
-        Assert.notNull(organizationId, "organizationId must not be null");
+    public List<OrganizationToolsDTO> getTools(Long userId) {
+        Assert.notNull(userId, "userId must not be null");
+        List<Organization> organizationList = organizationService.findByUserId(userId);
         List<OrganizationTools> organizationTools =
-                organizationToolsService.getOrganizationToolsByOrganizationId(organizationId);
+                organizationToolsService.getOrganizationToolsByOrganizationIds(
+                        organizationList.stream().map(Organization::getId).collect(Collectors.toList())
+                );
         return organizationTools.stream().map(OrganizationTools::to).collect(Collectors.toList());
     }
 

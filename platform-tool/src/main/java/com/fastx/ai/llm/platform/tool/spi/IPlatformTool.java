@@ -6,6 +6,23 @@ package com.fastx.ai.llm.platform.tool.spi;
 public interface IPlatformTool<Input extends IPlatformToolInput, Output extends IPlatformToolOutput> {
 
     /**
+     * icon
+     * @return icon full url
+     */
+    String getIcon();
+    /**
+     * name
+     * @return name
+     */
+    String getName();
+
+    /**
+     * desc
+     * @return description
+     */
+    String getDescription();
+
+    /**
      * unique code for this tool
      * @return code like 'x.y.z'
      */

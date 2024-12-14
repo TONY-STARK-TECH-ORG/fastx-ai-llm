@@ -24,6 +24,7 @@ import ApplicationPage from "./pages/dashboard/ApplicationPage.tsx";
 import {http} from "./api/Http.ts";
 import {Organization} from "./store/define.ts";
 import KnowledgeBasePage from "./pages/dashboard/KnowledgeBasePage.tsx";
+import ToolPage from "./pages/dashboard/ToolPage.tsx";
 //----------------------------------------------------------------------
 // Dashboard pages: KnowledgeBase
 //----------------------------------------------------------------------
@@ -97,6 +98,8 @@ function App() {
                                     <Route path={"/dashboard"} element={<DashboardPage/>}>
                                         <Route path="application" element={<ApplicationPage/>}/>
                                         <Route path="knowledgeBase" element={<KnowledgeBasePage />}/>
+
+                                        <Route path="tool/*" element={<ToolPage />} />
                                     </Route>
 
                                     <Route path={"/login"} element={<LoginPage/>}/>

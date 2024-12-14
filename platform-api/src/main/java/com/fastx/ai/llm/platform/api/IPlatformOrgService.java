@@ -49,11 +49,11 @@ public interface IPlatformOrgService {
     boolean deleteOrgTools(Long id);
 
     /**
-     * list all tools in organization
-     * @param orgId org id
+     * list all tools under user (user joined orgs)
+     * @param userId user id
      * @return tool list
      */
-    List<OrgToolDTO> getOrgTools(Long orgId);
+    List<OrgToolDTO> getOrgTools(Long userId);
 
     //------------------------------------------------------------------------
     // task

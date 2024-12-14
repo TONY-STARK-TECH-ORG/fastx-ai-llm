@@ -22,9 +22,9 @@ import java.util.List;
 public class OrganizationToolsServiceImpl extends ServiceImpl<OrganizationToolsMapper, OrganizationTools> implements IOrganizationToolsService {
 
     @Override
-    public List<OrganizationTools> getOrganizationToolsByOrganizationId(Long organizationId) {
+    public List<OrganizationTools> getOrganizationToolsByOrganizationIds(List<Long> organizationIds) {
         LambdaQueryWrapper<OrganizationTools> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(OrganizationTools::getOrganizationId, organizationId);
+        wrapper.in(OrganizationTools::getOrganizationId, organizationIds);
         wrapper.orderByDesc(OrganizationTools::getCreateTime);
         return Lists.createWhenNull(list(wrapper));
     }

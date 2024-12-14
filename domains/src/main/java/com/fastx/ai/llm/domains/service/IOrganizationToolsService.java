@@ -17,8 +17,8 @@ public interface IOrganizationToolsService extends IService<OrganizationTools> {
 
     /**
      * get all tools under org
-     * @param organizationId org id
+     * @param organizationIds org id
      * @return all tools
      */
-    List<OrganizationTools> getOrganizationToolsByOrganizationId(Long organizationId);
+    List<OrganizationTools> getOrganizationToolsByOrganizationIds(List<Long> organizationIds);
 }
