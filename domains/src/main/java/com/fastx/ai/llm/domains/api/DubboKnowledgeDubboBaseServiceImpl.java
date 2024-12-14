@@ -7,8 +7,10 @@ import com.fastx.ai.llm.domains.dto.KnowledgeBaseDTO;
 import com.fastx.ai.llm.domains.dto.KnowledgeBaseFileDTO;
 import com.fastx.ai.llm.domains.entity.KnowledgeBase;
 import com.fastx.ai.llm.domains.entity.KnowledgeBaseFile;
+import com.fastx.ai.llm.domains.entity.Organization;
 import com.fastx.ai.llm.domains.service.IKnowledgeBaseFileService;
 import com.fastx.ai.llm.domains.service.IKnowledgeBaseService;
+import com.fastx.ai.llm.domains.service.IOrganizationService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,9 @@ public class DubboKnowledgeDubboBaseServiceImpl extends DubboBaseDomainService i
 
     @Autowired
     IKnowledgeBaseFileService knowledgeBaseFileService;
+
+    @Autowired
+    IOrganizationService organizationService;
 
     @Override
     @SentinelResource("kb.create")
@@ -64,9 +69,12 @@ public class DubboKnowledgeDubboBaseServiceImpl extends DubboBaseDomainService i
 
     @Override
     @SentinelResource("kb.get")
-    public List<KnowledgeBaseDTO> getKnowledgeBaseByOrganizationId(Long organizationId) {
-        Assert.notNull(organizationId, "organizationId is null");
-        List<KnowledgeBase> knowledgeBases = knowledgeBaseService.getKnowledgeBaseByOrganizationId(organizationId);
+    public List<KnowledgeBaseDTO> getKnowledgeBaseByUserId(Long userId) {
+        Assert.notNull(userId, "userId is null");
+        List<Organization> organizationList = organizationService.findByUserId(userId);
+        List<KnowledgeBase> knowledgeBases = knowledgeBaseService.getKnowledgeBaseByOrganizationIds(
+                organizationList.stream().map(Organization::getId).collect(Collectors.toList())
+        );
         return knowledgeBases.stream().map(KnowledgeBase::to).collect(Collectors.toList());
     }
 
@@ -135,9 +143,5 @@ public class DubboKnowledgeDubboBaseServiceImpl extends DubboBaseDomainService i
         AssertUtil.notEmpty(knowledgeBaseFileDTO.getName(), "name must not be empty");
         AssertUtil.notEmpty(knowledgeBaseFileDTO.getExtension(), "extension must not be empty");
         AssertUtil.notEmpty(knowledgeBaseFileDTO.getDownloadUrl(), "downloadUrl must not be empty");
-        AssertUtil.notEmpty(knowledgeBaseFileDTO.getVecCollectionId(), "vecCollectionId must not be empty");
-        AssertUtil.notEmpty(knowledgeBaseFileDTO.getVecCollectionName(), "vecCollectionName must not be empty");
-        AssertUtil.notEmpty(knowledgeBaseFileDTO.getVecPartitionKey(), "vecPartitionKey must not be empty");
-        AssertUtil.notEmpty(knowledgeBaseFileDTO.getVecPartitionValue(), "vecPartitionValue must not be empty");
     }
 }

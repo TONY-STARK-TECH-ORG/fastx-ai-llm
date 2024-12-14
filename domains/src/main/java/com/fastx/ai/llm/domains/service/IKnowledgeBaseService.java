@@ -17,8 +17,8 @@ public interface IKnowledgeBaseService extends IService<KnowledgeBase> {
 
     /**
      * get knowledge base by org id
-     * @param organizationId org id
+     * @param organizationIds org ids
      * @return list
      */
-    List<KnowledgeBase> getKnowledgeBaseByOrganizationId(Long organizationId);
+    List<KnowledgeBase> getKnowledgeBaseByOrganizationIds(List<Long> organizationIds);
 }

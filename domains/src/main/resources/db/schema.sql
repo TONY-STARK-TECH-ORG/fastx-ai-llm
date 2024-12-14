@@ -164,7 +164,7 @@ alter table t_organization_tools
 
 create table if not exists t_knowledge_base (
     id bigint auto_increment primary key,
-    `name` varchar(64) not null unique,
+    `name` varchar(64) not null,
     description text,
 
     organization_id bigint not null,
@@ -177,7 +177,7 @@ create table if not exists t_knowledge_base (
 
 create table if not exists t_task (
     id bigint auto_increment primary key,
-    `name` varchar(64) not null unique,
+    `name` varchar(64) not null,
     description text,
 
     organization_id bigint not null,
@@ -258,3 +258,21 @@ create table if not exists `t_knowledge_base_file`(
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 账号创建时间，默认当前时间
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- 自动更新
 );
+
+drop index version on t_application_version;
+
+create unique index version
+    on t_application_version (version, application_id);
+
+alter table t_knowledge_base_file
+    modify vec_collection_name varchar(64) null;
+
+alter table t_knowledge_base_file
+    modify vec_collection_id varchar(64) null;
+
+alter table t_knowledge_base_file
+    modify vec_partition_key varchar(64) null;
+
+alter table t_knowledge_base_file
+    modify vec_partition_value varchar(64) null;
+

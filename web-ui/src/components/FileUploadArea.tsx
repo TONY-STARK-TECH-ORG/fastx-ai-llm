@@ -9,7 +9,7 @@ export type UploadDataProps = {
     workspaceId: string
 }
 
-export default function FileUploadArea( { data }: {data: UploadDataProps} ) {
+export default function FileUploadArea( { data, onSuccess }: {data: UploadDataProps; onSuccess: ()=>void} ) {
     const props: UploadProps = {
         name: 'files',
         multiple: true,
@@ -27,8 +27,9 @@ export default function FileUploadArea( { data }: {data: UploadDataProps} ) {
             message.success(fileUploadSuccess ? `${info.file.name} 文件上传成功` : `${info.file.name} 文件上传失败`);
 
             if (fileUploadSuccess) {
-                info.file.url = resp.data[0][info.file.name];
+                info.file.url = resp.data[0]['downloadUrl'];
             }
+            onSuccess()
         },
         onDrop(e) {
             console.log('Dropped files', e.dataTransfer.files);

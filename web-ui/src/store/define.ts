@@ -53,3 +53,22 @@ export interface Application extends Base {
     activeVersion: ApplicationVersion
     applicationVersions: ApplicationVersion[]
 }
+
+export interface KnowledgeBase extends Base {
+    name: string;
+    description: string;
+    organizationId: string;
+    status: string;
+}
+
+export interface KnowledgeBaseFile extends Base {
+    knowledgeBaseId: string;
+    name: string;
+    extension: string;
+    downloadUrl: string;
+    vecCollectionName: string;
+    vecCollectionId: string;
+    vecPartitionKey: string;
+    vecPartitionValue: string;
+    status: string;
+}

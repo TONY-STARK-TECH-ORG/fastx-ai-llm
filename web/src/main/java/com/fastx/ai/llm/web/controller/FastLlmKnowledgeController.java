@@ -32,9 +32,9 @@ public class FastLlmKnowledgeController {
     }
 
     @GetMapping("/list")
-    public Response<List<KnowledgeDTO>> listKnowledges(Long orgId) {
+    public Response<List<KnowledgeDTO>> listKnowledges(Long userId) {
         return Response.success(
-                platformKnowledgeService.getKnowledgesByOrgId(orgId)
+                platformKnowledgeService.getKnowledgesByUserId(userId)
         );
     }
 

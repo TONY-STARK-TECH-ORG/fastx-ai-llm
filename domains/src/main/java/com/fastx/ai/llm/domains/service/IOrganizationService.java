@@ -21,5 +21,4 @@ public interface IOrganizationService extends IService<Organization> {
      * @return org list or empty
      */
     List<Organization> findByUserId(Long userId);
-
 }

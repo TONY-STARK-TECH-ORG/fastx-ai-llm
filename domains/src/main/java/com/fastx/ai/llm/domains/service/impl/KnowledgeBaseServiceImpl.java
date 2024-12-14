@@ -22,9 +22,9 @@ import java.util.List;
 public class KnowledgeBaseServiceImpl extends ServiceImpl<KnowledgeBaseMapper, KnowledgeBase> implements IKnowledgeBaseService {
 
     @Override
-    public List<KnowledgeBase> getKnowledgeBaseByOrganizationId(Long organizationId) {
+    public List<KnowledgeBase> getKnowledgeBaseByOrganizationIds(List<Long> organizationIds) {
         LambdaQueryWrapper<KnowledgeBase> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(KnowledgeBase::getOrganizationId, organizationId);
+        lqw.in(KnowledgeBase::getOrganizationId, organizationIds);
         lqw.orderByDesc(KnowledgeBase::getCreateTime);
         return Lists.createWhenNull(this.list(lqw));
     }

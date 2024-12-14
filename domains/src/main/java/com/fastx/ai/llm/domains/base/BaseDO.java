@@ -14,10 +14,8 @@ public class BaseDO implements Serializable {
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    @TableField(fill = FieldFill.INSERT)
     private String createTime;
 
-    @TableField(fill = FieldFill.UPDATE)
     private String updateTime;
 
     @TableLogic

@@ -1,5 +1,5 @@
 import {List, Button, Divider, message, Avatar, Popconfirm, Spin} from 'antd';
-import {AppstoreAddOutlined, SaveOutlined, FileTextOutlined, SendOutlined} from "@ant-design/icons";
+import {AppstoreAddOutlined, SaveOutlined, FileTextOutlined, SendOutlined, DeleteOutlined} from "@ant-design/icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import {
     ChevronDownIcon,
@@ -19,7 +19,6 @@ import {IoCreate} from "react-icons/io5";
 export default function ApplicationPage() {
     const [createApplicationModalOpen, setCreateApplicationModalOpen] = useState(false);
     const [updateApplicationModalOpen, setUpdateApplicationModalOpen] = useState(false);
-
     const [createApplicationVersionModalOpen, setCreateApplicationVersionModalOpen] = useState(false);
 
     const [listLoading, setListLoading] = useState(false)
@@ -27,6 +26,7 @@ export default function ApplicationPage() {
     const [selectedApplication, setSelectedApplication] = useState<Application | undefined>(undefined)
     const [selectedApplicationVersion, setSelectedApplicationVersion] = useState<ApplicationVersion | undefined>(undefined)
     const [applicationDetailLoading, setApplicationDetailLoading] = useState(false)
+    const [deleteVersion, setDeleteVersion] = useState(false)
 
     const { user } = useContext(UserContext)
 
@@ -40,11 +40,22 @@ export default function ApplicationPage() {
             setApplicationList(res.data);
             if (selectedApplication) {
                 // 重置
-                setSelectedApplication(res.data?.find((a) => a.id === selectedApplication.id));
-                if (selectedApplicationVersion && selectedApplication.applicationVersions && selectedApplication.applicationVersions.length !== 0) {
-                    setSelectedApplicationVersion(
-                        selectedApplication.applicationVersions.find((v) => v.id === selectedApplicationVersion.id)
-                    )
+                const s = res.data?.find((a) => a.id === selectedApplication.id);
+                setSelectedApplication(s);
+                if (s?.applicationVersions && s?.applicationVersions.length !== 0) {
+                    if (selectedApplicationVersion) {
+                        setSelectedApplicationVersion(
+                            s.applicationVersions.find((v) => v.id === selectedApplicationVersion.id)
+                        )
+                    } else {
+                        setSelectedApplicationVersion(
+                            // default set to 0
+                            s?.applicationVersions[0]
+                        )
+                    }
+                } else {
+                    // no version data
+                    setSelectedApplicationVersion(undefined)
                 }
             }
         } else {
@@ -115,9 +126,27 @@ export default function ApplicationPage() {
         setApplicationDetailLoading(false)
     }
 
+    const deleteApplicationVersion = async () => {
+        if (!selectedApplicationVersion) {
+            message.error("请切换到要删除的版本")
+            return
+        }
+        // activate version
+        setApplicationDetailLoading(true)
+        const res = await http.post("app/version/delete", {id: selectedApplicationVersion.id})
+        if (res.success) {
+            message.success("版本删除成功")
+            // refresh current applicationList and show loading
+            setSelectedApplicationVersion(undefined)
+        } else {
+            message.error("版本删除失败，请重试")
+        }
+        setApplicationDetailLoading(false)
+    }
+
     useEffect(() => {
         loadApplicationList();
-    }, [user?.token])
+    }, [user?.token, deleteVersion])
 
     return (
         <div className="flex items-start justify-start h-screen p-2">
@@ -136,10 +165,15 @@ export default function ApplicationPage() {
                         pagination={false}
                         dataSource={applicationList}
                         renderItem={(item) => (
-                            <List.Item key={item.id} className="!p-2 hover:cursor-pointer hover:bg-[#fcfcfc]" onClick={() => {
-                                // set selected application
-                                setSelectedApplication(item)
-                            }}>
+                            <List.Item
+                                key={item.id}
+                                className="!p-2 hover:cursor-pointer hover:bg-[#FF6A00]/5"
+                                onClick={() => {
+                                    // set selected application
+                                    setSelectedApplication(item)
+                                    setSelectedApplicationVersion(undefined)
+                                }}
+                            >
                                 <div className="flex w-full items-center">
                                     <Avatar className="border border-gray-200" size={40} src={item.iconUrl} shape="square" />
                                     <div className="flex flex-col ml-2 grow items-start">
@@ -202,11 +236,11 @@ export default function ApplicationPage() {
                         </Menu>
                         <Divider type="vertical"/>
                         {selectedApplication.applicationVersions && selectedApplication.applicationVersions.length !== 0 ? (
-                            <div>
+                            <div className="flex items-center">
                                 <Menu>
                                     <MenuButton
                                         className="h-[24px] inline-flex items-center rounded-[2px] border border-[#FF6A00] bg-[#fff] px-2 text-sm/6 font-normal text-[#FF6A00] focus:outline-none data-[hover]:bg-[#FF6A00] data-[hover]:text-[#fff] data-[open]:bg-[#FF6A00] data-[open]:text-[#fff] fill-[#FF6A00] data-[hover]:fill-[#fff] data-[open]:fill-[#fff]  data-[focus]:outline-1 data-[focus]:outline-[#000]/10">
-                                        版本切换
+                                        版本
                                         <ChevronDownIcon className="size-4 fill-inherit" />
                                     </MenuButton>
 
@@ -279,6 +313,24 @@ export default function ApplicationPage() {
                         ): (
                             <Button size="small" onClick={() => setCreateApplicationVersionModalOpen(true)}>新建版本</Button>
                         )}
+                        {selectedApplicationVersion ? (
+                            <div className="flex items-center">
+                                <Popconfirm
+                                    placement="bottom"
+                                    title="删除版本"
+                                    description="该操作可能会影响线上应用，你确认删除该版本么？"
+                                    okText="是的"
+                                    cancelText="取消"
+                                    onConfirm={async () => {
+                                        await deleteApplicationVersion();
+                                        setDeleteVersion(!deleteVersion)
+                                    }}
+                                >
+                                    <Button size="small" danger icon={<DeleteOutlined />} />
+                                </Popconfirm>
+                                <Divider type="vertical" />
+                            </div>
+                        ) : null}
                         <div className="grow"></div>
                         <div className="flex items-center">
                             <p className="text-lg">{selectedApplication.name}</p>
@@ -335,7 +387,7 @@ export default function ApplicationPage() {
                                 <h1
                                     className="border-y text-5xl font-bold [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1] md:text-6xl"
                                 >
-                                    <span className="text-blue-500">FAST</span> RAG <span className="text-purple-600 ml-6">LLM</span> ENGINE
+                                    <span className="text-blue-500">FAST</span> RAG ENGINE
                                 </h1>
                             </div>
                             <div>

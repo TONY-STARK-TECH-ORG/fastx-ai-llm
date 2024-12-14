@@ -11,11 +11,18 @@ import java.util.List;
 public interface IPlatformKnowledgeService {
 
     /**
-     * get kb under org id
-     * @param orgId org id
+     * get kb under user id
+     * @param userId user id
      * @return kb list
      */
-    List<KnowledgeDTO> getKnowledgesByOrgId(Long orgId);
+    List<KnowledgeDTO> getKnowledgesByUserId(Long userId);
+
+    /**
+     * get kb under id
+     * @param knowledgeId kb id
+     * @return kb list
+     */
+    KnowledgeDTO getKnowledgeById(Long knowledgeId);
 
     /**
      * get kb files
