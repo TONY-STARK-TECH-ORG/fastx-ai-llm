@@ -26,7 +26,7 @@ public class KnowledgeBaseFileServiceImpl extends ServiceImpl<KnowledgeBaseFileM
         LambdaQueryWrapper<KnowledgeBaseFile> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(KnowledgeBaseFile::getKnowledgeBaseId, knowledgeBaseId);
         queryWrapper.orderByDesc(KnowledgeBaseFile::getCreateTime);
-        return Lists.emptyToNull(this.list(queryWrapper));
+        return Lists.createWhenNull(this.list(queryWrapper));
     }
 
     @Override

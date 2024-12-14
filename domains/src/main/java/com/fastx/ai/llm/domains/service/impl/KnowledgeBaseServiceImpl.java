@@ -26,7 +26,7 @@ public class KnowledgeBaseServiceImpl extends ServiceImpl<KnowledgeBaseMapper, K
         LambdaQueryWrapper<KnowledgeBase> lqw = new LambdaQueryWrapper<>();
         lqw.eq(KnowledgeBase::getOrganizationId, organizationId);
         lqw.orderByDesc(KnowledgeBase::getCreateTime);
-        return Lists.emptyToNull(this.list(lqw));
+        return Lists.createWhenNull(this.list(lqw));
     }
 
 }

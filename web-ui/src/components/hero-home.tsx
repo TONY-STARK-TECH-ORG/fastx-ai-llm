@@ -12,7 +12,7 @@ export default function HeroHome() {
             <h1
               className="border-y text-5xl font-bold [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1] md:text-6xl"
             >
-              <span className="text-blue-500">FAST</span>RAG <span className="text-purple-600">LLM</span>ENGINE
+              <span className="text-blue-500">FAST</span> RAG <span className="text-purple-600 ml-6">LLM</span> ENGINE
             </h1>
           </div>
         </div>

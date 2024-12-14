@@ -22,7 +22,7 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
 
     @Override
     public List<Organization> findByUserId(Long userId) {
-        return Lists.emptyToNull(this.baseMapper.findByUserId(userId));
+        return Lists.createWhenNull(this.baseMapper.findByUserId(userId));
     }
 
 }

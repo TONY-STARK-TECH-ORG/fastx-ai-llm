@@ -26,6 +26,6 @@ public class WorkflowServiceImpl extends ServiceImpl<WorkflowMapper, Workflow> i
         LambdaQueryWrapper<Workflow> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Workflow::getOrganizationId, organizationId);
         wrapper.orderByDesc(Workflow::getCreateTime);
-        return Lists.emptyToNull(this.list(wrapper));
+        return Lists.createWhenNull(this.list(wrapper));
     }
 }

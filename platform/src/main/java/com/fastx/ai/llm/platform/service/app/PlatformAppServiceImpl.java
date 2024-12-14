@@ -7,6 +7,7 @@ import com.fastx.ai.llm.domains.dto.ApplicationDTO;
 import com.fastx.ai.llm.domains.dto.ApplicationVersionDTO;
 import com.fastx.ai.llm.domains.dto.OrganizationDTO;
 import com.fastx.ai.llm.platform.api.IPlatformAppService;
+import com.fastx.ai.llm.platform.constant.IConstant;
 import com.fastx.ai.llm.platform.dto.AppDTO;
 import com.fastx.ai.llm.platform.dto.AppVersionDTO;
 import com.fastx.ai.llm.platform.dto.OrgDTO;
@@ -36,8 +37,7 @@ public class PlatformAppServiceImpl implements IPlatformAppService {
     @Override
     @SentinelResource("platform.app.get")
     public List<AppDTO> getAppList(Long userId) {
-        List<ApplicationDTO> applications = dubboApplicationService.getApplications(userId);
-        Assert.notEmpty(applications, "can't find applications");
+        List<ApplicationDTO> applications = Lists.createWhenNull(dubboApplicationService.getApplications(userId));
         return applications.stream().map(applicationDTO -> {
             AppDTO appDTO = new AppDTO();
             BeanUtils.copyProperties(applicationDTO, appDTO);
@@ -54,9 +54,13 @@ public class PlatformAppServiceImpl implements IPlatformAppService {
                 appDTO.setApplicationVersions(
                         applicationVersions.stream().map(av -> {
                             String versionData = av.getVersionData();
-                            // @TODO (stark) parse version to appVersion DTO
                             AppVersionDTO appVersionDTO = new AppVersionDTO();
+                            appVersionDTO.setConfig(versionData);
                             BeanUtils.copyProperties(av, appVersionDTO);
+
+                            if (appVersionDTO.getStatus().equals(IConstant.ACTIVE)) {
+                                appDTO.setActiveVersion(appVersionDTO);
+                            }
                             return appVersionDTO;
                         }).collect(Collectors.toList())
                 );
@@ -109,13 +113,12 @@ public class PlatformAppServiceImpl implements IPlatformAppService {
     @Override
     @SentinelResource("platform.app.version.create")
     public AppVersionDTO createNewAppVersion(AppVersionDTO appVersionDTO) {
-        // @TODO (stark) assemble data to db.version data
-        String versionData = "";
+        String versionData = appVersionDTO.getConfig();
         ApplicationVersionDTO version =
                 dubboApplicationService.createVersionData(appVersionDTO.getApplicationId(), versionData, appVersionDTO.getVersion());
-        // @TODO (stark) parse version to dto
         AppVersionDTO dto = new AppVersionDTO();
         BeanUtils.copyProperties(version, dto);
+        dto.setConfig(versionData);
         return dto;
     }
 
@@ -124,9 +127,7 @@ public class PlatformAppServiceImpl implements IPlatformAppService {
     public Boolean updateAppVersion(AppVersionDTO appVersionDTO) {
         Assert.notNull(appVersionDTO, "appVersion is null");
         Assert.notNull(appVersionDTO.getId(), "appVersion is null");
-
-        // @TODO (stark) assemble data to db.version data
-        String versionData = "";
+        String versionData = appVersionDTO.getConfig();
         return dubboApplicationService.updateVersionData(appVersionDTO.getId(), versionData);
     }
 
@@ -167,10 +168,11 @@ public class PlatformAppServiceImpl implements IPlatformAppService {
     public List<AppVersionDTO> getAppVersionList(Long appId) {
         Assert.notNull(appId, "appId is null");
         List<ApplicationVersionDTO> applicationVersions = dubboApplicationService.getApplicationVersions(appId);
-        return Lists.emptyToNull(applicationVersions).stream().map(av -> {
+        return Lists.createWhenNull(applicationVersions).stream().map(av -> {
             String versionData = av.getVersionData();
-            // @TODO (stark) parse version to appVersion DTO
+
             AppVersionDTO appVersionDTO = new AppVersionDTO();
+            appVersionDTO.setConfig(versionData);
             BeanUtils.copyProperties(av, appVersionDTO);
             return appVersionDTO;
         }).collect(Collectors.toList());

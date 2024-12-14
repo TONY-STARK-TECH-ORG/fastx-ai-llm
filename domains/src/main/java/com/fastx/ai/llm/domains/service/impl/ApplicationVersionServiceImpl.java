@@ -30,7 +30,7 @@ public class ApplicationVersionServiceImpl extends ServiceImpl<ApplicationVersio
         LambdaQueryWrapper<ApplicationVersion> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ApplicationVersion::getApplicationId, appId);
         queryWrapper.orderByDesc(ApplicationVersion::getCreateTime);
-        return Lists.emptyToNull(this.baseMapper.selectList(queryWrapper));
+        return Lists.createWhenNull(this.baseMapper.selectList(queryWrapper));
     }
 
     @Override

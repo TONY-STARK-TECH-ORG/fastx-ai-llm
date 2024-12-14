@@ -45,7 +45,7 @@ create table if not exists t_organization_user (
 
 create table if not exists t_application (
     id bigint auto_increment primary key,
-    `name` varchar(128) not null unique,
+    `name` varchar(128) not null,
     `type` enum('agent', 'playground') not null default 'agent',
     description text,
     icon_url varchar(255),

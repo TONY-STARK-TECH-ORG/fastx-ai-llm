@@ -26,7 +26,7 @@ public class WorkflowVersionServiceImpl extends ServiceImpl<WorkflowVersionMappe
         LambdaQueryWrapper<WorkflowVersion> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(WorkflowVersion::getWorkflowId, workflowId);
         queryWrapper.orderByDesc(WorkflowVersion::getCreateTime);
-        return Lists.emptyToNull(this.list(queryWrapper));
+        return Lists.createWhenNull(this.list(queryWrapper));
     }
 
 }

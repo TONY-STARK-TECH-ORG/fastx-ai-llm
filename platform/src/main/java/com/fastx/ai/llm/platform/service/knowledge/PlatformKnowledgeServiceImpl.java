@@ -29,7 +29,7 @@ public class PlatformKnowledgeServiceImpl implements IPlatformKnowledgeService {
     @SentinelResource("kb.get")
     public List<KnowledgeDTO> getKnowledgesByOrgId(Long orgId) {
         List<KnowledgeBaseDTO> knowledgeBases = dubboKnowledgeBaseService.getKnowledgeBaseByOrganizationId(orgId);
-        return Lists.emptyToNull(knowledgeBases).stream().map(knowledgeBaseDTO -> {
+        return Lists.createWhenNull(knowledgeBases).stream().map(knowledgeBaseDTO -> {
             KnowledgeDTO knowledgeDTO = new KnowledgeDTO();
             BeanUtils.copyProperties(knowledgeBaseDTO, knowledgeDTO);
             return knowledgeDTO;
@@ -41,7 +41,7 @@ public class PlatformKnowledgeServiceImpl implements IPlatformKnowledgeService {
     public List<KnowledgeFileDTO> getKnowledgeFilesByKnowledgeId(Long knowledgeId) {
         List<KnowledgeBaseFileDTO> knowledgeBaseFiles =
                 dubboKnowledgeBaseService.getKnowledgeBaseFileByKnowledgeBaseId(knowledgeId);
-        return Lists.emptyToNull(knowledgeBaseFiles).stream().map(knowledgeBaseFileDTO -> {
+        return Lists.createWhenNull(knowledgeBaseFiles).stream().map(knowledgeBaseFileDTO -> {
             KnowledgeFileDTO knowledgeFileDTO = new KnowledgeFileDTO();
             BeanUtils.copyProperties(knowledgeBaseFileDTO, knowledgeFileDTO);
             return knowledgeFileDTO;
@@ -74,7 +74,7 @@ public class PlatformKnowledgeServiceImpl implements IPlatformKnowledgeService {
         List<KnowledgeBaseFileDTO> knowledgeBaseFileDTOS =
                 dubboKnowledgeBaseService.batchCreateKnowledgeBaseFiles(collect);
         // return create result
-        return Lists.emptyToNull(knowledgeBaseFileDTOS).stream().map(kbf -> {
+        return Lists.createWhenNull(knowledgeBaseFileDTOS).stream().map(kbf -> {
             KnowledgeFileDTO knowledgeFileDTO = new KnowledgeFileDTO();
             BeanUtils.copyProperties(kbf, knowledgeFileDTO);
             return knowledgeFileDTO;

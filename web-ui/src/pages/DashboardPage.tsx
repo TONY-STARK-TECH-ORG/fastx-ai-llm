@@ -3,8 +3,7 @@ import AppMenu from "../components/AppMenu.tsx";
 import {Layout, Avatar, Modal } from 'antd';
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router";
-import Tools from "../components/Tools.tsx";
-import FileUploadArea from "../components/FileUploadArea.tsx";
+import { Outlet } from "react-router";
 
 const {Sider, Content} = Layout;
 
@@ -53,9 +52,8 @@ export default function DashboardPage () {
                 </div>
             </Sider>
             <Layout>
-                <Content className="w-full h-full p-2">
-                    <FileUploadArea data={{workspaceId: "123"}} />
-                    <Tools />
+                <Content className="w-full h-screen">
+                    <Outlet />
                 </Content>
             </Layout>
         </Layout>

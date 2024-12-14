@@ -26,6 +26,6 @@ public class OrganizationToolsServiceImpl extends ServiceImpl<OrganizationToolsM
         LambdaQueryWrapper<OrganizationTools> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(OrganizationTools::getOrganizationId, organizationId);
         wrapper.orderByDesc(OrganizationTools::getCreateTime);
-        return Lists.emptyToNull(list(wrapper));
+        return Lists.createWhenNull(list(wrapper));
     }
 }

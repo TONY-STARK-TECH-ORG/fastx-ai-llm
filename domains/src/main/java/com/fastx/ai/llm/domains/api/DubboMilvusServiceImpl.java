@@ -108,7 +108,7 @@ public class DubboMilvusServiceImpl implements IDubboMilvusService {
         DeleteReq req = DeleteReq.builder()
                 .collectionName(collectionName)
                 .filter(StringUtils.defaultIfBlank(filter, ""))
-                .ids(Lists.emptyToNull(ids))
+                .ids(Lists.createWhenNull(ids))
                 .build();
         return milvusService.delete(req);
 
@@ -132,8 +132,8 @@ public class DubboMilvusServiceImpl implements IDubboMilvusService {
                 .collectionName(collectionName)
                 .annsField(annsField)
                 .filter(filter)
-                .outputFields(Lists.emptyToNull(outputFields))
-                .data(List.of(new Float16Vec(Lists.emptyToNull(data))))
+                .outputFields(Lists.createWhenNull(outputFields))
+                .data(List.of(new Float16Vec(Lists.createWhenNull(data))))
                 .offset(offset)
                 .limit(limit)
                 .searchParams(searchParams)

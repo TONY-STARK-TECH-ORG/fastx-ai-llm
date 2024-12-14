@@ -1,6 +1,6 @@
 package com.fastx.ai.llm.domains.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fastx.ai.llm.domains.entity.OrganizationUser;
 import com.fastx.ai.llm.domains.mapper.OrganizationUserMapper;
@@ -23,10 +23,10 @@ public class OrganizationUserServiceImpl extends ServiceImpl<OrganizationUserMap
 
     @Override
     public List<OrganizationUser> findByUserId(Long userId) {
-        QueryWrapper<OrganizationUser> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", userId);
-        queryWrapper.orderByDesc("create_time");
-        return Lists.emptyToNull(this.baseMapper.selectList(queryWrapper));
+        LambdaQueryWrapper<OrganizationUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(OrganizationUser::getUserId, userId);
+        queryWrapper.orderByDesc(OrganizationUser::getCreateTime);
+        return Lists.createWhenNull(this.baseMapper.selectList(queryWrapper));
     }
 
 }

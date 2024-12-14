@@ -91,7 +91,7 @@ public class DubboApplicationServiceImpl extends DubboBaseDomainService implemen
         if (CollectionUtils.isNotEmpty(applicationVersions)) {
             Assert.isTrue(
                     applicationVersionService.removeByIds(
-                            Lists.emptyToNull(applicationVersions).stream().map(ApplicationVersionDTO::getId)
+                            Lists.createWhenNull(applicationVersions).stream().map(ApplicationVersionDTO::getId)
                                     .collect(Collectors.toList())),
                     "delete application version failed");
         }

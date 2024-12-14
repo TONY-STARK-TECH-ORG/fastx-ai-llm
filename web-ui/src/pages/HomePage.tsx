@@ -20,7 +20,7 @@ export default function HomePage() {
         });
     }, []);
     return (
-        <>
+        <div className="flex flex-col w-screen">
             <Header />
             <main className="grow">
                 <Hero />
@@ -30,6 +30,6 @@ export default function HomePage() {
                 <Cta />
             </main>
             <Footer border={true} />
-        </>
+        </div>
     );
 }

@@ -49,7 +49,7 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
     @SentinelResource("org.getBy.userId")
     public List<OrgDTO> getOrgByUserId(Long userId) {
         List<OrganizationDTO> organizationList = organizationService.findByUserId(userId);
-        return Lists.emptyToNull(organizationList).stream().map(o -> {
+        return Lists.createWhenNull(organizationList).stream().map(o -> {
             OrgDTO org = new OrgDTO();
             BeanUtils.copyProperties(o, org);
             return org;
@@ -90,9 +90,9 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
     @SentinelResource("org.tool.get")
     public List<OrgToolDTO> getOrgTools(Long orgId) {
         Assert.notNull(orgId, "orgId is null");
-        List<OrganizationToolsDTO> organizationTools = Lists.emptyToNull(
+        List<OrganizationToolsDTO> organizationTools = Lists.createWhenNull(
                 toolService.getOrganizationTools(orgId));
-        return Lists.emptyToNull(organizationTools).stream().map(ogt -> {
+        return Lists.createWhenNull(organizationTools).stream().map(ogt -> {
             OrgToolDTO orgTool = new OrgToolDTO();
             BeanUtils.copyProperties(ogt, orgTool);
             return orgTool;
@@ -134,7 +134,7 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
     public List<OrgTaskDTO> getTasksByOrgId(Long organizationId) {
         Assert.notNull(organizationId, "organizationId is null");
         List<TaskDTO> tasks = taskService.getTasksByOrganizationId(organizationId);
-        return Lists.emptyToNull(tasks).stream().map(t -> {
+        return Lists.createWhenNull(tasks).stream().map(t -> {
             OrgTaskDTO orgTask = new OrgTaskDTO();
             BeanUtils.copyProperties(t, orgTask);
             return orgTask;
@@ -198,7 +198,7 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
     public List<OrgWorkflowDTO> getWorkflowsByOrgId(Long orgId) {
         Assert.notNull(orgId, "orgId is null");
         List<WorkflowDTO> workflows = workflowService.getWorkflowsByOrganizationId(orgId);
-        return Lists.emptyToNull(workflows).stream().map(w -> {
+        return Lists.createWhenNull(workflows).stream().map(w -> {
             OrgWorkflowDTO orgWorkflow = new OrgWorkflowDTO();
             BeanUtils.copyProperties(w, orgWorkflow);
             return orgWorkflow;
@@ -248,7 +248,7 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
     public List<OrgWorkflowVersionDTO> getWorkflowVersionsByWorkflowId(Long orgWorkFlowId) {
         Assert.notNull(orgWorkFlowId, "orgWorkFlowId is null");
         List<WorkflowVersionDTO> workflowVersions = workflowService.getWorkflowVersionsByWorkflowId(orgWorkFlowId);
-        return Lists.emptyToNull(workflowVersions).stream().map(w -> {
+        return Lists.createWhenNull(workflowVersions).stream().map(w -> {
             OrgWorkflowVersionDTO orgWorkflowVersion = new OrgWorkflowVersionDTO();
             BeanUtils.copyProperties(w, orgWorkflowVersion);
             return orgWorkflowVersion;
