@@ -21,6 +21,8 @@ public class TaskLogDTO extends BaseDTO implements Serializable {
 
     private String status;
 
+    private String log;
+
     private LocalDateTime completeTime;
 
     public Long getTaskId() {
@@ -45,5 +47,13 @@ public class TaskLogDTO extends BaseDTO implements Serializable {
 
     public void setCompleteTime(LocalDateTime completeTime) {
         this.completeTime = completeTime;
+    }
+
+    public String getLog() {
+        return log;
+    }
+
+    public void setLog(String log) {
+        this.log = log;
     }
 }

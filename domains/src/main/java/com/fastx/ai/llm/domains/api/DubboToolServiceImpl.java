@@ -2,7 +2,6 @@ package com.fastx.ai.llm.domains.api;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.fastx.ai.llm.domains.dto.OrganizationToolsDTO;
-import com.fastx.ai.llm.domains.entity.Organization;
 import com.fastx.ai.llm.domains.entity.OrganizationTools;
 import com.fastx.ai.llm.domains.service.IOrganizationService;
 import com.fastx.ai.llm.domains.service.IOrganizationToolsService;
@@ -68,12 +67,11 @@ public class DubboToolServiceImpl implements IDubboToolService {
 
     @Override
     @SentinelResource("org.tool.get")
-    public List<OrganizationToolsDTO> getTools(Long userId) {
-        Assert.notNull(userId, "userId must not be null");
-        List<Organization> organizationList = organizationService.findByUserId(userId);
+    public List<OrganizationToolsDTO> getTools(Long orgId) {
+        Assert.notNull(orgId, "orgId must not be null");
         List<OrganizationTools> organizationTools =
                 organizationToolsService.getOrganizationToolsByOrganizationIds(
-                        organizationList.stream().map(Organization::getId).collect(Collectors.toList())
+                        List.of(orgId)
                 );
         return organizationTools.stream().map(OrganizationTools::to).collect(Collectors.toList());
     }

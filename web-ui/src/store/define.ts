@@ -2,7 +2,7 @@ import {Tool} from "./tool/Tool.ts";
 
 export interface Base {
     createTime: string;
-    id: string;
+    id?: string;
     updateTime: string;
 }
 
@@ -13,12 +13,19 @@ export interface Response<T> {
     success: boolean;
 }
 
+export interface Page<T> {
+    page: number;
+    size: number;
+    total: number;
+    list: T[];
+}
+
 export interface Token {
     token: string;
 }
 
 export interface Organization extends Base {
-    name: string
+    name?: string
 }
 
 export interface Node {
@@ -80,4 +87,22 @@ export interface OrgTool extends Base {
     configData: string;
     custom: boolean;
     customCode: string;
+}
+
+export interface OrgTask extends Base {
+    name: string;
+    description: string;
+    organizationId: string;
+    cron: string;
+    workflowId: string;
+    status: string;
+    type: string;
+}
+
+export interface OrgTaskLog extends Base {
+    key: string;
+    taskId: string;
+    completeTime: string;
+    status: string;
+    log: string;
 }

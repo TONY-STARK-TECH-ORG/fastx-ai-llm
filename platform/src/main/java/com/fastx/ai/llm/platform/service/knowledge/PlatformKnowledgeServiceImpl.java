@@ -27,8 +27,8 @@ public class PlatformKnowledgeServiceImpl implements IPlatformKnowledgeService {
 
     @Override
     @SentinelResource("kb.get")
-    public List<KnowledgeDTO> getKnowledgesByUserId(Long userId) {
-        List<KnowledgeBaseDTO> knowledgeBases = dubboKnowledgeBaseService.getKnowledgeBaseByUserId(userId);
+    public List<KnowledgeDTO> getKnowledgesByOrgId(Long orgId) {
+        List<KnowledgeBaseDTO> knowledgeBases = dubboKnowledgeBaseService.getKnowledgeBaseByOrganizationId(orgId);
         return Lists.createWhenNull(knowledgeBases).stream().map(knowledgeBaseDTO -> {
             KnowledgeDTO knowledgeDTO = new KnowledgeDTO();
             BeanUtils.copyProperties(knowledgeBaseDTO, knowledgeDTO);

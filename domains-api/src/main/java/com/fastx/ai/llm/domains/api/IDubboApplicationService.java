@@ -23,11 +23,11 @@ public interface IDubboApplicationService {
     ApplicationDTO createApplication(ApplicationDTO applicationDTO);
 
     /**
-     * get all application under user id
-     * @param userId
+     * get all application under org id
+     * @param orgId
      * @return
      */
-    List<ApplicationDTO> getApplications(Long userId);
+    List<ApplicationDTO> getApplications(Long orgId);
 
     /**
      * update a application

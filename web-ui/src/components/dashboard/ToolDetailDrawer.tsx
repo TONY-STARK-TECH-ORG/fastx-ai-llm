@@ -1,11 +1,11 @@
-import {ReactNode, useContext, useEffect, useState} from 'react';
+import {ReactNode, useState} from 'react';
 import {Button, Divider, Drawer, Form, Input, InputNumber, message, Select, Space, Switch} from 'antd';
 import {Tool} from "../../store/tool/Tool.ts";
 import {OrgTool} from "../../store/define.ts";
 import ReactJsonView from '@microlink/react-json-view'
 import {http} from "../../api/Http.ts";
 import {SlidingWindow} from "../../utils/SlidingWindow.ts";
-import {UserContext} from "../../context/UserContext.ts";
+import {useOrganizationStore} from "../../store/OrganizationStore.ts";
 
 const { TextArea } = Input;
 
@@ -21,8 +21,7 @@ export default function ToolDetailDrawer(
     const [output, setOutput] = useState<any | undefined>({})
     const [saveLoading, setSaveLoading] = useState(false)
 
-    const [selectOrganization, setSelectionOrganization] = useState()
-    const { organization } = useContext(UserContext);
+    const [orgId, orgName] = useOrganizationStore(state => [state.id, state.name])
 
     // already has this tool.
     const haveThisTool = () => {
@@ -209,7 +208,7 @@ export default function ToolDetailDrawer(
             const configValues = await configForm.validateFields();
 
             const res = await http.post("tool/org/tool/create", {
-                organizationId: selectOrganization,
+                organizationId: orgId,
                 toolCode: current?.code,
                 toolVersion: current?.version,
                 configData: JSON.stringify(configValues),
@@ -228,17 +227,10 @@ export default function ToolDetailDrawer(
         setSaveLoading(false)
     }
 
-    useEffect(() => {
-        return () => {
-            // cleanup
-            setSelectionOrganization(undefined)
-        }
-    }, []);
-
     return (
         <Drawer
             title={current?.name}
-            width={600}
+            width="50%"
             onClose={onClose}
             open={open}
             styles={{
@@ -261,17 +253,13 @@ export default function ToolDetailDrawer(
                     <Form labelCol={{ span: 5 }} labelAlign="right" initialValues={haveThisTool() ? JSON.parse(haveThisTool()!!.configData) : {}} form={configForm}>
                         <Form.Item label="组织" className="m-0" name="organizationId" required rules={[{ required: true }]}>
                             <Select
-                                allowClear
-                                placeholder="请选择工具所属组织"
-                                onSelect={(value) => {
-                                    setSelectionOrganization(value)
-                                }}
-                                options={organization?.map(o => {
-                                    return {
-                                        value: o.id,
-                                        label: o.name
-                                    }
-                                })}
+                                defaultValue={orgId}
+                                placeholder="工具所属组织"
+                                disabled
+                                options={[{
+                                    value: orgId,
+                                    label: orgName
+                                }]}
                             />
                         </Form.Item>
                         {getConfig()}

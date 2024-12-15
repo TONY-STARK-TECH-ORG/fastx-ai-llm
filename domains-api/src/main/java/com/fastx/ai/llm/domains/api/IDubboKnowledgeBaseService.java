@@ -38,10 +38,10 @@ public interface IDubboKnowledgeBaseService {
 
     /**
      * get all kb under org
-     * @param userId user id
+     * @param orgId org id
      * @return kb list
      */
-    List<KnowledgeBaseDTO> getKnowledgeBaseByUserId(Long userId);
+    List<KnowledgeBaseDTO> getKnowledgeBaseByOrganizationId(Long orgId);
 
     /**
      * delete single kb, with all under kb-files and milvus data.

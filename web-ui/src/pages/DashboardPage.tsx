@@ -4,11 +4,12 @@ import {Layout, Avatar, Modal } from 'antd';
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router";
 import { Outlet } from "react-router";
+import OrganizationSelectMenu from "../components/OrganizationSelectMenu.tsx";
 
 const {Sider, Content} = Layout;
 
 export default function DashboardPage () {
-    const [isLogin, logout] = useUserStore((state) => [state.isLogin, state.logout])
+    const [isLogin] = useUserStore((state) => [state.isLogin])
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const navigate = useNavigate();
@@ -18,8 +19,7 @@ export default function DashboardPage () {
     }
 
     const handleOk = () => {
-        logout();
-        navigate("/");
+        navigate("/logout");
     }
 
     const handleCancel = () => {
@@ -41,6 +41,7 @@ export default function DashboardPage () {
                 collapsedWidth={50}
             >
                 <div className="w-full h-full flex flex-col pb-2">
+                    <OrganizationSelectMenu />
                     <div className="grow">
                         <AppMenu/>
                     </div>

@@ -32,7 +32,7 @@ public interface IDubboTaskService {
 
     /**
      * delete a task, will delete all task log.
-     * @param taskDTO task info
+     * @param taskId task id
      * @return true or false
      */
     boolean deleteTask(Long taskId);

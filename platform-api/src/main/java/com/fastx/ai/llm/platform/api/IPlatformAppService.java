@@ -12,10 +12,10 @@ public interface IPlatformAppService {
 
     /**
      * list app under user
-     * @param userId user
+     * @param orgId org id
      * @return app list
      */
-    List<AppDTO> getAppList(Long userId);
+    List<AppDTO> getAppList(Long orgId);
     /**
      * create an llm application
      * @param app app

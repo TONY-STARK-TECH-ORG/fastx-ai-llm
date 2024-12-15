@@ -103,7 +103,8 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
         Assert.hasText(taskDTO.getName(), "name is null");
         Assert.hasText(taskDTO.getDescription(), "description is null");
         Assert.hasText(taskDTO.getCron(), "cron is null");
-        Assert.notNull(taskDTO.getWorkflowId(), "workflowId is null");
+        Assert.notNull(taskDTO.getWorkflowId(), "workflow is null");
+        Assert.notNull(taskDTO.getType(), "type is null");
     }
 
     private void isValidated(TaskLogDTO taskLogDTO) {

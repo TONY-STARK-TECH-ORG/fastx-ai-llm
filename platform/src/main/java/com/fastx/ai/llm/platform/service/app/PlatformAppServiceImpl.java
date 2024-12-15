@@ -36,8 +36,8 @@ public class PlatformAppServiceImpl implements IPlatformAppService {
 
     @Override
     @SentinelResource("platform.app.get")
-    public List<AppDTO> getAppList(Long userId) {
-        List<ApplicationDTO> applications = Lists.createWhenNull(dubboApplicationService.getApplications(userId));
+    public List<AppDTO> getAppList(Long orgId) {
+        List<ApplicationDTO> applications = Lists.createWhenNull(dubboApplicationService.getApplications(orgId));
         return applications.stream().map(applicationDTO -> {
             AppDTO appDTO = new AppDTO();
             BeanUtils.copyProperties(applicationDTO, appDTO);

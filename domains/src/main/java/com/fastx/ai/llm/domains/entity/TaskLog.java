@@ -33,6 +33,8 @@ public class TaskLog extends BaseDO implements Serializable {
 
     private LocalDateTime completeTime;
 
+    private String log;
+
     public static TaskLog of(TaskLogDTO taskLogDTO) {
         TaskLog taskLog = new TaskLog();
         BeanUtils.copyProperties(taskLogDTO, taskLog);

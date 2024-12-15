@@ -1,7 +1,7 @@
 import {Modal, Input, Select, message} from "antd";
-import {useContext, useState} from "react";
+import {useState} from "react";
 import {http} from "../../api/Http.ts";
-import {UserContext} from "../../context/UserContext.ts";
+import {useOrganizationStore} from "../../store/OrganizationStore.ts";
 
 const { TextArea } = Input;
 export default function CreateApplicationModal({open, onCancel, onSuccess}: {open: boolean; onCancel: ()=>void; onSuccess: ()=>void} ) {
@@ -13,9 +13,7 @@ export default function CreateApplicationModal({open, onCancel, onSuccess}: {ope
     const [applicationName, setApplicationName] = useState("")
     const [applicationDesc, setApplicationDesc] = useState("")
 
-    const [selectedOrganization, setSelectedOrganization] = useState(undefined)
-
-    const { organization } = useContext(UserContext);
+    const [orgId, orgName] = useOrganizationStore(state => [state.id, state.name])
 
     return (
         <>
@@ -38,7 +36,7 @@ export default function CreateApplicationModal({open, onCancel, onSuccess}: {ope
                         message.error("请输入简短的应用描述")
                         return
                     }
-                    if (selectedOrganization === undefined) {
+                    if (!orgId) {
                         message.error("请选择应用所属组织")
                         return
                     }
@@ -50,7 +48,7 @@ export default function CreateApplicationModal({open, onCancel, onSuccess}: {ope
                         description: applicationDesc,
                         type: selectedOption,
                         iconUrl: "https://oss.fastx-ai.com/fastx-ai-llm/123/logo.png",
-                        organizationId: selectedOrganization
+                        organizationId: orgId
                     })
                     if (res.success) {
                         message.success("应用创建成功")
@@ -85,16 +83,13 @@ export default function CreateApplicationModal({open, onCancel, onSuccess}: {ope
                     </div>
                     <Select
                         className="mt-2"
-                        placeholder="选择应用所属组织"
-                        options={organization?.map(item => {
-                            return {
-                                value: item.id,
-                                label: item.name
-                            }
-                        })}
-                        onChange={(value) => {
-                            setSelectedOrganization(value)
-                        }}
+                        placeholder="应用所属组织"
+                        options={[{
+                            value: orgId,
+                            label: orgName
+                        }]}
+                        disabled
+                        defaultValue={orgId}
                     />
                     <TextArea required showCount className="mt-2" rows={4} placeholder="应用简介 (100字内)" maxLength={105} value={applicationDesc} onChange={(e) => {
                         setApplicationDesc(e.target.value)

@@ -31,9 +31,9 @@ public class FastLlmAppController {
     }
 
     @GetMapping("/list")
-    public Response<List<AppDTO>> listApp(Long userId) {
+    public Response<List<AppDTO>> listApp(Long orgId) {
         return Response.success(
-                platformAppService.getAppList(userId)
+                platformAppService.getAppList(orgId)
         );
     }
 

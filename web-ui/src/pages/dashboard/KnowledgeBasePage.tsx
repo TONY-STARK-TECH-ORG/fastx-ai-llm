@@ -10,17 +10,16 @@ import {
     PencilIcon,
     TrashIcon,
 } from '@heroicons/react/16/solid'
-import {useContext, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {api, http} from "../../api/Http.ts";
-import {UserContext} from "../../context/UserContext.ts";
 import {KnowledgeBase, KnowledgeBaseFile} from "../../store/define.ts";
 import PageIllustrationDashboard from "../../components/page-illustration-dashboard.tsx";
 import CreateKnowledgeBaseModal from "../../components/dashboard/CreateKnowledgeBaseModal.tsx";
 import EditKnowledgeBaseModal from "../../components/dashboard/EditKnowledgeBaseModal.tsx";
 
 import type { UploadProps } from 'antd';
+import {useOrganizationStore} from "../../store/OrganizationStore.ts";
 const { Meta } = Card;
-
 
 export default function KnowledgeBasePage() {
     const [createKnowledgeBaseModalOpen, setCreateKnowledgeBaseModalOpen] = useState(false);
@@ -32,13 +31,16 @@ export default function KnowledgeBasePage() {
     const [selectedKnowledgeBase, setSelectedKnowledgeBase] = useState<KnowledgeBase | undefined>(undefined)
     const [knowledgeBaseDetailLoading, setKnowledgeBaseDetailLoading] = useState(false)
 
-    const { user } = useContext(UserContext)
+    const [fileUploading, setFileUploading] = useState(false)
+    const [fileUploadingProgress, setFileUploadingProgress] = useState<number | undefined>(0)
+
+    const [orgId] = useOrganizationStore(state => [state.id])
 
     const loadKnowledgeBaseList = async () => {
-        if (user === undefined) {
+        if (orgId === undefined) {
             return ;
         }
-        const res = await http.get<KnowledgeBase[]>("knowledge/list?userId=" + user?.id);
+        const res = await http.get<KnowledgeBase[]>("knowledge/list?orgId=" + orgId);
         setListLoading(true)
         if (res.success) {
             setKnowledgeBaseList(res.data);
@@ -72,7 +74,7 @@ export default function KnowledgeBasePage() {
 
     const setSelectedKnowledgeBaseAndLoadFile = async (item: KnowledgeBase) => {
         setSelectedKnowledgeBase(item)
-        await loadKnowledgeBaseFileList(item.id)
+        await loadKnowledgeBaseFileList(item.id!!)
     }
 
     const loadKnowledgeBaseFileList = async (id: string) => {
@@ -94,17 +96,23 @@ export default function KnowledgeBasePage() {
     const handleChange: UploadProps['onChange'] = (info) => {
         const { status } = info.file;
         if (status === 'uploading') {
+            setFileUploading(true)
+            setFileUploadingProgress(info.file.percent)
             return ;
         }
 
         const resp = info.file.response;
+        console.log(resp)
         const fileUploadSuccess = status === 'done' && resp.code === 200;
         message.success(fileUploadSuccess ? `${info.file.name} 文件上传成功` : `${info.file.name} 文件上传失败`);
 
         if (fileUploadSuccess) {
             info.file.url = resp.data[0]['downloadUrl'];
         }
-        selectedKnowledgeBase && loadKnowledgeBaseFileList(selectedKnowledgeBase.id)
+        selectedKnowledgeBase && loadKnowledgeBaseFileList(selectedKnowledgeBase.id!!)
+
+        setFileUploading(false)
+        setFileUploadingProgress(0)
     }
 
     const deleteKnowledgeBaseFile = async (item: KnowledgeBaseFile) => {
@@ -112,7 +120,7 @@ export default function KnowledgeBasePage() {
         const res =
             await http.post("knowledge/file/delete", [{id: item.id}]);
         if (res.success) {
-            selectedKnowledgeBase && await loadKnowledgeBaseFileList(selectedKnowledgeBase?.id)
+            selectedKnowledgeBase && await loadKnowledgeBaseFileList(selectedKnowledgeBase?.id!!)
             message.success("文档删除成功")
         } else {
             message.error("删除知识库文档失败，请重试")
@@ -122,7 +130,7 @@ export default function KnowledgeBasePage() {
 
     useEffect(() => {
         loadKnowledgeBaseList();
-    }, [user?.token])
+    }, [orgId])
 
     return (
         <div className="flex items-start justify-start h-screen p-2">
@@ -152,7 +160,8 @@ export default function KnowledgeBasePage() {
                                 <div className="flex w-full items-center">
                                     <div className="flex flex-col ml-2 grow items-start">
                                         <p className={"text-sm font-medium"}>{item.name}</p>
-                                        <div className="flex">
+                                        <p className="text-[12px] text-gray-500 text-wrap">{item.description}</p>
+                                        <div className="flex mt-2">
                                             <div
                                                 className={"flex items-center justify-center rounded-[2px] px-1 py-0 " + (item.status === 'active' ? "bg-green-600" : "bg-orange-500")}>
                                                 {item.status === 'active' ?
@@ -162,7 +171,7 @@ export default function KnowledgeBasePage() {
                                         </div>
                                     </div>
                                     {selectedKnowledgeBase && item.id === selectedKnowledgeBase.id ? (
-                                        <div className="w-[1px] h-[40px] bg-blue-600"></div>
+                                        <div className="w-[1px] h-[60px] bg-blue-600"></div>
                                     ) : null}
                                 </div>
                             </List.Item>
@@ -301,6 +310,7 @@ export default function KnowledgeBasePage() {
                     </div>
                 </div>
             )}
+            <Spin spinning={fileUploading} percent={fileUploadingProgress} fullscreen />
             <Spin spinning={knowledgeBaseDetailLoading} fullscreen />
             <CreateKnowledgeBaseModal open={createKnowledgeBaseModalOpen} onCancel={() => {
                 setCreateKnowledgeBaseModalOpen(false);

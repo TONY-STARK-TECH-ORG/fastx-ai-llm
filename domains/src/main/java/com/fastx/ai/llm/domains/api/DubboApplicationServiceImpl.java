@@ -6,7 +6,6 @@ import com.fastx.ai.llm.domains.dto.ApplicationDTO;
 import com.fastx.ai.llm.domains.dto.ApplicationVersionDTO;
 import com.fastx.ai.llm.domains.entity.Application;
 import com.fastx.ai.llm.domains.entity.ApplicationVersion;
-import com.fastx.ai.llm.domains.entity.OrganizationUser;
 import com.fastx.ai.llm.domains.service.IApplicationService;
 import com.fastx.ai.llm.domains.service.IApplicationVersionService;
 import com.fastx.ai.llm.domains.service.IOrganizationUserService;
@@ -19,7 +18,6 @@ import org.apache.seata.core.context.RootContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,16 +60,10 @@ public class DubboApplicationServiceImpl extends DubboBaseDomainService implemen
 
     @SentinelResource("application.list")
     @Override
-    public List<ApplicationDTO> getApplications(Long userId) {
-        List<OrganizationUser> organizationUserList = organizationUserService.findByUserId(userId);
-        if (CollectionUtils.isEmpty(organizationUserList)) {
-            return new ArrayList<>();
-        }
+    public List<ApplicationDTO> getApplications(Long orgId) {
+        Assert.notNull(orgId, "organization id is null");
         // find all application under org
-        return applicationService.findByOrgIds(
-                // convert org to id
-                organizationUserList.stream().map(OrganizationUser::getId).collect(Collectors.toList())
-                ).stream().map(Application::to).collect(Collectors.toList());
+        return applicationService.findByOrgIds(List.of(orgId)).stream().map(Application::to).collect(Collectors.toList());
     }
 
     @SentinelResource("application.update")

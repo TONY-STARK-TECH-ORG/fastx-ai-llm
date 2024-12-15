@@ -6,6 +6,10 @@ export const api = (path: string) => {
 
 class Http {
 
+    async getWithParams<T>(path: string, params: any) {
+        return this.get<T>(path + "?" + new URLSearchParams(params).toString())
+    }
+
     async get<T>(path: string) {
         const apiURL = api(path);
         const res = await fetch(apiURL, {

@@ -4,6 +4,10 @@ spring:
     active: default, dubbo, upload
   application:
     name: fast-llm-web
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 120MB
 #  ai:
 #    openai:
 #      api-key: sk-02dOKWbd6R3oZ9CoBCbxELB348OnjJ6iFePyPqzQBm9lLv7x
@@ -17,3 +21,5 @@ server:
       charset: UTF-8
       force: true
       enabled: true
+  tomcat:
+    max-swallow-size: 150MB

@@ -1,11 +1,11 @@
 import {Tabs, List, Card, Spin, message, Badge} from 'antd';
 import {useLocation, useNavigate} from "react-router";
-import {useContext, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {http} from "../../api/Http.ts";
 import {Tool} from "../../store/tool/Tool.ts";
-import {UserContext} from "../../context/UserContext.ts";
 import {OrgTool} from "../../store/define.ts";
 import ToolDetailDrawer from "../../components/dashboard/ToolDetailDrawer.tsx";
+import {useOrganizationStore} from "../../store/OrganizationStore.ts";
 
 type ToolSepDataMap = {
     [key: string]: {
@@ -22,7 +22,7 @@ export default function ToolPage() {
     const location = useLocation();
     const navigate = useNavigate();
     const [loadingData, setLoadingData] = useState(false);
-    const { user } = useContext(UserContext)
+    const [orgId] = useOrganizationStore(state => [state.id])
     // datas
     const [toolDataMap, setToolDataMap] = useState<ToolSepDataMap | undefined>({
         "llm": {
@@ -126,7 +126,7 @@ export default function ToolPage() {
 
     // load tools from server
     const loadPlatformTools = async () => {
-        if (!user) {
+        if (!orgId) {
             return
         }
         setLoadingData(true);
@@ -175,10 +175,10 @@ export default function ToolPage() {
     }
 
     const loadOrgTools = async () => {
-        if (!user) {
+        if (!orgId) {
             return
         }
-        const res = await http.get<OrgTool[]>("tool/org/tool/list?userId=" + user.id)
+        const res = await http.get<OrgTool[]>("tool/org/tool/list?orgId=" + orgId)
         if (res.success) {
             setOrgTools(res.data)
         } else {
@@ -191,7 +191,7 @@ export default function ToolPage() {
             loadPlatformTools()
         })
         setCurrentLocation(location.pathname.replace("/dashboard/tool/", ""))
-    }, [location, user?.id]);
+    }, [location, orgId]);
 
     return (
         <div className="w-full h-full p-2 flex flex-col">

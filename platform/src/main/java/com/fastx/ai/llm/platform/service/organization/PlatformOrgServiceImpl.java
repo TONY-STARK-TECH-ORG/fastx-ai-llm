@@ -91,10 +91,10 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
 
     @Override
     @SentinelResource("org.tool.get")
-    public List<OrgToolDTO> getOrgTools(Long userId) {
-        Assert.notNull(userId, "userId is null");
+    public List<OrgToolDTO> getOrgTools(Long orgId) {
+        Assert.notNull(orgId, "orgId is null");
         List<OrganizationToolsDTO> organizationTools = Lists.createWhenNull(
-                toolService.getTools(userId));
+                toolService.getTools(orgId));
         return Lists.createWhenNull(organizationTools).stream().map(ogt -> {
             OrgToolDTO orgTool = new OrgToolDTO();
             BeanUtils.copyProperties(ogt, orgTool);

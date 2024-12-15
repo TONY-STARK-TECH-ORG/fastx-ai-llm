@@ -1,7 +1,7 @@
 import {Modal, Input, Select, message} from "antd";
-import {useContext, useState} from "react";
+import {useState} from "react";
 import {http} from "../../api/Http.ts";
-import {UserContext} from "../../context/UserContext.ts";
+import {useOrganizationStore} from "../../store/OrganizationStore.ts";
 
 const { TextArea } = Input;
 export default function CreateKnowledgeBaseModal({open, onCancel, onSuccess}: {open: boolean; onCancel: ()=>void; onSuccess: ()=>void} ) {
@@ -11,9 +11,7 @@ export default function CreateKnowledgeBaseModal({open, onCancel, onSuccess}: {o
     const [knowledgeBaseName, setKnowledgeBaseName] = useState("")
     const [KnowledgeBaseDesc, setKnowledgeBaseDesc] = useState("")
 
-    const [selectedOrganization, setSelectedOrganization] = useState(undefined)
-
-    const { organization } = useContext(UserContext);
+    const [orgId, orgName] = useOrganizationStore(state => [state.id, state.name])
 
     return (
         <>
@@ -36,7 +34,7 @@ export default function CreateKnowledgeBaseModal({open, onCancel, onSuccess}: {o
                         message.error("请输入简短的知识库描述")
                         return
                     }
-                    if (selectedOrganization === undefined) {
+                    if (!orgId) {
                         message.error("请选择知识库所属组织")
                         return
                     }
@@ -46,7 +44,7 @@ export default function CreateKnowledgeBaseModal({open, onCancel, onSuccess}: {o
                     const res = await http.post("knowledge/create", {
                         name: knowledgeBaseName,
                         description: KnowledgeBaseDesc,
-                        organizationId: selectedOrganization
+                        organizationId: orgId
                     })
                     if (res.success) {
                         message.success("知识库创建成功")
@@ -75,15 +73,14 @@ export default function CreateKnowledgeBaseModal({open, onCancel, onSuccess}: {o
                     <Select
                         className="mt-2"
                         placeholder="选择知识库所属组织"
-                        options={organization?.map(item => {
-                            return {
-                                value: item.id,
-                                label: item.name
+                        options={[
+                            {
+                                value: orgId,
+                                label: orgName
                             }
-                        })}
-                        onChange={(value) => {
-                            setSelectedOrganization(value)
-                        }}
+                        ]}
+                        disabled
+                        defaultValue={orgId}
                     />
                     <TextArea
                         className="mt-2"

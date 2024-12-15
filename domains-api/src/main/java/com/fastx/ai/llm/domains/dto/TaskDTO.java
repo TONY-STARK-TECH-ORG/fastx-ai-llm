@@ -28,6 +28,16 @@ public class TaskDTO extends BaseDTO implements Serializable {
 
     private String status;
 
+    private String type;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public Long getOrganizationId() {
         return organizationId;
     }

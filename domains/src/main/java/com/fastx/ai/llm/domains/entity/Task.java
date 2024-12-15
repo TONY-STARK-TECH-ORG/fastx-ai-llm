@@ -38,6 +38,8 @@ public class Task extends BaseDO implements Serializable {
 
     private String status;
 
+    private String type;
+
     public static Task of(TaskDTO taskDTO) {
         Task task = new Task();
         BeanUtils.copyProperties(taskDTO, task);

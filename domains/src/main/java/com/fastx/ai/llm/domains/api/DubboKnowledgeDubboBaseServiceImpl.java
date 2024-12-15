@@ -7,7 +7,6 @@ import com.fastx.ai.llm.domains.dto.KnowledgeBaseDTO;
 import com.fastx.ai.llm.domains.dto.KnowledgeBaseFileDTO;
 import com.fastx.ai.llm.domains.entity.KnowledgeBase;
 import com.fastx.ai.llm.domains.entity.KnowledgeBaseFile;
-import com.fastx.ai.llm.domains.entity.Organization;
 import com.fastx.ai.llm.domains.service.IKnowledgeBaseFileService;
 import com.fastx.ai.llm.domains.service.IKnowledgeBaseService;
 import com.fastx.ai.llm.domains.service.IOrganizationService;
@@ -69,11 +68,10 @@ public class DubboKnowledgeDubboBaseServiceImpl extends DubboBaseDomainService i
 
     @Override
     @SentinelResource("kb.get")
-    public List<KnowledgeBaseDTO> getKnowledgeBaseByUserId(Long userId) {
-        Assert.notNull(userId, "userId is null");
-        List<Organization> organizationList = organizationService.findByUserId(userId);
+    public List<KnowledgeBaseDTO> getKnowledgeBaseByOrganizationId(Long orgId) {
+        Assert.notNull(orgId, "orgId is null");
         List<KnowledgeBase> knowledgeBases = knowledgeBaseService.getKnowledgeBaseByOrganizationIds(
-                organizationList.stream().map(Organization::getId).collect(Collectors.toList())
+                List.of(orgId)
         );
         return knowledgeBases.stream().map(KnowledgeBase::to).collect(Collectors.toList());
     }

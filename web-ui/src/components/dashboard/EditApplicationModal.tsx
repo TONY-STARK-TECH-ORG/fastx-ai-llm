@@ -1,8 +1,8 @@
 import {Modal, Input, Select, message} from "antd";
-import {useContext, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {http} from "../../api/Http.ts";
-import {UserContext} from "../../context/UserContext.ts";
 import {Application} from "../../store/define.ts";
+import {useOrganizationStore} from "../../store/OrganizationStore.ts";
 
 const { TextArea } = Input;
 export default function EditApplicationModal(
@@ -16,16 +16,13 @@ export default function EditApplicationModal(
     const [applicationName, setApplicationName] = useState<string | undefined>(undefined)
     const [applicationDesc, setApplicationDesc] = useState<string | undefined>(undefined)
 
-    const [selectedOrganization, setSelectedOrganization] = useState<string | undefined>(undefined)
-
-    const { organization } = useContext(UserContext);
+    const [orgId, orgName] = useOrganizationStore(state => [state.id, state.name])
 
     useEffect(() => {
         if (open) {
             setSelectedOption(application?.type)
             setApplicationDesc(application?.description)
             setApplicationName(application?.name)
-            setSelectedOrganization(application?.organization.id)
         }
 
         return () => {
@@ -56,7 +53,7 @@ export default function EditApplicationModal(
                         message.error("请输入简短的应用描述")
                         return
                     }
-                    if (selectedOrganization === undefined) {
+                    if (!orgId) {
                         message.error("请选择应用所属组织")
                         return
                     }
@@ -69,7 +66,7 @@ export default function EditApplicationModal(
                         description: applicationDesc,
                         type: selectedOption,
                         iconUrl: "https://oss.fastx-ai.com/fastx-ai-llm/123/logo.png",
-                        organizationId: selectedOrganization
+                        organizationId: orgId
                     })
                     if (res.success) {
                         message.success("应用更新成功")
@@ -103,18 +100,16 @@ export default function EditApplicationModal(
                         />
                     </div>
                     <Select
-                        defaultValue={selectedOrganization}
+                        defaultValue={orgId}
                         className="mt-2"
                         placeholder="选择应用所属组织"
-                        options={organization?.map(item => {
-                            return {
-                                value: item.id,
-                                label: item.name
+                        options={[
+                            {
+                                value: orgId,
+                                label: orgName
                             }
-                        })}
-                        onChange={(value) => {
-                            setSelectedOrganization(value)
-                        }}
+                        ]}
+                        disabled
                     />
                     <TextArea required showCount className="mt-2" rows={4} placeholder="应用简介 (100字内)" maxLength={105} value={applicationDesc} onChange={(e) => {
                         setApplicationDesc(e.target.value)

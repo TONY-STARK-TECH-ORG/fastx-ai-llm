@@ -49,7 +49,7 @@ export default function LoginPage() {
                                             message.error("登录失败：" + resp.msg)
                                         } else {
                                             message.success("登录成功！")
-                                            navigate("/dashboard")
+                                            navigate("/dashboard/application")
                                         }
                                     })}>
                                         <div className="space-y-4">

@@ -63,13 +63,14 @@ public class FastLlmFileUploadController {
             try {
                 if (knowledgeFiles != null) {
                     OrgTaskDTO taskDTO = new OrgTaskDTO();
-                    taskDTO.setName(knowledgeById.getName() + "::fileProcess");
+                    taskDTO.setName(knowledgeById.getName() + "::FileProcess");
                     taskDTO.setDescription(Arrays.stream(files).map(f -> StringUtils.defaultIf(f.getOriginalFilename(), f.getName())).collect(Collectors.joining(",")));
                     taskDTO.setCron("-1");
                     taskDTO.setOrganizationId(knowledgeById.getOrganizationId());
                     // system workflow (process file)
                     // @TODO (stark) 组织增加配置项，可以配置默认的数据处理 workflow
                     taskDTO.setWorkflowId(99999999999990L);
+                    taskDTO.setType("knowledge");
                     platformOrgService.createTask(taskDTO);
                 }
             } catch (Exception e) {

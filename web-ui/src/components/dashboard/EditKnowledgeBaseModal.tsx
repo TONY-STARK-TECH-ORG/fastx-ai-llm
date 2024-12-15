@@ -1,8 +1,8 @@
 import {Modal, Input, Select, message} from "antd";
-import {useContext, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {http} from "../../api/Http.ts";
-import {UserContext} from "../../context/UserContext.ts";
 import {KnowledgeBase} from "../../store/define.ts";
+import {useOrganizationStore} from "../../store/OrganizationStore.ts";
 
 const { TextArea } = Input;
 export default function EditKnowledgeBaseModal(
@@ -16,16 +16,13 @@ export default function EditKnowledgeBaseModal(
     const [knowledgeBaseName, setKnowledgeBaseName] = useState<string | undefined>(undefined)
     const [knowledgeBaseDesc, setKnowledgeBaseDesc] = useState<string | undefined>(undefined)
 
-    const [selectedOrganization, setSelectedOrganization] = useState<string | undefined>(undefined)
-
-    const { organization } = useContext(UserContext);
+    const [orgId, orgName] = useOrganizationStore(state => [state.id, state.name])
 
     useEffect(() => {
         if (open) {
             setSelectedOption(knowledgeBase?.status)
             setKnowledgeBaseDesc(knowledgeBase?.description)
             setKnowledgeBaseName(knowledgeBase?.name)
-            setSelectedOrganization(knowledgeBase?.organizationId)
         }
 
         return () => {
@@ -56,7 +53,7 @@ export default function EditKnowledgeBaseModal(
                         message.error("请输入简短的知识库描述")
                         return
                     }
-                    if (selectedOrganization === undefined) {
+                    if (!orgId) {
                         message.error("请选择知识库所属组织")
                         return
                     }
@@ -69,7 +66,7 @@ export default function EditKnowledgeBaseModal(
                         description: knowledgeBaseDesc,
                         status: selectedOption,
                         iconUrl: "https://oss.fastx-ai.com/fastx-ai-llm/123/logo.png",
-                        organizationId: selectedOrganization
+                        organizationId: orgId
                     })
                     if (res.success) {
                         message.success("知识库更新成功")
@@ -103,18 +100,16 @@ export default function EditKnowledgeBaseModal(
                         />
                     </div>
                     <Select
-                        defaultValue={selectedOrganization}
+                        defaultValue={orgId}
                         className="mt-2"
                         placeholder="选择知识库所属组织"
-                        options={organization?.map(item => {
-                            return {
-                                value: item.id,
-                                label: item.name
+                        options={[
+                            {
+                                value: orgId,
+                                label: orgName
                             }
-                        })}
-                        onChange={(value) => {
-                            setSelectedOrganization(value)
-                        }}
+                        ]}
+                        disabled
                     />
                     <TextArea required showCount className="mt-2" rows={4} placeholder="知识库简介 (100字内)" maxLength={105} value={knowledgeBaseDesc} onChange={(e) => {
                         setKnowledgeBaseDesc(e.target.value)

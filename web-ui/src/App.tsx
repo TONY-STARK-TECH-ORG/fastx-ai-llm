@@ -1,14 +1,15 @@
 import './App.css'
-import {ConfigProvider, message, Spin} from 'antd';
+import {ConfigProvider, message} from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import en_US from 'antd/locale/en_US';
 import { BrowserRouter, Routes, Route } from "react-router";
-
+//----------------------------------------------------------------------
+// Infos
+//----------------------------------------------------------------------
 import {UserContext} from "./context/UserContext.ts";
 import {useEffect, useState} from "react";
 import {User} from "./store/user/User.ts";
 import {useUserStore} from "./store/UserStore.ts";
-
 //----------------------------------------------------------------------
 // Main pages
 //----------------------------------------------------------------------
@@ -23,44 +24,44 @@ import LogoutPage from "./pages/LogoutPage.tsx";
 import ApplicationPage from "./pages/dashboard/ApplicationPage.tsx";
 import {http} from "./api/Http.ts";
 import {Organization} from "./store/define.ts";
-import KnowledgeBasePage from "./pages/dashboard/KnowledgeBasePage.tsx";
-import ToolPage from "./pages/dashboard/ToolPage.tsx";
-import TaskPage from "./pages/dashboard/TaskPage.tsx";
-import LogPage from "./pages/dashboard/LogPage.tsx";
 //----------------------------------------------------------------------
 // Dashboard pages: KnowledgeBase
 //----------------------------------------------------------------------
-
+import KnowledgeBasePage from "./pages/dashboard/KnowledgeBasePage.tsx";
 //----------------------------------------------------------------------
 // Dashboard pages: Workflow
 //----------------------------------------------------------------------
-
+import WorkflowPage from "./pages/dashboard/WorkflowPage.tsx";
 //----------------------------------------------------------------------
 // Dashboard pages: Tasks
 //----------------------------------------------------------------------
-
+import TaskPage from "./pages/dashboard/TaskPage.tsx";
 //----------------------------------------------------------------------
 // Dashboard pages: Tools
 //----------------------------------------------------------------------
-
-//----------------------------------------------------------------------
-// Dashboard pages: Logs
-//----------------------------------------------------------------------
-
+import ToolPage from "./pages/dashboard/ToolPage.tsx";
+import LoadingPage from "./pages/loading/LoadingPage.tsx";
 //----------------------------------------------------------------------
 // Dashboard pages: Others
 //----------------------------------------------------------------------
 
 function App() {
     const locale = 'zhCN';
-    const [user, setUser] = useState<User | undefined>(undefined)
+    // user localStorage store.
     const [userState, token] = useUserStore((state) => [state, state.token])
-    const [loading, setLoading] = useState(false)
 
+    // global loading.
+    const [loading, setLoading] = useState(true)
+
+    // global state.
+
+    const [user, setUser] = useState<User | undefined>(undefined)
     const [organization, setOrganization] = useState<Organization[] | undefined>([])
 
+    //----------------------------------------------------------------------
+    // @TODO (stark) organization load need move to store.
+    //----------------------------------------------------------------------
     const loadOrganizationList = async () => {
-        setLoading(true);
         if (userState === undefined) {
             return
         }
@@ -71,49 +72,63 @@ function App() {
         } else {
             message.error("所属组织加载失败，请重新打开创建窗口并重试")
         }
-        setLoading(false);
     }
 
     useEffect(() => {
-        setUser({...userState})
-        loadOrganizationList()
+        //----------------------------------------------------------------------
+        // Avoid effect many times.
+        //----------------------------------------------------------------------
+        const fetchAppInitData = async () => {
+            if (token) {
+                setUser({...userState})
+                await loadOrganizationList()
+            }
+            setTimeout(() => setLoading(false), 3000)
+        }
+
+        fetchAppInitData();
     }, [token])
+
+    if (loading) {
+        return <LoadingPage />
+    }
 
     return (
         <ConfigProvider
             locale={locale === 'zhCN' ? zhCN : en_US}
             theme={{
+                //----------------------------------------------------------------------
+                // Ant design design tokens.
+                //----------------------------------------------------------------------
                 token: {
                     // Seed Token，影响范围大
                     colorPrimary: '#FF6A00',
-                    borderRadius: 2,
+                    borderRadius: 3,
                 },
             }}
         >
-            <Spin spinning={loading}>
-                <div className="flex flex-col w-screen">
-                    <div className="grow">
-                        <UserContext.Provider value={{user, setUser, organization, setOrganization}}>
-                            <BrowserRouter>
-                                <Routes>
-                                    <Route path={"/"} element={<HomePage/>}/>
-                                    <Route path={"/dashboard"} element={<DashboardPage/>}>
-                                        <Route path="application" element={<ApplicationPage/>}/>
-                                        <Route path="knowledgeBase" element={<KnowledgeBasePage />}/>
-                                        <Route path="tool/*" element={<ToolPage />} />
-                                        <Route path="task/*" element={<TaskPage />} />
-                                        <Route path="log/*" element={<LogPage />} />
-                                    </Route>
+            <div className="flex flex-col w-screen">
+                <div className="grow">
+                    <UserContext.Provider value={{user, setUser, organization, setOrganization}}>
+                        <BrowserRouter>
+                            <Routes>
+                                <Route path={"/"} element={<HomePage/>}/>
+                                <Route path={"/dashboard"} element={<DashboardPage/>}>
+                                    <Route path="application" element={<ApplicationPage/>}/>
+                                    <Route path="knowledgeBase" element={<KnowledgeBasePage/>}/>
+                                    <Route path="tool/*" element={<ToolPage/>}/>
+                                    <Route path="task/*" element={<TaskPage/>}/>
+                                    <Route path="workflow" element={<WorkflowPage/>}/>
+                                </Route>
 
-                                    <Route path={"/login"} element={<LoginPage/>}/>
-                                    <Route path={"/logout"} element={<LogoutPage/>}/>
-                                    <Route path={"/register"} element={<RegisterPage/>}/>
-                                </Routes>
-                            </BrowserRouter>
-                        </UserContext.Provider>
-                    </div>
+                                <Route path={"/login"} element={<LoginPage/>}/>
+                                <Route path={"/logout"} element={<LogoutPage/>}/>
+                                <Route path={"/register"} element={<RegisterPage/>}/>
+                            </Routes>
+                        </BrowserRouter>
+                    </UserContext.Provider>
                 </div>
-            </Spin>
+            </div>
         </ConfigProvider>
     )
 }

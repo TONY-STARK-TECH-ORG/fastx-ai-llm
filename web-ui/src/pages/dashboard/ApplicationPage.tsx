@@ -7,14 +7,14 @@ import {
     TrashIcon,
 } from '@heroicons/react/16/solid'
 import CreateApplicationModal from "../../components/dashboard/CreateApplicationModal.tsx";
-import {useContext, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {http} from "../../api/Http.ts";
-import {UserContext} from "../../context/UserContext.ts";
 import {Application, ApplicationVersion} from "../../store/define.ts";
 import PageIllustrationDashboard from "../../components/page-illustration-dashboard.tsx";
 import EditApplicationModal from "../../components/dashboard/EditApplicationModal.tsx";
 import CreateApplicationVersionModal from "../../components/dashboard/CreateApplicationVersionModal.tsx";
 import {IoCreate} from "react-icons/io5";
+import {useOrganizationStore} from "../../store/OrganizationStore.ts";
 
 export default function ApplicationPage() {
     const [createApplicationModalOpen, setCreateApplicationModalOpen] = useState(false);
@@ -28,13 +28,13 @@ export default function ApplicationPage() {
     const [applicationDetailLoading, setApplicationDetailLoading] = useState(false)
     const [deleteVersion, setDeleteVersion] = useState(false)
 
-    const { user } = useContext(UserContext)
+    const [orgId] = useOrganizationStore(state => [state.id])
 
     const loadApplicationList = async () => {
-        if (user?.id === undefined) {
+        if (orgId === undefined) {
             return ;
         }
-        const res = await http.get<Application[]>("app/list?userId=" + user?.id);
+        const res = await http.get<Application[]>("app/list?orgId=" + orgId);
         setListLoading(true)
         if (res.success) {
             setApplicationList(res.data);
@@ -146,7 +146,7 @@ export default function ApplicationPage() {
 
     useEffect(() => {
         loadApplicationList();
-    }, [user?.token, deleteVersion])
+    }, [orgId, deleteVersion])
 
     return (
         <div className="flex items-start justify-start h-screen p-2">

@@ -276,3 +276,5 @@ alter table t_knowledge_base_file
 alter table t_knowledge_base_file
     modify vec_partition_value varchar(64) null;
 
+alter table t_task_log
+    add log longtext null;
