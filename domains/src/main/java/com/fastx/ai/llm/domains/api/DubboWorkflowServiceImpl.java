@@ -99,11 +99,18 @@ public class DubboWorkflowServiceImpl extends DubboBaseDomainService implements 
 
     @Override
     @SentinelResource("workflow.version.update")
+    @Transactional(rollbackFor = Exception.class)
     public boolean updateWorkflowVersion(WorkflowVersionDTO workflowVersionDTO) {
         isValidated(workflowVersionDTO);
         Assert.notNull(workflowVersionDTO.getId(), "id was null");
+        if (IConstant.ACTIVE.equals(workflowVersionDTO.getStatus())) {
+            // set other version to inactive.
+            Assert.isTrue(
+                    workflowVersionService.setOtherVersionToInactive(workflowVersionDTO.getWorkflowId()), "inactive other version failed.");
+        }
         WorkflowVersion workflowVersion = WorkflowVersion.of(workflowVersionDTO);
-        return workflowVersionService.updateById(workflowVersion);
+        Assert.isTrue(workflowVersionService.updateById(workflowVersion), "update work flow version failed!");
+        return true;
     }
 
     @Override

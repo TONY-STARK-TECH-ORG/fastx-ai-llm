@@ -2,7 +2,6 @@ package com.fastx.ai.llm.platform.dto;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * <p>
@@ -22,10 +21,6 @@ public class FlowVersionDTO extends BaseDTO implements Serializable {
     private String version;
 
     private String status;
-
-    private String nodesData;
-
-    private List<NodeDTO> nodes;
 
     public Long getWorkflowId() {
         return workflowId;
@@ -49,21 +44,5 @@ public class FlowVersionDTO extends BaseDTO implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getNodesData() {
-        return nodesData;
-    }
-
-    public void setNodesData(String nodesData) {
-        this.nodesData = nodesData;
-    }
-
-    public List<NodeDTO> getNodes() {
-        return nodes;
-    }
-
-    public void setNodes(List<NodeDTO> nodes) {
-        this.nodes = nodes;
     }
 }

@@ -1,7 +1,9 @@
 package com.fastx.ai.llm.domains.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fastx.ai.llm.domains.constant.IConstant;
 import com.fastx.ai.llm.domains.entity.WorkflowVersion;
 import com.fastx.ai.llm.domains.mapper.WorkflowVersionMapper;
 import com.fastx.ai.llm.domains.service.IWorkflowVersionService;
@@ -27,6 +29,14 @@ public class WorkflowVersionServiceImpl extends ServiceImpl<WorkflowVersionMappe
         queryWrapper.eq(WorkflowVersion::getWorkflowId, workflowId);
         queryWrapper.orderByDesc(WorkflowVersion::getCreateTime);
         return Lists.createWhenNull(this.list(queryWrapper));
+    }
+
+    @Override
+    public boolean setOtherVersionToInactive(Long workflowId) {
+        LambdaUpdateWrapper<WorkflowVersion> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(WorkflowVersion::getWorkflowId, workflowId);
+        updateWrapper.set(WorkflowVersion::getStatus, IConstant.IN_ACTIVE);
+        return update(updateWrapper);
     }
 
 }

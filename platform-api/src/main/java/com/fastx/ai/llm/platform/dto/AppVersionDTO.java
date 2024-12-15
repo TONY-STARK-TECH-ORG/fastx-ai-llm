@@ -29,7 +29,7 @@ public class AppVersionDTO extends BaseDTO implements Serializable {
     /**
      * dependency: work flow
      */
-    private FlowVersionDTO workflowVersion;
+    private OrgWorkflowVersionDTO workflowVersion;
 
     public String getConfig() {
         return config;
@@ -63,11 +63,11 @@ public class AppVersionDTO extends BaseDTO implements Serializable {
         this.status = status;
     }
 
-    public FlowVersionDTO getWorkflowVersion() {
+    public OrgWorkflowVersionDTO getWorkflowVersion() {
         return workflowVersion;
     }
 
-    public void setWorkflowVersion(FlowVersionDTO workflowVersion) {
+    public void setWorkflowVersion(OrgWorkflowVersionDTO workflowVersion) {
         this.workflowVersion = workflowVersion;
     }
 }

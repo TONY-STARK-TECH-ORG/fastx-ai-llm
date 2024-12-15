@@ -83,7 +83,7 @@ function App() {
                 setUser({...userState})
                 await loadOrganizationList()
             }
-            setTimeout(() => setLoading(false), 3000)
+            setTimeout(() => setLoading(false), 1000)
         }
 
         fetchAppInitData();

@@ -34,12 +34,26 @@ export interface Node {
     tool: Tool;
 }
 
+export interface Workflow extends Base {
+    name: string;
+    status: string;
+    organizationId: string;
+}
+
 export interface WorkflowVersion extends Base {
     workflowId: string;
     version: string;
     status: string;
-    nodesData: string;
+    versionData: string;
     nodes: Node[];
+}
+
+export interface WorkFlowExecLog extends Base {
+    workflowVersionId: string;
+    inputData: string;
+    outputData: string;
+    execData: string;
+    extraData: string;
 }
 
 export interface ApplicationVersion extends Base {

@@ -22,4 +22,9 @@ public interface IWorkflowVersionService extends IService<WorkflowVersion> {
      */
     List<WorkflowVersion> getWorkflowVersionByWorkflowId(Long workflowId);
 
+    /**
+     * set other version to inactive
+     * @param workflowId flow id
+     */
+    boolean setOtherVersionToInactive(Long workflowId);
 }
