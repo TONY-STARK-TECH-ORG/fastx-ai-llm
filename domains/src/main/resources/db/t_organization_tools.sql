@@ -14,5 +14,3 @@ create table t_organization_tools
     constraint t_organization_tools_pk
         unique (organization_id, tool_code, tool_version)
 );
-
-INSERT INTO `fast-llm`.t_organization_tools (organization_id, tool_code, tool_version, config_data, custom, custom_code, deleted, create_time, update_time) VALUES (1, 'openai.chat', '1.0.0', '{"apiKey": "sk-02dOKWbd6R3oZ9CoBCbxELB348OnjJ6iFePyPqzQBm9lLv7x", "baseUrl": "https://open.xiaojingai.com/v1", "streaming": true, "organizationId": 1}', 0, null, 0, '2024-12-15 01:01:08', '2024-12-15 01:01:08');
