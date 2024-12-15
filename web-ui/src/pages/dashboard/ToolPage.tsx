@@ -44,16 +44,20 @@ export default function ToolPage() {
         { name: "LLM 函数", key: "llm-function" },
         { name: "LLM 工具", key: "llm-tool" },
         { name: "LLM 其他", key: "llm-other" },
-        { name: "预处理", key: "train-pre" },
+        { name: "数据预处理", key: "train-dataset" },
         { name: "后处理", key: "train-post" },
+        { name: "上传/下载", key: "train-upload" },
         { name: "Tokenizer", key: "train-tokenizer" },
         { name: "微调", key: "train-finetune" },
+        { name: "超参数", key: "train-hyperParams" },
+        { name: "评测", key: "train-benchmark" },
         { name: "其他", key: "train-other" },
     ])
     const [orgTools, setOrgTools] = useState<OrgTool[] | undefined>([])
 
     const [toolDetailDrawerOpen, setToolDetailDrawerOpen] = useState(false);
     const [currentToolDetail, setCurrentToolDetail] = useState<Tool | undefined>(undefined)
+    const [currentLocation, setCurrentLocation] = useState<string | undefined>()
 
     const openToolDetail = (item: Tool) => {
         setCurrentToolDetail(item)
@@ -137,7 +141,10 @@ export default function ToolPage() {
                     "other": []
                 },
                 "train": {
-                    "pre": [],
+                    "dataset": [],
+                    "hyperParams": [],
+                    "upload": [],
+                    "benchmark": [],
                     "post": [],
                     "tokenizer": [],
                     "finetune": [],
@@ -183,12 +190,14 @@ export default function ToolPage() {
         loadOrgTools().then(() => {
             loadPlatformTools()
         })
+        setCurrentLocation(location.pathname.replace("/dashboard/tool/", ""))
     }, [location, user?.id]);
 
     return (
         <div className="w-full h-full p-2 flex flex-col">
             <Tabs
-                defaultActiveKey={location.pathname.replace("/dashboard/tool/", "")}
+                defaultActiveKey={currentLocation}
+                activeKey={currentLocation}
                 type="card"
                 size="small"
                 tabBarStyle={{margin: 0}}
