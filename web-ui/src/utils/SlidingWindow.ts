@@ -55,5 +55,13 @@ export class SlidingWindow {
         }
         return null;
     }
+
+    public isFoundMarker() {
+        return this.foundMarker;
+    }
+
+    public checkStop() {
+        return this.queue.getStorage().join('');
+    }
 }
 

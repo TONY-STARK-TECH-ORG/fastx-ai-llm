@@ -30,7 +30,23 @@ public class DubboToolServiceImpl implements IDubboToolService {
     public OrganizationToolsDTO createOrganizationTools(OrganizationToolsDTO organizationToolsDTO) {
         isValidated(organizationToolsDTO);
         OrganizationTools organizationTools = OrganizationTools.of(organizationToolsDTO);
-        Assert.isTrue(organizationToolsService.save(organizationTools), "save organizationTools failed");
+        // query
+        OrganizationTools tools = organizationToolsService.getByOrganizationIdAndCodeVersion(
+                organizationTools.getOrganizationId(),
+                organizationTools.getToolCode(),
+                organizationTools.getToolVersion()
+        );
+        if (tools != null) {
+            // already has same tools
+            tools.setConfigData(organizationTools.getConfigData());
+            tools.setCustom(organizationTools.getCustom());
+            tools.setCustomCode(organizationTools.getCustomCode());
+            Assert.isTrue(organizationToolsService.updateById(tools), "update organizationTools failed");
+            return tools.to();
+        } else {
+            // create new
+            Assert.isTrue(organizationToolsService.save(organizationTools), "save organizationTools failed");
+        }
         return organizationTools.to();
     }
 

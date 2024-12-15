@@ -1,6 +1,7 @@
 package com.fastx.ai.llm.platform.service.organization;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.domains.api.IDubboOrganizationService;
 import com.fastx.ai.llm.domains.api.IDubboTaskService;
 import com.fastx.ai.llm.domains.api.IDubboToolService;
@@ -9,12 +10,14 @@ import com.fastx.ai.llm.domains.dto.*;
 import com.fastx.ai.llm.platform.api.IPlatformOrgService;
 import com.fastx.ai.llm.platform.dto.*;
 import com.rometools.utils.Lists;
+import org.apache.commons.lang.StringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -95,6 +98,20 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
         return Lists.createWhenNull(organizationTools).stream().map(ogt -> {
             OrgToolDTO orgTool = new OrgToolDTO();
             BeanUtils.copyProperties(ogt, orgTool);
+            // security apiKey and more
+            if (StringUtils.isNotEmpty(ogt.getConfigData())) {
+                Map<String, Object> configData = JSON.parseObject(orgTool.getConfigData(), Map.class);
+                configData.forEach((k, v) -> {
+                    if (k.toLowerCase().contains("key") ||
+                            k.toLowerCase().contains("secret") ||
+                            k.toLowerCase().contains("password") ||
+                            k.toLowerCase().contains("passwd")) {
+                        // replace mapdata.
+                        configData.replace(k, "******");
+                    }
+                });
+                orgTool.setConfigData(JSON.toJSONString(configData));
+            }
             return orgTool;
         }).collect(Collectors.toList());
     }

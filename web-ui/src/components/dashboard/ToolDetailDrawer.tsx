@@ -1,10 +1,11 @@
-import {ReactNode, useState} from 'react';
-import {Button, Divider, Drawer, Form, Input, InputNumber, message, Space, Switch} from 'antd';
+import {ReactNode, useContext, useEffect, useState} from 'react';
+import {Button, Divider, Drawer, Form, Input, InputNumber, message, Select, Space, Switch} from 'antd';
 import {Tool} from "../../store/tool/Tool.ts";
 import {OrgTool} from "../../store/define.ts";
 import ReactJsonView from '@microlink/react-json-view'
 import {http} from "../../api/Http.ts";
 import {SlidingWindow} from "../../utils/SlidingWindow.ts";
+import {UserContext} from "../../context/UserContext.ts";
 
 const { TextArea } = Input;
 
@@ -18,6 +19,10 @@ export default function ToolDetailDrawer(
     const [configForm] = Form.useForm();
     const [inputForm] = Form.useForm();
     const [output, setOutput] = useState<any | undefined>({})
+    const [saveLoading, setSaveLoading] = useState(false)
+
+    const [selectOrganization, setSelectionOrganization] = useState()
+    const { organization } = useContext(UserContext);
 
     // already has this tool.
     const haveThisTool = () => {
@@ -38,19 +43,19 @@ export default function ToolDetailDrawer(
         config.forEach((c: any) => {
             if (c.type.endsWith("String")) {
                 configFormItems.push((
-                    <Form.Item key={c.name} className="m-0 mt-1" name={c.name} rules={[{ required: !!c.required }]}>
+                    <Form.Item label={c.name} key={c.name} className="m-0" name={c.name} rules={[{ required: !!c.required }]}>
                         <Input className="mt-2" placeholder={c.name}/>
                     </Form.Item>
                 ))
             } else if (c.type.endsWith("Integer") || c.type.endsWith("Long") || c.type.endsWith("Float") || c.type.endsWith("Double")) {
                 configFormItems.push((
-                    <Form.Item key={c.name} className="m-0 mt-1" name={c.name} rules={[{ required: !!c.required }]}>
+                    <Form.Item label={c.name} key={c.name} className="m-0" name={c.name} rules={[{ required: !!c.required }]}>
                         <InputNumber className="mt-2" placeholder={c.name}/>
                     </Form.Item>
                 ))
             } else if (c.type.endsWith("Boolean")) {
                 configFormItems.push((
-                    <Form.Item key={c.name} className="m-0 mt-1" label={c.name} name={c.name} rules={[{ required: !!c.required }]}>
+                    <Form.Item key={c.name} className="m-0" label={c.name} name={c.name} rules={[{ required: !!c.required }]}>
                         <Switch className="mt-2" />
                     </Form.Item>
                 ))
@@ -76,25 +81,25 @@ export default function ToolDetailDrawer(
             }
             if (c.type.endsWith("String")) {
                 inputFormItems.push((
-                    <Form.Item key={c.name} className="m-0 mt-1" name={c.name} rules={[{ required: !!c.required }]}>
+                    <Form.Item label={c.name} key={c.name} className="m-0" name={c.name} rules={[{ required: !!c.required }]}>
                         <Input className="mt-2" placeholder={c.name}/>
                     </Form.Item>
                 ))
             } else if (c.type.endsWith("Integer") || c.type.endsWith("Long") || c.type.endsWith("Float") || c.type.endsWith("Double")) {
                 inputFormItems.push((
-                    <Form.Item key={c.name} className="m-0 mt-1" name={c.name} rules={[{ required: !!c.required }]}>
+                    <Form.Item label={c.name} key={c.name} className="m-0" name={c.name} rules={[{ required: !!c.required }]}>
                         <InputNumber className="mt-2" placeholder={c.name}/>
                     </Form.Item>
                 ))
             } else if (c.type.endsWith("Boolean")) {
                 inputFormItems.push((
-                    <Form.Item key={c.name} className="m-0 mt-1" name={c.name} rules={[{ required: !!c.required }]}>
+                    <Form.Item label={c.name} key={c.name} className="m-0" name={c.name} rules={[{ required: !!c.required }]}>
                         <Switch className="mt-2" checkedChildren={c.name} unCheckedChildren={c.name} />
                     </Form.Item>
                 ))
             } else {
                 inputFormItems.push((
-                    <Form.Item key={c.name} className="m-0 mt-1" name={c.name} rules={[{ required: !!c.required }]}>
+                    <Form.Item label={c.name} key={c.name} className="m-0" name={c.name} rules={[{ required: !!c.required }]}>
                         <TextArea placeholder={c.name + "{} 请输入合法的 JSON 内容"} />
                     </Form.Item>
                 ))
@@ -103,8 +108,8 @@ export default function ToolDetailDrawer(
         if (current.type === 'llm-model') {
             // add messages input item
             inputFormItems.push((
-                <Form.Item key="messages" className="m-0 mt-1" name="messages" rules={[{ required: true }]}>
-                    <Input placeholder={"请输入提示词"} />
+                <Form.Item label="messages" key="messages" className="m-0 mt-1" name="messages" rules={[{ required: true }]}>
+                    <Input placeholder={"请输入ROLE: USER 的内容"} />
                 </Form.Item>
             ))
         }
@@ -161,10 +166,21 @@ export default function ToolDetailDrawer(
                     })
 
                     if (stop) {
+                        if (!slideWindow.isFoundMarker()) {
+                            setOutput((prev: any) => {
+                                const streaming = prev.streaming + slideWindow.checkStop();
+                                return {
+                                    ...prev,
+                                    streaming: streaming
+                                }
+                            })
+                        }
                         message.success("流输出结束")
-                        setOutput({
-                            ...output,
-                            responseObj: JSON.parse(output.response)
+                        setOutput((prev: any) =>{
+                            return {
+                                ...prev,
+                                responseObj: JSON.parse(prev.response)
+                            }
                         })
                     }
                 });
@@ -186,10 +202,43 @@ export default function ToolDetailDrawer(
         }
     }
 
+    const onSave = async () => {
+        setSaveLoading(true)
+        // save tool config to org tool.
+        try {
+            const configValues = await configForm.validateFields();
+
+            const res = await http.post("tool/org/tool/create", {
+                organizationId: selectOrganization,
+                toolCode: current?.code,
+                toolVersion: current?.version,
+                configData: JSON.stringify(configValues),
+            });
+            if(res.success) {
+                message.success("工具配置保存成功")
+                // refresh outer page.
+                onRefresh()
+            } else {
+                message.error("工具配置保存失败: " + res.msg)
+            }
+        } catch (errorInfo) {
+            message.error("请检查配置项内容是否填写完整")
+        }
+
+        setSaveLoading(false)
+    }
+
+    useEffect(() => {
+        return () => {
+            // cleanup
+            setSelectionOrganization(undefined)
+        }
+    }, []);
+
     return (
         <Drawer
             title={current?.name}
-            width={400}
+            width={600}
             onClose={onClose}
             open={open}
             styles={{
@@ -200,7 +249,7 @@ export default function ToolDetailDrawer(
             extra={
                 <Space>
                     <Button onClick={onClose}>返回</Button>
-                    <Button onClick={onClose} type="primary">
+                    <Button loading={saveLoading} onClick={onSave} type="primary">
                         保存
                     </Button>
                 </Space>
@@ -209,22 +258,36 @@ export default function ToolDetailDrawer(
             <div className="flex flex-col">
                 <div>
                     <h1>配置项</h1>
-                    <Form initialValues={haveThisTool() ? JSON.parse(haveThisTool()!!.configData) : {}} form={configForm} layout="vertical">
+                    <Form labelCol={{ span: 5 }} labelAlign="right" initialValues={haveThisTool() ? JSON.parse(haveThisTool()!!.configData) : {}} form={configForm}>
+                        <Form.Item label="组织" className="m-0" name="organizationId" required rules={[{ required: true }]}>
+                            <Select
+                                allowClear
+                                placeholder="请选择工具所属组织"
+                                onSelect={(value) => {
+                                    setSelectionOrganization(value)
+                                }}
+                                options={organization?.map(o => {
+                                    return {
+                                        value: o.id,
+                                        label: o.name
+                                    }
+                                })}
+                            />
+                        </Form.Item>
                         {getConfig()}
                     </Form>
                 </div>
                 <Divider className="!my-2"/>
                 <div>
-                    <h1>测试输入</h1>
-                    <Form form={inputForm} layout="vertical">
+                    <h1>测试 <span className="text-blue-600 font-medium">[重新输入您的 KEY/SEC 后测试]</span></h1>
+                    <Form labelCol={{ span: 6 }} labelAlign="right" form={inputForm}>
                         {getInputConfig()}
                     </Form>
                     <Button className="mt-2" onClick={sendToolTestRequest}>发起测试</Button>
                 </div>
                 <Divider className="!my-2"/>
-                <div className="grow">
-                    <h1>测试输出</h1>
-                    <div>
+                <div className="grow w-full">
+                    <div className="w-full overflow-auto">
                         <ReactJsonView src={output}/>
                     </div>
                 </div>

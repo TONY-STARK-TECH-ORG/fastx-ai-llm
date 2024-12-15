@@ -21,4 +21,13 @@ public interface IOrganizationToolsService extends IService<OrganizationTools> {
      * @return all tools
      */
     List<OrganizationTools> getOrganizationToolsByOrganizationIds(List<Long> organizationIds);
+
+    /**
+     * query by fields.
+     * @param organizationId organization id
+     * @param toolCode code
+     * @param toolVersion version
+     * @return tool
+     */
+    OrganizationTools getByOrganizationIdAndCodeVersion(Long organizationId, String toolCode, String toolVersion);
 }

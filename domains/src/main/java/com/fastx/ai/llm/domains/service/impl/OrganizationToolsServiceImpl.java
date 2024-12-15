@@ -28,4 +28,13 @@ public class OrganizationToolsServiceImpl extends ServiceImpl<OrganizationToolsM
         wrapper.orderByDesc(OrganizationTools::getCreateTime);
         return Lists.createWhenNull(list(wrapper));
     }
+
+    @Override
+    public OrganizationTools getByOrganizationIdAndCodeVersion(Long organizationId, String toolCode, String toolVersion) {
+        LambdaQueryWrapper<OrganizationTools> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(OrganizationTools::getOrganizationId, organizationId);
+        wrapper.eq(OrganizationTools::getToolCode, toolCode);
+        wrapper.eq(OrganizationTools::getToolVersion, toolVersion);
+        return getOne(wrapper);
+    }
 }

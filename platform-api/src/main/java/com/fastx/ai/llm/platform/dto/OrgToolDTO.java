@@ -23,6 +23,8 @@ public class OrgToolDTO extends BaseDTO implements Serializable {
 
     private String customCode;
 
+    // For output.
+
     private ToolDTO toolDTO;
 
 
