@@ -12,6 +12,7 @@ export default function EditWorkflowModal(
     const [cancelButtonDisable, setCancelButtonDisable] = useState(false)
 
     const [workflowName, setWorkflowName] = useState<string | undefined>(undefined)
+    const [workflowState, setWorkflowState] = useState<string | undefined>('active')
 
     const [orgId, orgName] = useOrganizationStore(state => [state.id, state.name])
 
@@ -41,13 +42,18 @@ export default function EditWorkflowModal(
                         message.error("请选择工作流所属组织")
                         return
                     }
+                    if (!workflowState) {
+                        message.error("请选择工作流状态")
+                        return
+                    }
                     // 2.0 submit data with http-client
                     setSubmitLoading(true)
                     setCancelButtonDisable(true)
                     const res = await http.post("workflow/org/workflow/update", {
                         id: workflow?.id,
                         name: workflowName,
-                        organizationId: orgId
+                        organizationId: orgId,
+                        status: workflowState
                     })
                     if (res.success) {
                         message.success("工作流更新成功")
@@ -80,6 +86,24 @@ export default function EditWorkflowModal(
                             }
                         ]}
                         disabled
+                    />
+                    <Select
+                        defaultValue={workflowState}
+                        className="mt-2"
+                        placeholder="工作流状态"
+                        options={[
+                            {
+                                value: 'active',
+                                label: '启用'
+                            },
+                            {
+                                value: 'inactive',
+                                label: '停用'
+                            }
+                        ]}
+                        onChange={(value) => {
+                            setWorkflowState(value)
+                        }}
                     />
                 </div>
             </Modal>

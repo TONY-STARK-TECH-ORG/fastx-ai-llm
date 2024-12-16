@@ -1,6 +1,6 @@
-import {List, Button, Divider, message, Spin} from 'antd';
+import {List, Button, Divider, message, Spin, Popconfirm} from 'antd';
 import {
-    AppstoreAddOutlined, RadiusUprightOutlined
+    AppstoreAddOutlined, DeleteOutlined, RadiusUprightOutlined
 } from "@ant-design/icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import {
@@ -17,6 +17,7 @@ import {Workflow, WorkflowVersion} from "../../store/define.ts";
 import CreateWorkflowModal from "../../components/dashboard/CreateWorkflowModal.tsx";
 import EditWorkflowModal from "../../components/dashboard/EditWorkflowModal.tsx";
 import CreateWorkflowVersionModal from "../../components/dashboard/CreateWorkflowVersionModal.tsx";
+import WorkflowPanel from "../../components/workflow/WorkFlowPanel.tsx";
 
 export default function WorkflowPage() {
     const [orgId] = useOrganizationStore(state => [state.id])
@@ -38,7 +39,6 @@ export default function WorkflowPage() {
             return
         }
         setPageLoading(true)
-        // @TODO (stark) call delete API
         const res = await http.post("workflow/org/workflow/delete", {
             id: selectedWorkFlow.id
         })
@@ -106,9 +106,27 @@ export default function WorkflowPage() {
         setPageLoading(false)
         if (res.success) {
             message.success("工作流版本激活成功")
-            loadWorkflowVersionList(selectedWorkFlowVersion.workflowId)
+            await loadWorkflowList();
+            await loadWorkflowVersionList(selectedWorkFlowVersion.workflowId)
         } else {
             message.error("工作流版本激活失败，请重试: " + res.msg)
+        }
+    }
+
+    const deleteWorkflowVersion = async () => {
+        if (!selectedWorkFlowVersion) {
+            return
+        }
+        setPageLoading(true)
+        const res = await http.post("workflow/org/workflow/version/delete", {
+            id: selectedWorkFlowVersion.id
+        })
+        setPageLoading(false)
+        if (res.success) {
+            message.success("工作流版本删除成功")
+            await loadWorkflowVersionList(selectedWorkFlowVersion.workflowId)
+        } else {
+            message.error("工作流版本删除失败，请重试: " + res.msg)
         }
     }
 
@@ -143,12 +161,18 @@ export default function WorkflowPage() {
                                 <div className="flex w-full items-center">
                                     <div className="flex flex-col ml-2 grow items-start">
                                         <p className={"text-sm font-medium"}>{item.name}</p>
-                                        <div className="flex mt-2">
+                                        <div className="flex mt-2 items-center">
                                             <div
                                                 className={"flex items-center justify-center rounded-[2px] px-1 py-0 " + (item.status === 'active' ? "bg-green-600" : "bg-orange-500")}>
                                                 {item.status === 'active' ?
-                                                    <p className="text-[10px] text-white">可用</p> :
-                                                    <p className="text-[10px] text-white">未发布</p>}
+                                                    <p className="text-[10px] text-white">启用</p> :
+                                                    <p className="text-[10px] text-white">停用</p>}
+                                            </div>
+                                            <div
+                                                className={"ml-0.5 flex items-center justify-center rounded-[2px] px-1 py-0 " + (item.activeVersion ? "bg-green-600" : "bg-orange-500")}>
+                                                {item.activeVersion ?
+                                                    <p className="text-[10px] text-white">版本在线</p> :
+                                                    <p className="text-[10px] text-white">草稿</p>}
                                             </div>
                                         </div>
                                     </div>
@@ -238,31 +262,45 @@ export default function WorkflowPage() {
                                         size="small"
                                         onClick={activeWorkflowVersion}
                                         icon={<RadiusUprightOutlined/>}
-                                        className="ml-2"
                                     >
                                         发布
                                     </Button>
+                                </div>
+                                <Divider type="vertical"/>
+                                <div>
+                                    <Popconfirm
+                                        placement="bottom"
+                                        title="删除版本"
+                                        description="该操作可能会直接影响线上应用，你确认删除该版本么？"
+                                        okText="是的"
+                                        cancelText="取消"
+                                        onConfirm={deleteWorkflowVersion}
+                                    >
+                                        <Button
+                                            size="small"
+                                            danger
+                                            icon={<DeleteOutlined/>}
+                                        />
+                                    </Popconfirm>
                                 </div>
                             </>
                         ) : null}
                         <div className="grow"></div>
                         <div className="flex items-center">
                             <p className="text-lg">{selectedWorkFlow.name}</p>
-                            <Divider type="vertical"/>
-                            {selectedWorkFlow.status === 'active' ? (
-                                <div>
-                                    <p className="text-xs text-green-600">可用</p>
+                            {selectedWorkFlowVersion ? (
+                                <div className="flex items-center">
+                                    <Divider type="vertical"/>
+                                    <div>
+                                        <p className="text-xs text-red-600">正在编辑：{selectedWorkFlowVersion.version}</p>
+                                    </div>
                                 </div>
-                            ): (
-                                <div>
-                                    <p className="text-xs">未发布</p>
-                                </div>
-                            )}
+                            ) : null}
                         </div>
                     </div>
                     {selectedWorkFlowVersion ? (
                         <div className="grow w-full bg-gray-100/50 mt-2 flex flex-col items-start justify-start p-2 overflow-auto">
-                            <p>工作流版本列表</p>
+                            <WorkflowPanel />
                         </div>
                     ) : (
                         <div className="grow w-full bg-gray-100/50 mt-2 flex flex-col items-center justify-center p-2 overflow-auto">

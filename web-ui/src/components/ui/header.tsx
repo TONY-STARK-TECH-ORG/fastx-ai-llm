@@ -29,7 +29,7 @@ export default function Header() {
             <li>
               <Link
                 to={{
-                  pathname: isLogin() ? "/dashboard" : "/login"
+                  pathname: isLogin() ? "/dashboard/application" : "/login"
                 }}
                 className="btn-sm bg-gray-800 text-gray-200 shadow hover:bg-gray-900"
               >

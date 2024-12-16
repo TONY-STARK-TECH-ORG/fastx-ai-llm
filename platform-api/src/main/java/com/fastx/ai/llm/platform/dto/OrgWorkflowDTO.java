@@ -22,6 +22,8 @@ public class OrgWorkflowDTO extends BaseDTO implements Serializable {
 
     private Long organizationId;
 
+    private OrgWorkflowVersionDTO activeVersion;
+
     public String getName() {
         return name;
     }
@@ -44,5 +46,13 @@ public class OrgWorkflowDTO extends BaseDTO implements Serializable {
 
     public void setOrganizationId(Long organizationId) {
         this.organizationId = organizationId;
+    }
+
+    public OrgWorkflowVersionDTO getActiveVersion() {
+        return activeVersion;
+    }
+
+    public void setActiveVersion(OrgWorkflowVersionDTO activeVersion) {
+        this.activeVersion = activeVersion;
     }
 }

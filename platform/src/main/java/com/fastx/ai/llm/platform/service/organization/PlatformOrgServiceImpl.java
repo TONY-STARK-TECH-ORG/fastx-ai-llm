@@ -18,6 +18,7 @@ import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -218,6 +219,18 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
         return Lists.createWhenNull(workflows).stream().map(w -> {
             OrgWorkflowDTO orgWorkflow = new OrgWorkflowDTO();
             BeanUtils.copyProperties(w, orgWorkflow);
+
+            // query workflow version.
+            List<WorkflowVersionDTO> versions =
+                    workflowService.getWorkflowVersionsByWorkflowId(w.getId());
+            Optional<WorkflowVersionDTO> active =
+                    Lists.createWhenNull(versions).stream().filter(v -> v.getStatus().equals("active")).findFirst();
+            if (active.isPresent()) {
+                OrgWorkflowVersionDTO v = new OrgWorkflowVersionDTO();
+                BeanUtils.copyProperties(active.get(), v);
+                orgWorkflow.setActiveVersion(v);
+            }
+
             return orgWorkflow;
         }).collect(Collectors.toList());
     }

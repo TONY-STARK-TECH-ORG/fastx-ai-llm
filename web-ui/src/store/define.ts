@@ -38,6 +38,7 @@ export interface Workflow extends Base {
     name: string;
     status: string;
     organizationId: string;
+    activeVersion: WorkflowVersion | undefined;
 }
 
 export interface WorkflowVersion extends Base {
@@ -45,7 +46,6 @@ export interface WorkflowVersion extends Base {
     version: string;
     status: string;
     versionData: string;
-    nodes: Node[];
 }
 
 export interface WorkFlowExecLog extends Base {

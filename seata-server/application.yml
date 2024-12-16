@@ -23,7 +23,7 @@ seata:
   config:
     type: zk # Configuration type, using Zookeeper
     zk:
-      server-addr: 172.17.0.4:2181 # Address of the Zookeeper server
+      server-addr: 172.17.0.3:2181 # Address of the Zookeeper server
       session-timeout: 6000 # Session timeout in milliseconds
       connect-timeout: 2000 # Connection timeout in milliseconds
       username: # Username for Zookeeper (if required)
@@ -34,7 +34,7 @@ seata:
     type: zk # Registry type, using Zookeeper
     zk:
       cluster: default # Cluster name
-      server-addr: 172.17.0.4:2181 # Address of the Zookeeper server
+      server-addr: 172.17.0.3:2181 # Address of the Zookeeper server
       session-timeout: 6000 # Session timeout in milliseconds
       connect-timeout: 2000 # Connection timeout in milliseconds
       username: # Username for Zookeeper (if required)
