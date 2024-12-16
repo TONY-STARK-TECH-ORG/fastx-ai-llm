@@ -168,6 +168,7 @@ const useWorkflowStore = createWithEqualityFn<AppState>((set, get) => ({
         get().setEdges(edges(get().edges));
     },
     onSave: () => {
+        get().onLayout()
         return  {
             nodes: get().nodes || [],
             edges: get().edges || [],
