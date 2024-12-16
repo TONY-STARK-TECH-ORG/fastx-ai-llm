@@ -15,6 +15,7 @@ export default function EditApplicationModal(
 
     const [applicationName, setApplicationName] = useState<string | undefined>(undefined)
     const [applicationDesc, setApplicationDesc] = useState<string | undefined>(undefined)
+    const [applicationState, setApplicationState] = useState<string | undefined>('active')
 
     const [orgId, orgName] = useOrganizationStore(state => [state.id, state.name])
 
@@ -57,6 +58,10 @@ export default function EditApplicationModal(
                         message.error("请选择应用所属组织")
                         return
                     }
+                    if (!applicationState) {
+                        message.error("请选择应用状态")
+                        return
+                    }
                     // 2.0 submit data with http-client
                     setSubmitLoading(true)
                     setCancelButtonDisable(true)
@@ -66,7 +71,8 @@ export default function EditApplicationModal(
                         description: applicationDesc,
                         type: selectedOption,
                         iconUrl: "https://oss.fastx-ai.com/fastx-ai-llm/123/logo.png",
-                        organizationId: orgId
+                        organizationId: orgId,
+                        status: applicationState
                     })
                     if (res.success) {
                         message.success("应用更新成功")
@@ -96,6 +102,18 @@ export default function EditApplicationModal(
                             options={[
                                 {value: 'agent', label: '智能体'},
                                 {value: 'playground', label: '体验场'},
+                            ]}
+                        />
+                        <Select
+                            placeholder="应用状态"
+                            className="mt-2 w-full"
+                            defaultValue={applicationState}
+                            onChange={(value) => {
+                                setApplicationState(value)
+                            }}
+                            options={[
+                                {value: 'active', label: '可用'},
+                                {value: 'inactive', label: '停用'},
                             ]}
                         />
                     </div>

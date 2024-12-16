@@ -180,9 +180,15 @@ export default function ApplicationPage() {
                                         <p className={"text-sm font-medium"}>{item.name}</p>
                                         <div className="flex">
                                             <div
-                                                className={"flex items-center justify-center rounded-[2px] px-1 py-0 " + (item.activeVersion ? "bg-green-600" : "bg-orange-500")}>
+                                                className={"flex items-center justify-center rounded-[2px] px-1 py-0 " + (item.status === 'active' ? "bg-green-600" : "bg-orange-500")}>
+                                                {item.status === 'active' ?
+                                                    <p className="text-[10px] text-white">可访问</p> :
+                                                    <p className="text-[10px] text-white">停用</p>}
+                                            </div>
+                                            <div
+                                                className={"ml-1 flex items-center justify-center rounded-[2px] px-1 py-0 " + (item.activeVersion ? "bg-green-600" : "bg-orange-500")}>
                                                 {item.activeVersion ?
-                                                    <p className="text-[10px] text-white">线上：{item.activeVersion.version}</p> :
+                                                    <p className="text-[10px] text-white">{item.activeVersion.version}</p> :
                                                     <p className="text-[10px] text-white">未发布</p>}
                                             </div>
                                             <div
@@ -334,16 +340,6 @@ export default function ApplicationPage() {
                         <div className="grow"></div>
                         <div className="flex items-center">
                             <p className="text-lg">{selectedApplication.name}</p>
-                            <Divider type="vertical"/>
-                            {selectedApplication.activeVersion ? (
-                                <div>
-                                    <p className="text-xs text-green-600">已发布： {selectedApplication.activeVersion.version}</p>
-                                </div>
-                            ): (
-                                <div>
-                                    <p className="text-xs">未发布</p>
-                                </div>
-                            )}
                             <Divider type="vertical"/>
                             {selectedApplicationVersion ? (
                                 <div className="flex items-center">
