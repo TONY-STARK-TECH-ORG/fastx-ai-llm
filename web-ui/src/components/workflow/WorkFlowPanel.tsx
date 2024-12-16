@@ -1,251 +1,154 @@
 import {
-    ReactFlow,
-    MiniMap,
-    Controls,
     Background,
-    useNodesState,
-    useEdgesState,
-    addEdge,
-    Panel, useReactFlow, ReactFlowProvider,
-    Node,
+    BackgroundVariant,
+    Controls,
     Edge,
-    OnConnect,
-    NodeTypes,
-    FitViewOptions,
-    DefaultEdgeOptions,
+    MiniMap,
+    ReactFlow,
+    useReactFlow,
     useStoreApi
 } from '@xyflow/react';
 // Layout
-import Dagre from '@dagrejs/dagre';
 import DevTools from "./dev/DevTools.tsx";
 import '@xyflow/react/dist/style.css';
-import {useCallback} from "react";
-
-import SimpleNode from "./SimpleNode.tsx";
+import useWorkflowStore, {AppNode} from "../../store/WorkflowStore.ts";
+import {useEffect} from "react";
 import SimpleEdge from "./SimpleEdge.tsx";
+import ConnectionLine from "./ConnectionLine.tsx";
+import SimpleNode from "./SimpleNode.tsx";
+import {useDrag} from "./DragContext.tsx";
 
-export const initialNodes:Node[] = [
-    {
-        id: '1',
-        type: 'input',
-        data: { label: 'input' },
-        position: { x: 0, y: 0 },
-    },
-    {
-        id: '2',
-        data: { label: 'node 2' },
-        position: { x: 0, y: 100 },
-    },
-    {
-        id: '2a',
-        data: { label: 'node 2a' },
-        position: { x: 0, y: 200 },
-    },
-    {
-        id: '2b',
-        data: { label: 'node 2b' },
-        position: { x: 0, y: 300 },
-    },
-    {
-        id: '2c',
-        data: { label: 'node 2c' },
-        position: { x: 0, y: 400 },
-    },
-    {
-        id: '2d',
-        data: { label: 'node 2d' },
-        position: { x: 0, y: 500 },
-    },
-    {
-        id: '3',
-        data: { label: 'node 3' },
-        position: { x: 200, y: 100 },
-    },
-];
+export type ClosestNode = {distance: number; node: AppNode | undefined }
 
-export const initialEdges:Edge[] = [
-    { id: 'e12', source: '1', target: '2', animated: true },
-    { id: 'e13', source: '1', target: '3', animated: true },
-    { id: 'e22a', source: '2', target: '2a', animated: true },
-    { id: 'e22b', source: '2', target: '2b', animated: true },
-    { id: 'e22c', source: '2', target: '2c', animated: true },
-    { id: 'e2c2d', source: '2c', target: '2d', animated: true },
-];
+// @TODO (stark) change id to uuid.
+let id = 0;
+const getId = () => `dndnode_${id++}`;
 
-const fitViewOptions: FitViewOptions = {
-    padding: 0.2,
-};
 
-const defaultEdgeOptions: DefaultEdgeOptions = {
-    animated: true,
-};
-
-const MIN_DISTANCE = 150;
-
-const getLayoutedElements = (nodes, edges, options) => {
-    const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-    g.setGraph({ rankdir: options.direction });
-
-    edges.forEach((edge) => g.setEdge(edge.source, edge.target));
-    nodes.forEach((node) =>
-        g.setNode(node.id, {
-            ...node,
-            width: node.measured?.width ?? 0,
-            height: node.measured?.height ?? 0,
-        }),
-    );
-
-    Dagre.layout(g);
-
-    return {
-        nodes: nodes.map((node) => {
-            const position = g.node(node.id);
-            // We are shifting the dagre node position (anchor=center center) to the top left
-            // so it matches the React Flow node anchor point (top left).
-            const x = position.x - (node.measured?.width ?? 0) / 2;
-            const y = position.y - (node.measured?.height ?? 0) / 2;
-
-            return { ...node, position: { x, y } };
-        }),
+export default function WorkflowPanel () {
+    const [
+        relayOut,
+        nodes,
+        setNodes,
         edges,
-    };
-};
+        onNodesChange,
+        onEdgesChange,
+        onConnect,
+        onCloseNodeDrag,
+        onCloseNodeDragStop,
+        zoomCenter,
+        isValidConnection,
+    ] = useWorkflowStore(state => [
+        state.reLayout,
+        state.nodes,
+        state.setNodes,
+        state.edges,
+        state.onNodesChange,
+        state.onEdgesChange,
+        state.onConnect,
+        state.onCloseNodeDrag,
+        state.onCloseNodeDragStop,
+        state.zoomCenter,
+        state.isValidConnection
+    ]);
 
-export function LayoutFlow () {
-
-//------------------------------------------------------------
-// register type start!
-//------------------------------------------------------------
-    const nodeTypes: NodeTypes = {
-        // general node.
-        simpleNode: SimpleNode
-    }
-
-    const edgeTypes = {
-        simpleEdge: SimpleEdge
-    }
-//------------------------------------------------------------
-// register type end!
-//------------------------------------------------------------
-
-    const { fitView, getInternalNode } = useReactFlow();
     const store = useStoreApi();
+    const {
+        fitView,
+        getInternalNode,
+        setCenter,
+        screenToFlowPosition
+    } = useReactFlow();
+    const { type, setType } = useDrag()
 
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-
-    const onConnect: OnConnect = useCallback((connection) => {
-        const edge = { ...connection, type: 'simpleEdge' };
-        setEdges((eds) => addEdge(edge, eds));
-    }, [setEdges]);
-
-    const onLayout = useCallback(
-        (direction) => {
-            console.log(nodes);
-            const layouted = getLayoutedElements(nodes, edges, { direction });
-
-            setNodes([...layouted.nodes]);
-            setEdges([...layouted.edges]);
-
-            window.requestAnimationFrame(() => {
-                fitView();
-            });
-        },
-        [nodes, edges],
-    );
-
-    const getClosestEdge = useCallback((node) => {
-        const { nodeLookup } = store.getState();
+    const getClosestEdge =  (node: AppNode) => {
+        const { nodeLookup } = store.getState()!!;
         const internalNode = getInternalNode(node.id);
 
-        const closestNode = Array.from(nodeLookup.values()).reduce(
+        const closestNode:ClosestNode = Array.from(nodeLookup.values()).reduce(
             (res, n) => {
-                if (n.id !== internalNode.id) {
-                    const dx =
-                        n.internals.positionAbsolute.x -
-                        internalNode.internals.positionAbsolute.x;
-                    const dy =
-                        n.internals.positionAbsolute.y -
-                        internalNode.internals.positionAbsolute.y;
+                if (n.id !== internalNode?.id) {
+                    const dx = n.internals.positionAbsolute.x - internalNode?.internals.positionAbsolute.x!!;
+                    const dy = n.internals.positionAbsolute.y - internalNode?.internals.positionAbsolute.y!!;
                     const d = Math.sqrt(dx * dx + dy * dy);
 
-                    if (d < res.distance && d < MIN_DISTANCE) {
+                    if (d < res.distance && d < 150) {
                         res.distance = d;
+                        // @ts-ignore
                         res.node = n;
                     }
                 }
-
                 return res;
             },
             {
                 distance: Number.MAX_VALUE,
-                node: null,
+                node: undefined,
             },
         );
 
-        if (!closestNode.node) {
-            return null;
-        }
-
-        const closeNodeIsSource =
-            closestNode.node.internals.positionAbsolute.x <
-            internalNode.internals.positionAbsolute.x;
-
+        if (!closestNode.node) {return undefined;}
+        // @ts-ignore
+        const closeNodeIsSource = closestNode.node.internals.positionAbsolute.x < internalNode?.internals.positionAbsolute.x!!;
         return {
             id: closeNodeIsSource
                 ? `${closestNode.node.id}-${node.id}`
                 : `${node.id}-${closestNode.node.id}`,
             source: closeNodeIsSource ? closestNode.node.id : node.id,
             target: closeNodeIsSource ? node.id : closestNode.node.id,
-        };
-    }, []);
+        } as Edge;
+    }
 
-    const onNodeDrag = useCallback(
-        (_, node) => {
-            const closeEdge = getClosestEdge(node);
+    const onDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+    }
 
-            setEdges((es) => {
-                const nextEdges = es.filter((e) => e.className !== 'temp');
+    const onDrop = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        if (!type) {
+            return;
+        }
+        const position = screenToFlowPosition({
+            x: event.clientX,
+            y: event.clientY,
+        });
+        const newNode = {
+            id: getId(),
+            type: type,
+            position,
+            data: { label: `${type} node` },
+        } as AppNode;
+        setNodes(nodes.concat(newNode));
+    }
 
-                if (
-                    closeEdge &&
-                    !nextEdges.find(
-                        (ne) =>
-                            ne.source === closeEdge.source && ne.target === closeEdge.target,
-                    )
-                ) {
-                    closeEdge.className = 'temp';
-                    nextEdges.push(closeEdge);
-                }
+    const onNodeDragInner = (_event: React.MouseEvent, node: AppNode) => {
+        const closestEdge = getClosestEdge(node);
+        // Auto connect closer handler.
+        onCloseNodeDrag(closestEdge);
+    }
 
-                return nextEdges;
-            });
-        },
-        [getClosestEdge, setEdges],
-    );
+    const onNodeDragStopInner = (_event: React.MouseEvent, node: AppNode) => {
+        const closestEdge = getClosestEdge(node);
+        // Auto connect closer handler.
+        onCloseNodeDragStop(closestEdge);
+    }
 
-    const onNodeDragStop = useCallback(
-        (_, node) => {
-            const closeEdge = getClosestEdge(node);
+    const onDragStart = (event: React.DragEvent<HTMLDivElement>, nodeType: string) => {
+        setType(nodeType);
+        event.dataTransfer.effectAllowed = 'move';
+    };
 
-            setEdges((es) => {
-                const nextEdges = es.filter((e) => e.className !== 'temp');
+    useEffect(() => {
+        if (zoomCenter) {
+            setCenter(zoomCenter.x, zoomCenter.y, {zoom: 3, duration: 1000})
+        }
+    }, [zoomCenter]);
 
-                if (
-                    closeEdge &&
-                    !nextEdges.find(
-                        (ne) =>
-                            ne.source === closeEdge.source && ne.target === closeEdge.target,
-                    )
-                ) {
-                    nextEdges.push(closeEdge);
-                }
-
-                return nextEdges;
-            });
-        },
-        [getClosestEdge],
-    );
+    useEffect(() => {
+        window.requestAnimationFrame(() => {
+            fitView();
+        });
+    }, [relayOut]);
 
     return (
         <div className="w-full h-full flex flex">
@@ -253,42 +156,46 @@ export function LayoutFlow () {
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
+                    edgeTypes={{
+                        simpleEdge: SimpleEdge
+                    }}
+                    nodeTypes={{
+                        simpleNode: SimpleNode
+                    }}
+                    fitView
+                    fitViewOptions={{
+                        padding: 0.2,
+                    }}
+                    defaultEdgeOptions={{
+                        animated: true,
+                    }}
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
-                    fitView
-                    nodeTypes={nodeTypes}
-                    edgeTypes={edgeTypes}
-                    fitViewOptions={fitViewOptions}
-                    defaultEdgeOptions={defaultEdgeOptions}
-
-                    onNodeDrag={onNodeDrag}
-                    onNodeDragStop={onNodeDragStop}
+                    onNodeDrag={onNodeDragInner}
+                    onNodeDragStop={onNodeDragStopInner}
+                    onDrop={onDrop}
+                    onDragOver={onDragOver}
+                    connectionLineComponent={ConnectionLine}
+                    isValidConnection={isValidConnection}
                 >
-                    <Panel position="top-center">
-                        <button onClick={() => onLayout('TB')}>vertical layout</button>
-                        <button onClick={() => onLayout('LR')}>horizontal layout</button>
-                    </Panel>
                     <Controls/>
                     <MiniMap zoomable pannable position={"top-left"}/>
-                    <Background variant={"dots"} color="#ddd" gap={24} size={2}/>
+                    <Background variant={BackgroundVariant.Dots} color="#ddd" gap={24} size={2}/>
                     <DevTools/>
                 </ReactFlow>
             </div>
             <div className="w-[200px] h-full border border-gray-100 bg-white hover:shadow hover:shadow-blue-50 ml-2">
-
+                <div className="dndnode input" onDragStart={(event) => onDragStart(event, 'input')} draggable>
+                    Input Node
+                </div>
+                <div className="dndnode" onDragStart={(event) => onDragStart(event, 'default')} draggable>
+                    Default Node
+                </div>
+                <div className="dndnode output" onDragStart={(event) => onDragStart(event, 'output')} draggable>
+                    Output Node
+                </div>
             </div>
         </div>
     )
-}
-
-export default function WorkflowPanel() {
-    return (
-        <div className="w-full h-full">
-            <ReactFlowProvider>
-                <LayoutFlow/>
-            </ReactFlowProvider>
-        </div>
-
-    );
 }

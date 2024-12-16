@@ -1,10 +1,11 @@
 import {useUserStore} from "../store/UserStore.ts";
 import AppMenu from "../components/AppMenu.tsx";
-import {Layout, Avatar, Modal } from 'antd';
+import {Layout, Avatar } from 'antd';
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router";
 import { Outlet } from "react-router";
 import OrganizationSelectMenu from "../components/OrganizationSelectMenu.tsx";
+import UserSettings from "./setting/UserSettings.tsx";
 
 const {Sider, Content} = Layout;
 
@@ -18,10 +19,6 @@ export default function DashboardPage () {
         setIsModalOpen(true);
     }
 
-    const handleOk = () => {
-        navigate("/logout");
-    }
-
     const handleCancel = () => {
         setIsModalOpen(false);
     }
@@ -30,7 +27,7 @@ export default function DashboardPage () {
         if (!isLogin()) {
             navigate("/login");
         }
-    }, [])
+    }, [isLogin()])
 
     return (
         <Layout className="w-screen h-screen">
@@ -48,7 +45,7 @@ export default function DashboardPage () {
                     <div className="w-full flex items-center justify-center py-2">
                         <Avatar onClick={openUserinfoModel} className="w-6 h-6 hover:cursor-pointer"
                                 src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"/>
-                        <Modal title="退出登录？" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} />
+                        <UserSettings open={isModalOpen} onClose={handleCancel} />
                     </div>
                 </div>
             </Sider>

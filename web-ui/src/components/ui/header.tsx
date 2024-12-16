@@ -1,9 +1,12 @@
 import { Link } from "react-router";
 import Logo from "./logo";
 import {useUserStore} from "../../store/UserStore.ts";
+import {useLocalStorage} from "@uidotdev/usehooks";
 
 export default function Header() {
   const [isLogin] = useUserStore((state) => [state.isLogin, state.logout])
+  const [currentMenu] =
+      useLocalStorage("open-menu", '/dashboard/application')
 
   return (
     <header className="fixed top-2 z-30 w-full md:top-6">
@@ -29,7 +32,7 @@ export default function Header() {
             <li>
               <Link
                 to={{
-                  pathname: isLogin() ? "/dashboard/application" : "/login"
+                  pathname: isLogin() ? currentMenu : "/login"
                 }}
                 className="btn-sm bg-gray-800 text-gray-200 shadow hover:bg-gray-900"
               >

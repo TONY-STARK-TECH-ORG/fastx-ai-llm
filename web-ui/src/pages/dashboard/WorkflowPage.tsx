@@ -1,6 +1,6 @@
 import {List, Button, Divider, message, Spin, Popconfirm} from 'antd';
 import {
-    AppstoreAddOutlined, DeleteOutlined, RadiusUprightOutlined
+    AppstoreAddOutlined, DeleteOutlined, LayoutOutlined, RadiusUprightOutlined, SaveOutlined, ZoomInOutlined
 } from "@ant-design/icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import {
@@ -18,9 +18,19 @@ import CreateWorkflowModal from "../../components/dashboard/CreateWorkflowModal.
 import EditWorkflowModal from "../../components/dashboard/EditWorkflowModal.tsx";
 import CreateWorkflowVersionModal from "../../components/dashboard/CreateWorkflowVersionModal.tsx";
 import WorkflowPanel from "../../components/workflow/WorkFlowPanel.tsx";
+import {ReactFlowProvider} from "@xyflow/react";
+import useWorkflowStore from "../../store/WorkflowStore.ts";
+import {DragProvider} from "../../components/workflow/DragContext.tsx";
 
 export default function WorkflowPage() {
     const [orgId] = useOrganizationStore(state => [state.id])
+    const [
+        onLayout,
+        onZoomSelected,
+        onSave,
+        onInit,
+    ] = useWorkflowStore(state => [state.onLayout, state.onZoomSelected, state.onSave, state.onInit])
+
     const [pageLoading, setPageLoading] = useState(false)
 
     const [createWorkflowModalOpen, setCreateWorkflowModalOpen] = useState(false);
@@ -91,7 +101,7 @@ export default function WorkflowPage() {
         setPageLoading(false)
     }
 
-    const activeWorkflowVersion = async () => {
+    const updateWorkflowVersion = async (status: string | undefined, versionData: string | undefined) => {
         if (!selectedWorkFlowVersion) {
             return
         }
@@ -99,18 +109,25 @@ export default function WorkflowPage() {
         const res = await http.post("workflow/org/workflow/version/update", {
             id: selectedWorkFlowVersion.id,
             workflowId: selectedWorkFlowVersion.workflowId,
-            status: "active",
-            versionData: selectedWorkFlowVersion.versionData,
+            status: status ? status : selectedWorkFlowVersion.status,
+            versionData: versionData ? versionData : selectedWorkFlowVersion.versionData,
             version: selectedWorkFlowVersion.version
         })
         setPageLoading(false)
         if (res.success) {
-            message.success("工作流版本激活成功")
+            message.success("工作流版本更新/保存成功")
             await loadWorkflowList();
             await loadWorkflowVersionList(selectedWorkFlowVersion.workflowId)
         } else {
-            message.error("工作流版本激活失败，请重试: " + res.msg)
+            message.error("工作流版本更新/保存失败，请重试: " + res.msg)
         }
+    }
+
+    const activeWorkflowVersion = async () => {
+        if (!selectedWorkFlowVersion) {
+            return
+        }
+        await updateWorkflowVersion("active", undefined);
     }
 
     const deleteWorkflowVersion = async () => {
@@ -129,6 +146,14 @@ export default function WorkflowPage() {
             message.error("工作流版本删除失败，请重试: " + res.msg)
         }
     }
+
+    useEffect(() => {
+        if (selectedWorkFlowVersion &&
+            selectedWorkFlowVersion.versionData &&
+            selectedWorkFlowVersion.versionData.length !== 0) {
+            onInit(selectedWorkFlowVersion.versionData)
+        }
+    }, [selectedWorkFlowVersion]);
 
     useEffect(() => {
         loadWorkflowList()
@@ -267,6 +292,32 @@ export default function WorkflowPage() {
                                     </Button>
                                 </div>
                                 <Divider type="vertical"/>
+                                <Button
+                                    className="hover:!border-green-500"
+                                    size="small"
+                                    onClick={async () => {
+                                        const data = onSave();
+                                        await updateWorkflowVersion(undefined, JSON.stringify(data));
+                                    }}
+                                    icon={<SaveOutlined className="text-lime-600" />}
+                                />
+                                <Button
+                                    className="mr-2"
+                                    size="small"
+                                    onClick={() => {
+                                        onLayout()
+                                    }}
+                                    icon={<LayoutOutlined/>}
+                                />
+                                <Button
+                                    className="mr-2"
+                                    size="small"
+                                    onClick={() => {
+                                        onZoomSelected()
+                                    }}
+                                    icon={<ZoomInOutlined/>}
+                                />
+                                <Divider type="vertical"/>
                                 <div>
                                     <Popconfirm
                                         placement="bottom"
@@ -299,8 +350,13 @@ export default function WorkflowPage() {
                         </div>
                     </div>
                     {selectedWorkFlowVersion ? (
-                        <div className="grow w-full bg-gray-100/50 mt-2 flex flex-col items-start justify-start p-2 overflow-auto">
-                            <WorkflowPanel />
+                        <div
+                            className="grow w-full bg-gray-100/50 mt-2 flex flex-col items-start justify-start p-2 overflow-auto">
+                            <ReactFlowProvider>
+                                <DragProvider>
+                                    <WorkflowPanel />
+                                </DragProvider>
+                            </ReactFlowProvider>
                         </div>
                     ) : (
                         <div className="grow w-full bg-gray-100/50 mt-2 flex flex-col items-center justify-center p-2 overflow-auto">

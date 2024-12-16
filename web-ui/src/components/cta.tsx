@@ -2,9 +2,12 @@ import Stripes from "../../public/images/stripes-dark.svg";
 import { Image } from "antd";
 import {useUserStore} from "../store/UserStore.ts";
 import {Link} from "react-router";
+import {useLocalStorage} from "@uidotdev/usehooks";
 
 export default function Cta() {
   const [ isLogin ] = useUserStore(state => [state.isLogin]);
+  const [currentMenu] =
+      useLocalStorage("open-menu", '/dashboard/application')
   return (
     <section>
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -43,7 +46,7 @@ export default function Cta() {
               <Link
                 className="btn group mb-4 w-full bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] text-white shadow hover:bg-[length:100%_150%] sm:mb-0 sm:w-auto"
                 to={{
-                  pathname: isLogin() ? "/dashboard" : "/register"
+                  pathname: isLogin() ? currentMenu : "/register"
                 }}
               >
                 <span className="relative inline-flex items-center">

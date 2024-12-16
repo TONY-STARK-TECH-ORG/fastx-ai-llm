@@ -13,6 +13,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public Response<Void> handle(Exception exception) {
+        exception.printStackTrace();
         if (StringUtils.contains(exception.getMessage(), "DuplicateKeyException")) {
             return Response.error("similar data exists!");
         }

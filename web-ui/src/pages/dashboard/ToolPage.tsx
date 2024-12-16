@@ -6,6 +6,7 @@ import {Tool} from "../../store/tool/Tool.ts";
 import {OrgTool} from "../../store/define.ts";
 import ToolDetailDrawer from "../../components/dashboard/ToolDetailDrawer.tsx";
 import {useOrganizationStore} from "../../store/OrganizationStore.ts";
+import PageIllustrationDashboard from "../../components/page-illustration-dashboard.tsx";
 
 type ToolSepDataMap = {
     [key: string]: {
@@ -79,48 +80,50 @@ export default function ToolPage() {
 
     const getChildren = () => {
         return (
-            <div className="w-full h-full bg-white overflow-auto p-2">
-                <List
-                    grid={{ gutter: 24, column: 4 }}
-                    dataSource={getChildrenData()}
-                    renderItem={(item) => (
-                        <List.Item>
-                            <Badge.Ribbon text={item.version} color={item.status === 'active' ? "green" : "orange"}>
-                                <Card
-                                    onClick={() => {
-                                        openToolDetail(item);
-                                    }}
-                                    className="rounded-[4px] hover:cursor-pointer"
-                                    styles={{
-                                        body: {
-                                            padding: 0
-                                        }
-                                    }}
-                                >
-                                    <div className={"flex justify-center items-center p-2 flex-col items-center justify-start"}>
-                                        <div className="w-full flex items-center">
-                                            <img src={item.icon} className={"w-[50px] h-[50px] border border-gray-100"} alt=""/>
-                                            <div className="flex flex-col ml-2 items-start justify-center">
-                                                <p className="text-[15px] text-black">{item.name}</p>
-                                                <p className="text-[10px] text-black/50">作者：{item.author}</p>
+                <div className="w-full h-full bg-white overflow-auto p-2">
+                    <List
+                        grid={{gutter: 24, column: 4}}
+                        dataSource={getChildrenData()}
+                        renderItem={(item) => (
+                            <List.Item>
+                                <Badge.Ribbon text={item.version} color={item.status === 'active' ? "green" : "orange"}>
+                                    <Card
+                                        onClick={() => {
+                                            openToolDetail(item);
+                                        }}
+                                        className="rounded-[4px] hover:cursor-pointer"
+                                        styles={{
+                                            body: {
+                                                padding: 0
+                                            }
+                                        }}
+                                    >
+                                        <div
+                                            className={"flex justify-center items-center p-2 flex-col items-center justify-start"}>
+                                            <div className="w-full flex items-center">
+                                                <img src={item.icon}
+                                                     className={"w-[50px] h-[50px] border border-gray-100"} alt=""/>
+                                                <div className="flex flex-col ml-2 items-start justify-center">
+                                                    <p className="text-[15px] text-black">{item.name}</p>
+                                                    <p className="text-[10px] text-black/50">作者：{item.author}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="flex items-start justify-start mt-2">
-                                            <p className="text-[12px] text-left">
+                                            <div className="flex items-start justify-start mt-2">
+                                                <p className="text-[12px] text-left">
                                                 <span className={
-                                                    (orgTools?.find(o => o.toolCode === item.code && o.toolVersion === item.version) ? "text-green-500": "text-orange-600") + " mr-1 font-medium"
+                                                    (orgTools?.find(o => o.toolCode === item.code && o.toolVersion === item.version) ? "text-green-500" : "text-orange-600") + " mr-1 font-medium"
                                                 }>
                                                     {orgTools?.find(o => o.toolCode === item.code && o.toolVersion === item.version) ? "已配置" : "未配置"}
                                                 </span>
-                                                {item.description}</p>
+                                                    {item.description}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                </Card>
-                            </Badge.Ribbon>
-                        </List.Item>
-                    )}
-                />
-            </div>
+                                    </Card>
+                                </Badge.Ribbon>
+                            </List.Item>
+                        )}
+                    />
+                </div>
         )
     }
 
@@ -212,7 +215,29 @@ export default function ToolPage() {
                 }}
             />
             <div className="w-full grow">
-                {getChildren()}
+                {!orgId ? (
+                    <div className="w-full h-full bg-white items-center justify-center flex">
+                        <PageIllustrationDashboard />
+                        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+                            {/* Hero content */}
+                            <div className="flex flex-col items-center justify-center">
+                                {/* Section header */}
+                                <div className="text-center">
+                                    <h1
+                                        className="border-y text-5xl font-bold [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1] md:text-6xl"
+                                    >
+                                        <span className="text-green-500">TOOL</span><span className="text-pink-600 ml-6">STORE</span>
+                                    </h1>
+                                </div>
+                                <div>
+                                    <h1 className="text-xl font-normal mt-3">
+                                        Tips：要选择一个组织才能访问工具商店
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ) : getChildren()}
             </div>
             <Spin fullscreen spinning={loadingData} />
             <ToolDetailDrawer

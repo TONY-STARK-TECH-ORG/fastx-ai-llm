@@ -1,39 +1,41 @@
 import {
     BaseEdge,
     EdgeLabelRenderer,
-    getStraightPath,
     useReactFlow,
     Edge,
-    EdgeProps
+    EdgeProps, getBezierPath
 } from '@xyflow/react';
-
-// getBezierPath
-// getSimpleBezierPath
-// getSmoothStepPath
-// getStraightPath
-
-// @TODO (stark) https://reactflow.dev/examples/edges/animating-edges 动画处理
-// @TODO (stark) https://reactflow.dev/examples/edges/custom-connectionline 连接线处理
-// @TODO (stark) https://reactflow.dev/examples/edges/markers 边缘标记（箭头）
-// @TODO (stark) https://reactflow.dev/examples/edges/edge-label-renderer 标签渲染器
 
 export type SimpleEdge = Edge<
     {
 
     },
-    'SimpleEdge'
+    'simpleEdge'
 >
 
 export default function SimpleEdge(props: EdgeProps<SimpleEdge>) {
     const { setEdges } = useReactFlow();
 
-    const [edgePath, labelX, labelY] = getStraightPath({
+    const [edgePath, labelX, labelY] = getBezierPath({
         ...props
     });
 
     return (
         <>
-            <BaseEdge id={props.id} path={edgePath} />
+            <BaseEdge
+                id={props.id}
+                path={edgePath}
+                style={props.selected ? {
+                    strokeWidth: 2,
+                    stroke: '#FF0072',
+                }: {
+                    strokeWidth: 1,
+                    stroke: '#eeeeee',
+                }}
+            />
+            <circle r="2" fill="#ff0073">
+                <animateMotion dur="3s" repeatCount="indefinite" path={edgePath}/>
+            </circle>
             <EdgeLabelRenderer>
                 <button
                     style={{
