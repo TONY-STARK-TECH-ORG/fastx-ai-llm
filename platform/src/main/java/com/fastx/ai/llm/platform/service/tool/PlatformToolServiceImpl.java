@@ -13,6 +13,7 @@ import com.fastx.ai.llm.platform.tool.spi.IPlatformTool;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformToolInput;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformToolOutput;
 import com.fastx.ai.llm.platform.tool.train.TrainInput;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.dubbo.common.stream.StreamObserver;
 import org.apache.dubbo.common.utils.ConcurrentHashSet;
@@ -68,7 +69,7 @@ public class PlatformToolServiceImpl implements IPlatformToolService {
         IPlatformTool<IPlatformToolInput, IPlatformToolOutput> tool = ToolsLoader.getTool(toolCode, toolVersion, type);
         Assert.notNull(tool, "tool not found!");
         IPlatformToolInput in;
-        if ("llm-model".equals(type)) {
+        if (StringUtils.startsWith(type, "llm-")) {
             in = new LLMInput();
         } else {
             in = new TrainInput();

@@ -1,4 +1,4 @@
-import {ReactNode, useState} from 'react';
+import {ReactNode, useEffect, useState} from 'react';
 import {Button, Divider, Drawer, Form, Input, InputNumber, message, Select, Space, Switch} from 'antd';
 import {Tool} from "../../store/tool/Tool.ts";
 import {OrgTool} from "../../store/define.ts";
@@ -63,6 +63,8 @@ export default function ToolDetailDrawer(
         return configFormItems;
     }
 
+    const [inputFormItems, setInputFormItems] = useState<ReactNode[]>([])
+
     const getInputConfig = () => {
         if (!current?.prototype) {
             return
@@ -78,31 +80,31 @@ export default function ToolDetailDrawer(
             if (current.type === 'llm-model' && c.name === 'messages') {
                 return ;
             }
+
+            let item: ReactNode;
+
             if (c.type.endsWith("String")) {
-                inputFormItems.push((
-                    <Form.Item label={c.name} key={c.name} className="m-0" name={c.name} rules={[{ required: !!c.required }]}>
-                        <Input className="mt-2" placeholder={c.name}/>
-                    </Form.Item>
-                ))
+                item = <Input className="mt-2" placeholder={c.name}/>
             } else if (c.type.endsWith("Integer") || c.type.endsWith("Long") || c.type.endsWith("Float") || c.type.endsWith("Double")) {
-                inputFormItems.push((
-                    <Form.Item label={c.name} key={c.name} className="m-0" name={c.name} rules={[{ required: !!c.required }]}>
-                        <InputNumber className="mt-2" placeholder={c.name}/>
-                    </Form.Item>
-                ))
+                item = <InputNumber className="mt-2" placeholder={c.name}/>
             } else if (c.type.endsWith("Boolean")) {
-                inputFormItems.push((
-                    <Form.Item label={c.name} key={c.name} className="m-0" name={c.name} rules={[{ required: !!c.required }]}>
-                        <Switch className="mt-2" checkedChildren={c.name} unCheckedChildren={c.name} />
-                    </Form.Item>
-                ))
+                item = <Switch className="mt-2" checkedChildren={c.name} unCheckedChildren={c.name} />
             } else {
-                inputFormItems.push((
-                    <Form.Item label={c.name} key={c.name} className="m-0" name={c.name} rules={[{ required: !!c.required }]}>
-                        <TextArea placeholder={c.name + "{} 请输入合法的 JSON 内容"} />
-                    </Form.Item>
-                ))
+                item = <TextArea placeholder={c.name + "{} 请输入合法的 JSON 内容"} />
             }
+
+            if (c.array) {
+                // this item can be-add more.
+                item = <div className="flex flex-col">
+                    {item}
+                </div>
+            }
+
+            inputFormItems.push((
+                <Form.Item label={c.name} key={c.name} className="m-0 mt-1" name={c.name} rules={[{ required: !!c.required }]}>
+                    {item}
+                </Form.Item>
+            ));
         })
         if (current.type === 'llm-model') {
             // add messages input item
@@ -112,7 +114,7 @@ export default function ToolDetailDrawer(
                 </Form.Item>
             ))
         }
-        return inputFormItems;
+        setInputFormItems(inputFormItems)
     }
 
     const sendToolTestRequest = async () => {
@@ -227,6 +229,10 @@ export default function ToolDetailDrawer(
         setSaveLoading(false)
     }
 
+    useEffect(() => {
+        getInputConfig()
+    }, [current]);
+
     return (
         <Drawer
             title={current?.name}
@@ -267,9 +273,9 @@ export default function ToolDetailDrawer(
                 </div>
                 <Divider className="!my-2"/>
                 <div>
-                    <h1>测试 <span className="text-blue-600 font-medium">[重新输入您的 KEY/SEC 后测试]</span></h1>
+                    <h1>测试 <span className="text-blue-600 font-medium">[如测试含密钥类工具，为保护您的密钥安全，请重新输入您的 KEY/SEC 后测试]</span></h1>
                     <Form labelCol={{ span: 6 }} labelAlign="right" form={inputForm}>
-                        {getInputConfig()}
+                        {inputFormItems}
                     </Form>
                     <Button className="mt-2" onClick={sendToolTestRequest}>发起测试</Button>
                 </div>
