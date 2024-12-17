@@ -95,6 +95,7 @@ export interface KnowledgeBaseFile extends Base {
 }
 
 export interface OrgTool extends Base {
+    key: string;
     organizationId: string;
     toolCode: string;
     toolVersion: string;

@@ -2,12 +2,14 @@ package com.fastx.ai.llm.platform.exec;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import com.alibaba.ttl.TtlRunnable;
+import com.fastx.ai.llm.platform.tool.llm.LLMOutput;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.concurrent.*;
 
 /**
@@ -26,6 +28,9 @@ public class PlatformToolExecutor {
     private static ThreadFactory THREAD_FACTORY;
 
     private static Thread.UncaughtExceptionHandler uncaughtExceptionHandler = (t, e) -> {
+        if (Objects.nonNull(PlatformToolExecutor.EXEC_CONTEXT.get())) {
+            PlatformToolExecutor.EXEC_CONTEXT.get().setLlmOutput(LLMOutput.of(e.getMessage()));
+        }
         log.error("tool exec error: {} ", e.getMessage());
     };
 

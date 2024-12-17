@@ -97,11 +97,11 @@ public class OpenAI extends BaseLlmModel {
             throw new ToolExecException("openai need config and input data.");
         }
 
-        try {
-            // send request
-            OpenAIConfig config = JSON.parseObject(input.getConfig(), OpenAIConfig.class);
-            OpenAIRequest request = JSON.parseObject(input.getData(), OpenAIRequest.class);
+        // send request
+        OpenAIConfig config = JSON.parseObject(input.getConfig(), OpenAIConfig.class);
+        OpenAIRequest request = JSON.parseObject(input.getData(), OpenAIRequest.class);
 
+        try {
             OpenAIClient client = OpenAIOkHttpClient.builder()
                     .apiKey(config.getApiKey())
                     .baseUrl(config.getBaseUrl())
@@ -192,7 +192,18 @@ public class OpenAI extends BaseLlmModel {
                 );
             }
         } catch (Exception e) {
-            throw new ToolExecException(e.getMessage(), e);
+            if (config.isStreaming()) {
+                try {
+                    OutputStreamWriter writer = new OutputStreamWriter(input.getStream(), "UTF-8");
+                    writer.write(e.getMessage());
+                    writer.close();
+                    input.getStream().close();
+                } catch (Exception x) {
+                    // ignored
+                }
+
+            }
+            return LLMOutput.ofError(e.getMessage());
         }
     }
 

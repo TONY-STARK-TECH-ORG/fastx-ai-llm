@@ -1,5 +1,7 @@
 package com.fastx.ai.llm.platform.tool.spi;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @author stark
  */
@@ -17,5 +19,9 @@ public interface IPlatformToolOutput {
      */
     String getError();
 
+
+    default boolean isSuccess() {
+        return StringUtils.isEmpty(getError());
+    }
 
 }

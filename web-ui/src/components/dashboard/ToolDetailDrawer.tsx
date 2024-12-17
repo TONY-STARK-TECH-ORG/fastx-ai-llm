@@ -1,13 +1,12 @@
 import {ReactNode, useEffect, useState} from 'react';
-import {Button, Divider, Drawer, Form, Input, InputNumber, message, Select, Space, Switch} from 'antd';
+import {Button, Divider, Drawer, Form, Input, message, Select, Space} from 'antd';
 import {Tool} from "../../store/tool/Tool.ts";
 import {OrgTool} from "../../store/define.ts";
 import ReactJsonView from '@microlink/react-json-view'
 import {http} from "../../api/Http.ts";
 import {SlidingWindow} from "../../utils/SlidingWindow.ts";
 import {useOrganizationStore} from "../../store/OrganizationStore.ts";
-
-const { TextArea } = Input;
+import {CloseOutlined} from "@ant-design/icons";
 
 type ToolDetailDrawerProps = {open:boolean; current: Tool | undefined; orgTools: OrgTool[] | undefined; onClose: ()=>void; onRefresh: ()=>void }
 
@@ -16,137 +15,38 @@ export default function ToolDetailDrawer(
     ToolDetailDrawerProps
 ) {
 
-    const [configForm] = Form.useForm();
-    const [inputForm] = Form.useForm();
+    const [form] = Form.useForm();
+
     const [output, setOutput] = useState<any | undefined>({})
     const [saveLoading, setSaveLoading] = useState(false)
-
     const [orgId, orgName] = useOrganizationStore(state => [state.id, state.name])
+
+    const [configFormItem, setConfigFormItem] = useState<ReactNode>()
+    const [inputsFormItem, setInputsFormItem] = useState<ReactNode>()
 
     // already has this tool.
     const haveThisTool = () => {
         return orgTools?.find(o => o.toolCode === current?.code && o.toolVersion === current?.version)
     }
 
-    const getConfig = () => {
-        if (!current?.prototype) {
-            return
-        }
-        const protoType = JSON.parse(current?.prototype);
-        if (!protoType.config) {
-            return
-        }
-        const config = protoType.config
-        const configFormItems:ReactNode[] = []
-        // @TODO (stark) need a object to parse this JSON. and render with object, not use json string.
-        config.forEach((c: any) => {
-            if (c.type.endsWith("String")) {
-                configFormItems.push((
-                    <Form.Item label={c.name} key={c.name} className="m-0" name={c.name} rules={[{ required: !!c.required }]}>
-                        <Input className="mt-2" placeholder={c.name}/>
-                    </Form.Item>
-                ))
-            } else if (c.type.endsWith("Integer") || c.type.endsWith("Long") || c.type.endsWith("Float") || c.type.endsWith("Double")) {
-                configFormItems.push((
-                    <Form.Item label={c.name} key={c.name} className="m-0" name={c.name} rules={[{ required: !!c.required }]}>
-                        <InputNumber className="mt-2" placeholder={c.name}/>
-                    </Form.Item>
-                ))
-            } else if (c.type.endsWith("Boolean")) {
-                configFormItems.push((
-                    <Form.Item key={c.name} className="m-0" label={c.name} name={c.name} rules={[{ required: !!c.required }]}>
-                        <Switch className="mt-2" />
-                    </Form.Item>
-                ))
-            }
-        })
-        return configFormItems;
-    }
-
-    const [inputFormItems, setInputFormItems] = useState<ReactNode[]>([])
-
-    const getInputConfig = () => {
-        if (!current?.prototype) {
-            return
-        }
-        const protoType = JSON.parse(current?.prototype);
-        if (!protoType.inputs) {
-            return
-        }
-        const input = protoType.inputs
-        const inputFormItems:ReactNode[] = []
-        // @TODO (stark) need a object to parse this JSON. and render with object, not use json string.
-        input.forEach((c: any) => {
-            if (current.type === 'llm-model' && c.name === 'messages') {
-                return ;
-            }
-
-            let item: ReactNode;
-
-            if (c.type.endsWith("String")) {
-                item = <Input className="mt-2" placeholder={c.name}/>
-            } else if (c.type.endsWith("Integer") || c.type.endsWith("Long") || c.type.endsWith("Float") || c.type.endsWith("Double")) {
-                item = <InputNumber className="mt-2" placeholder={c.name}/>
-            } else if (c.type.endsWith("Boolean")) {
-                item = <Switch className="mt-2" checkedChildren={c.name} unCheckedChildren={c.name} />
-            } else {
-                item = <TextArea placeholder={c.name + "{} 请输入合法的 JSON 内容"} />
-            }
-
-            if (c.array) {
-                // this item can be-add more.
-                item = <div className="flex flex-col">
-                    {item}
-                </div>
-            }
-
-            inputFormItems.push((
-                <Form.Item label={c.name} key={c.name} className="m-0 mt-1" name={c.name} rules={[{ required: !!c.required }]}>
-                    {item}
-                </Form.Item>
-            ));
-        })
-        if (current.type === 'llm-model') {
-            // add messages input item
-            inputFormItems.push((
-                <Form.Item label="messages" key="messages" className="m-0 mt-1" name="messages" rules={[{ required: true }]}>
-                    <Input placeholder={"请输入ROLE: USER 的内容"} />
-                </Form.Item>
-            ))
-        }
-        setInputFormItems(inputFormItems)
-    }
-
     const sendToolTestRequest = async () => {
         try {
-            const configValues = await configForm.validateFields();
-            const inputValues = await inputForm.validateFields();
+            const formValue = await form.validateFields();
 
             const requestBody = {
                 toolCode: current?.code,
                 toolVersion: current?.version,
                 type: current?.type,
-                input: {
-                    config: configValues,
-                    data: {
-                        ...inputValues,
-                        messages: current?.type === 'llm-model' ? [{
-                            role: 'user',
-                            content: inputValues.messages
-                        }] : inputValues.messages
-                    }
-                }
+                input: formValue
             };
 
-            if (configValues && configValues.streaming) {
+            if (formValue && formValue.config.streaming == 'true') {
                 setOutput({
                     streaming: "",
                     response: ""
                 })
                 const slideWindow = new SlidingWindow("<FASTX-EOF>")
                 await http.stream("tool/platform/tool/stream-exec", requestBody, (data, stop) => {
-                    console.log(data)
-
                     // test match
                     slideWindow.processChunk(data ?? "", (before) => {
                         setOutput((prev: any) => {
@@ -177,24 +77,18 @@ export default function ToolDetailDrawer(
                             })
                         }
                         message.success("流输出结束")
-                        setOutput((prev: any) =>{
-                            return {
-                                ...prev,
-                                responseObj: JSON.parse(prev.response)
-                            }
-                        })
                     }
                 });
             } else {
                 const res = await http.post<any>(
                     "tool/platform/tool/exec", requestBody)
-                if (res.success) {
+                if (res.success && res.data.success) {
                     message.success("工具调用成功")
                     const data = res.data
                     console.log(JSON.parse(data.data!!))
                     setOutput(JSON.parse(data.data!!))
                 } else {
-                    message.error("工具调用失败" + res.msg);
+                    message.error("工具调用失败" + res.data.error);
                 }
             }
         } catch (errorInfo) {
@@ -204,16 +98,17 @@ export default function ToolDetailDrawer(
     }
 
     const onSave = async () => {
+        console.log(form.getFieldsValue())
         setSaveLoading(true)
         // save tool config to org tool.
         try {
-            const configValues = await configForm.validateFields();
+            const formValue = await form.validateFields();
 
             const res = await http.post("tool/org/tool/create", {
                 organizationId: orgId,
                 toolCode: current?.code,
                 toolVersion: current?.version,
-                configData: JSON.stringify(configValues),
+                configData: JSON.stringify(formValue.config),
             });
             if(res.success) {
                 message.success("工具配置保存成功")
@@ -223,14 +118,82 @@ export default function ToolDetailDrawer(
                 message.error("工具配置保存失败: " + res.msg)
             }
         } catch (errorInfo) {
-            message.error("请检查配置项内容是否填写完整")
+            message.error("请检查配置项内容是否填写完整、测试验证后，再做保存操作")
         }
 
         setSaveLoading(false)
     }
 
+    const renderConfigForm = () => {
+        const config = JSON.parse(current?.prototype ?? "{\"config\": []}").config;
+        config.forEach((cnf: any) => cnf.key = cnf.name)
+        const item = (<>
+            {config.map((c: any, _index: number) => {
+                return (
+                    <Form.Item key={c.name} className="m-1" label={c.name} name={['config', c.name]}
+                               rules={[{required: c.required, message: '请输入' + c.name}]}>
+                        <Input/>
+                    </Form.Item>
+                )
+            })}
+        </>)
+        setConfigFormItem(item)
+    }
+
+    const renderInputsForm = () => {
+        const inputs = JSON.parse(current?.prototype ?? "{\"inputs\": []}").inputs;
+        inputs.forEach((inp: any) => inp.key = inp.name);
+        const item = (<>
+            {inputs.map((c: any, _index: number) => {
+                if (!c.array) {
+                    return (
+                        <Form.Item key={c.name} className="m-1" label={c.name} name={['inputs', c.name]}
+                                   rules={[{required: c.required, message: '请输入' + c.name}]}>
+                            <Input/>
+                        </Form.Item>
+                    )
+                } else {
+                    return (
+                        <Form.List key={c.name} name={['inputs', c.name]}>
+                            {(subFields, subOpt) => (
+                                <div>
+                                    {subFields.map((subField) => (
+                                        <div key={subField.key} className="bg-gray-50 flex flex-row-reverse pl-1">
+                                            <Form.Item className="m-1" label={"role"}
+                                                       name={[subField.name, 'role']}
+                                                       rules={[{required: c.required, message: '请输入'}]}>
+                                                <Input placeholder="role"/>
+                                            </Form.Item>
+                                            <Form.Item className="m-1 grow" label={"content"}
+                                                       name={[subField.name, 'content']}
+                                                       rules={[{required: c.required, message: '请输入'}]}>
+                                                <Input placeholder="content"/>
+                                            </Form.Item>
+                                            <CloseOutlined
+                                                onClick={() => {
+                                                    subOpt.remove(subField.name);
+                                                }}
+                                            />
+                                        </div>
+                                    ))}
+                                    <Button className="mt-1" type="dashed" onClick={() => subOpt.add()} block>
+                                        + 添加消息
+                                    </Button>
+                                </div>
+                            )}
+                        </Form.List>
+                    )
+                }
+            })}
+        </>)
+        setInputsFormItem(item)
+    }
+
     useEffect(() => {
-        getInputConfig()
+        if (current) {
+            renderConfigForm()
+            renderInputsForm()
+        }
     }, [current]);
 
     return (
@@ -254,31 +217,32 @@ export default function ToolDetailDrawer(
             }
         >
             <div className="flex flex-col">
-                <div>
-                    <h1>配置项</h1>
-                    <Form labelCol={{ span: 5 }} labelAlign="right" initialValues={haveThisTool() ? JSON.parse(haveThisTool()!!.configData) : {}} form={configForm}>
-                        <Form.Item label="组织" className="m-0" name="organizationId" required rules={[{ required: true }]}>
-                            <Select
-                                defaultValue={orgId}
-                                placeholder="工具所属组织"
-                                disabled
-                                options={[{
-                                    value: orgId,
-                                    label: orgName
-                                }]}
-                            />
-                        </Form.Item>
-                        {getConfig()}
-                    </Form>
-                </div>
-                <Divider className="!my-2"/>
-                <div>
-                    <h1>测试 <span className="text-blue-600 font-medium">[如测试含密钥类工具，为保护您的密钥安全，请重新输入您的 KEY/SEC 后测试]</span></h1>
-                    <Form labelCol={{ span: 6 }} labelAlign="right" form={inputForm}>
-                        {inputFormItems}
-                    </Form>
-                    <Button className="mt-2" onClick={sendToolTestRequest}>发起测试</Button>
-                </div>
+                <Form
+                    labelCol={{span: 6}}
+                    wrapperCol={{span: 18}}
+                    form={form}
+                    name="tool_detail_form"
+                    autoComplete="off"
+                    initialValues={{config: haveThisTool()?.configData ? JSON.parse(haveThisTool()?.configData!!) : {}}}
+                >
+                    <p>配置项</p>
+                    <Form.Item initialValue={orgId} label="组织" className="m-0" name={['config', 'organizationId']} required
+                               rules={[{required: true}]}>
+                        <Select
+                            placeholder="工具所属组织"
+                            disabled
+                            options={[{
+                                value: orgId,
+                                label: orgName
+                            }]}
+                        />
+                    </Form.Item>
+                    {configFormItem}
+                    <Divider className="!my-2"/>
+                    <p>测试输入 <span className="text-xs font-medium text-red-500">如配置包含密钥，为保护密钥安全，需重新设置后进行测试</span></p>
+                    {inputsFormItem}
+                </Form>
+                <Button className="mt-2" onClick={sendToolTestRequest}>发起测试</Button>
                 <Divider className="!my-2"/>
                 <div className="grow w-full">
                     <div className="w-full overflow-auto">

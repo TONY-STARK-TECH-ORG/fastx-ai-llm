@@ -1,5 +1,6 @@
 package com.fastx.ai.llm.platform.exec;
 
+import com.fastx.ai.llm.platform.tool.llm.LLMOutput;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformToolOutput;
 
 /**
@@ -10,9 +11,13 @@ public class ToolRunner implements Runnable {
     @Override
     public void run() {
         ToolContext toolContext = PlatformToolExecutor.EXEC_CONTEXT.get();
-        // exec
-        IPlatformToolOutput exec = toolContext.getTool().exec(toolContext.getLlmInput());
-        // set output
-        toolContext.setLlmOutput(exec);
+        try {
+            // exec
+            IPlatformToolOutput exec = toolContext.getTool().exec(toolContext.getLlmInput());
+            // set output
+            toolContext.setLlmOutput(exec);
+        } catch (Exception e) {
+            toolContext.setLlmOutput(LLMOutput.ofError(e.getMessage()));
+        }
     }
 }

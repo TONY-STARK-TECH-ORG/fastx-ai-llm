@@ -41,4 +41,10 @@ public class LLMOutput implements IPlatformToolOutput {
         output.setData(data);
         return output;
     }
+
+    public static LLMOutput ofError(String error) {
+        LLMOutput output = empty();
+        output.setError(error);
+        return output;
+    }
 }

@@ -183,6 +183,9 @@ export default function ToolPage() {
         }
         const res = await http.get<OrgTool[]>("tool/org/tool/list?orgId=" + orgId)
         if (res.success) {
+            if (res.data) {
+                res.data.forEach(r => r.key = r.id!!)
+            }
             setOrgTools(res.data)
         } else {
             message.error("加载组织工具出错，请刷新页面重试")

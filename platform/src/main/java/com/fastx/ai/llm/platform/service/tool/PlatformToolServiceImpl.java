@@ -77,12 +77,14 @@ public class PlatformToolServiceImpl implements IPlatformToolService {
         if (input.containsKey("config")) {
             in.setConfig(JSON.toJSONString(input.get("config")));
         }
-        if (input.containsKey("data")) {
-            in.setData(JSON.toJSONString(input.get("data")));
+        if (input.containsKey("inputs")) {
+            in.setData(JSON.toJSONString(input.get("inputs")));
         }
         IPlatformToolOutput exec = tool.exec(in);
-        return Map.of("data",
-                ObjectUtils.defaultIfNull(exec.getData(), new HashMap<>()), "error", ObjectUtils.defaultIfNull(exec.getError(), ""));
+        return Map.of(
+                "data", ObjectUtils.defaultIfNull(exec.getData(), new HashMap<>()),
+                "error", ObjectUtils.defaultIfNull(exec.getError(), ""),
+                "success", exec.isSuccess());
     }
 
     @Override

@@ -54,7 +54,7 @@ public class ToolContext {
 
         LLMInput in = new LLMInput();
         in.setConfig(JSON.toJSONString(input.get("config")));
-        in.setData(JSON.toJSONString(input.get("data")));
+        in.setData(JSON.toJSONString(input.get("inputs")));
         // set stream
         PipedOutputStream stream = new PipedOutputStream();
         in.setStream(stream);
