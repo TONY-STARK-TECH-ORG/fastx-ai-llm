@@ -5,6 +5,7 @@ import {OrgTool} from "../../../store/define.ts";
 import {Button, ConfigProvider, Form, Input} from "antd";
 import {CloseOutlined, PlaySquareOutlined} from "@ant-design/icons";
 import useWorkflowStore from "../../../store/WorkflowStore.ts";
+import ReactJsonView from "@microlink/react-json-view";
 
 const handleStyle = {};
 
@@ -146,8 +147,9 @@ export default function LLM_FunctionNode(props: NodeProps<LLM_ModelNode>) {
                 </div>
             ) : null}
             {props.data.executeResult && props.data.executeResult != -1 ? (
-                <div className="p-1">
-                    <p className="text-[8px] text-gray-400">上次执行结果</p>
+                <div className="w-[200px] p-1 flex flex-col">
+                    <p className="text-[8px] text-gray-400 mb-1">上次执行结果</p>
+                    <ReactJsonView collapsed={true} src={props.data.executeResult}/>
                 </div>
             ) : null}
             {tool?.code === 'llm.start' ? (
