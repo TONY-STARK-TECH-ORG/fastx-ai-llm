@@ -73,16 +73,16 @@ function NodeInfo({
                 width: width * 2,
             }}
         >
-            <div>id: {id}</div>
-            <div>type: {type}</div>
-            <div>selected: {selected ? 'true' : 'false'}</div>
-            <div>
+            <p className="text-[8px]">id: {id}</p>
+            <p className="text-[8px]">type: {type}</p>
+            <p className="text-[8px]">selected: {selected ? 'true' : 'false'}</p>
+            <p className="text-[8px]">
                 position: {position.x.toFixed(1)}, {position.y.toFixed(1)}
-            </div>
-            <div>
+            </p>
+            <p className="text-[8px]">
                 dimensions: {width} × {height}
-            </div>
-            <div>data: {JSON.stringify(data, null, 2)}</div>
+            </p>
+            <p className="text-[8px]">data: {JSON.stringify(data, null, 2)}</p>
         </div>
     );
 }

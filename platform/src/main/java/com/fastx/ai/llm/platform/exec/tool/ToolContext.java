@@ -1,4 +1,4 @@
-package com.fastx.ai.llm.platform.exec;
+package com.fastx.ai.llm.platform.exec.tool;
 
 import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.platform.config.ToolsLoader;

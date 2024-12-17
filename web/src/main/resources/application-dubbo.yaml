@@ -8,3 +8,4 @@ dubbo:
     name: fastx-llm-web
     logger: slf4j
     qos-port: 22223
+    serialize-check-status: DISABLE

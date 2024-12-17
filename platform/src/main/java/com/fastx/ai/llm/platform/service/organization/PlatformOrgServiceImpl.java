@@ -9,11 +9,17 @@ import com.fastx.ai.llm.domains.api.IDubboWorkflowService;
 import com.fastx.ai.llm.domains.dto.*;
 import com.fastx.ai.llm.platform.api.IPlatformOrgService;
 import com.fastx.ai.llm.platform.dto.*;
+import com.fastx.ai.llm.platform.exec.workflow.WorkflowContext;
+import com.fastx.ai.llm.platform.exec.workflow.WorkflowExecuteContext;
+import com.fastx.ai.llm.platform.exec.workflow.WorkflowExecutor;
+import com.fastx.ai.llm.platform.tool.nodes.WorkflowGraph;
 import com.rometools.utils.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -24,6 +30,7 @@ import java.util.stream.Collectors;
 /**
  * @author stark
  */
+@Slf4j
 @DubboService
 public class PlatformOrgServiceImpl implements IPlatformOrgService {
 
@@ -38,6 +45,9 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
 
     @DubboReference
     IDubboWorkflowService workflowService;
+
+    @Autowired
+    WorkflowExecutor workflowExecutor;
 
     @Override
     @SentinelResource("org.getBy.id")
@@ -322,6 +332,44 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
                     BeanUtils.copyProperties(w, orgWorkflowExecLog);
                     return orgWorkflowExecLog;
         }).collect(Collectors.toList()));
+    }
+
+    @Override
+    public Map<String, Object> executeWorkflowVersion(Long id) {
+        // get version data.
+        OrgWorkflowVersionDTO orgWorkflowVersion = getWorkflowVersion(id);
+        Assert.notNull(orgWorkflowVersion, "version not found!");
+        // execute work flow.
+        WorkflowGraph graph = WorkflowGraph.of(orgWorkflowVersion.getVersionData());
+        // init context
+        WorkflowContext context = new WorkflowContext();
+        context.setGraph(graph);
+
+        graph.getNodes().forEach(node -> {
+            // fill input.
+            context.getInputs().put(node.getData().getName(), node.getData().getInnerData().get("inputs"));
+            // get org config and fill in.
+            try {
+                Long orgToolId = node.getData().getOrgTool().getId();
+                OrganizationToolsDTO orgTool = toolService.getOrganizationToolById(orgToolId);
+                Map<String, Object> configData = JSON.parseObject(orgTool.getConfigData(), Map.class);
+                // remove stream config.
+                configData.remove("streaming");
+                context.getConfig().put(node.getData().getName(), configData);
+            } catch (Exception e) {
+                log.error("get org tool config error!", e);
+            }
+        });
+
+        // set context to execute.
+        WorkflowExecuteContext.setContext(context);
+        workflowExecutor.execute();
+        return Map.of(
+                "inputs", context.getInputs(),
+                "outputs", context.getOutputs(),
+                "logs", context.getExecLogs(),
+                "modifiedInputs", context.getModifiedInputs()
+        );
     }
 
 }

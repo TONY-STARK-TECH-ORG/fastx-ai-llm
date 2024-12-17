@@ -1,4 +1,4 @@
-package com.fastx.ai.llm.platform.exec;
+package com.fastx.ai.llm.platform.exec.tool;
 
 import com.fastx.ai.llm.platform.tool.llm.LLMOutput;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformToolOutput;

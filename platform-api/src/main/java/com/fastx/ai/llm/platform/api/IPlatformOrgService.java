@@ -3,6 +3,7 @@ package com.fastx.ai.llm.platform.api;
 import com.fastx.ai.llm.platform.dto.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author stark
@@ -201,4 +202,11 @@ public interface IPlatformOrgService {
      * @return page
      */
     PlatformPagaDTO<OrgWorkflowExecLogDTO> getWorkflowExecLogsByWorkflowVersionId(Long orgWorkflowVersionId, Long page, Long size);
+
+    /**
+     * test execute workflow version.
+     * @param id workflow id
+     * @return exec result
+     */
+    Map<String, Object> executeWorkflowVersion(Long id);
 }

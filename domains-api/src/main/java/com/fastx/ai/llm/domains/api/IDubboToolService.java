@@ -42,4 +42,10 @@ public interface IDubboToolService {
      */
     List<OrganizationToolsDTO> getTools(Long orgId);
 
+    /**
+     * get single organization tool config
+     * @param id org tool id
+     * @return tool config
+     */
+    OrganizationToolsDTO getOrganizationToolById(Long id);
 }

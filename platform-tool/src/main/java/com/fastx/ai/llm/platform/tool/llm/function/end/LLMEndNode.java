@@ -1,5 +1,6 @@
-package com.fastx.ai.llm.platform.tool.llm.function.start;
+package com.fastx.ai.llm.platform.tool.llm.function.end;
 
+import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.platform.tool.entity.Fields;
 import com.fastx.ai.llm.platform.tool.entity.Prototype;
 import com.fastx.ai.llm.platform.tool.exception.ToolExecException;
@@ -7,23 +8,28 @@ import com.fastx.ai.llm.platform.tool.llm.LLMInput;
 import com.fastx.ai.llm.platform.tool.llm.LLMOutput;
 import com.fastx.ai.llm.platform.tool.llm.function.BaseLlmFunction;
 import com.fastx.ai.llm.platform.tool.llm.model.openai.types.OpenAIMessage;
+import com.fastx.ai.llm.platform.tool.llm.model.openai.types.OpenAIRequest;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformTool;
 import com.google.auto.service.AutoService;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author stark
  */
 @AutoService(IPlatformTool.class)
-public class LLMStartNode extends BaseLlmFunction {
+public class LLMEndNode extends BaseLlmFunction {
 
     public static Prototype _prototype = new Prototype();
 
     private static String MODEL_ID = "modelId";
     private static String MESSAGES = "messages";
+    private static String CONTENT = "content";
+    private static String USAGE = "usage";
 
     static {
         // build prototype to openAI
@@ -35,7 +41,7 @@ public class LLMStartNode extends BaseLlmFunction {
 
         List<Fields> outputs = new ArrayList<>();
         outputs.add(Fields.of(MODEL_ID, String.class, "gpt-4o-mini"));
-        outputs.add(Fields.ofArray(MESSAGES, OpenAIMessage.class));
+        outputs.add(Fields.of(CONTENT, String.class, ""));
 
         _prototype.setConfig(config);
         _prototype.setInputs(inputs);
@@ -45,9 +51,22 @@ public class LLMStartNode extends BaseLlmFunction {
     @Override
     public LLMOutput exec(LLMInput input) {
         if (StringUtils.isAnyBlank(input.getData())) {
-            throw new ToolExecException("llm start node need input data.");
+            throw new ToolExecException("llm end node need input data.");
         }
-        return LLMOutput.of(input.getData());
+        String content = "";
+        String modelId = "";
+        try {
+            OpenAIRequest request = JSON.parseObject(input.getData(), OpenAIRequest.class);
+            modelId = request.getModelId();
+            Optional<OpenAIMessage> assistant =
+                    request.getMessages().stream().filter(openAIMessage -> openAIMessage.getRole().equals("assistant")).findFirst();
+            if (assistant.isPresent()) {
+                content = assistant.get().getContent();
+            }
+        } catch (Exception e) {
+            content = e.getMessage();
+        }
+        return LLMOutput.of(JSON.toJSONString(Map.of("content", content, "modelId", modelId)));
     }
 
     @Override
@@ -57,17 +76,17 @@ public class LLMStartNode extends BaseLlmFunction {
 
     @Override
     public String getName() {
-        return "LLM StartNode";
+        return "LLM EndNode";
     }
 
     @Override
     public String getDescription() {
-        return "LLM input node. user input, system input and more ...";
+        return "LLM output node. assistant output, system output and more ...";
     }
 
     @Override
     public String getCode() {
-        return "llm.start";
+        return "llm.end";
     }
 
     @Override

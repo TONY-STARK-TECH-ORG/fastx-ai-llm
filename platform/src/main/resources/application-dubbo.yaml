@@ -6,8 +6,9 @@ dubbo:
     port: 50052
   application:
     name: fastx-llm-platform
-    logger: slf4j
+#    logger: slf4j
     qos-port: 22222
+    serialize-check-status: DISABLE
   tracing:
     enabled: true
   scan:

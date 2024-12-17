@@ -76,6 +76,13 @@ public class DubboToolServiceImpl implements IDubboToolService {
         return organizationTools.stream().map(OrganizationTools::to).collect(Collectors.toList());
     }
 
+    @Override
+    public OrganizationToolsDTO getOrganizationToolById(Long id) {
+        OrganizationTools organizationTools = organizationToolsService.getById(id);
+        Assert.notNull(organizationTools, "not found organizationTools");
+        return organizationTools.to();
+    }
+
     private void isValidated(OrganizationToolsDTO organizationTools) {
         Assert.notNull(organizationTools, "organizationTools is null");
         Assert.notNull(organizationTools.getOrganizationId(), "organizationId is null");

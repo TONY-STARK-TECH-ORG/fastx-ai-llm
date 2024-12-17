@@ -9,6 +9,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author stark
@@ -62,6 +63,11 @@ public class FastLlmWorkflowController {
     @PostMapping("org/workflow/version/delete")
     public Response<Boolean> deleteWorkflowVersion(@RequestBody OrgWorkflowVersionDTO orgWorkflowVersionDTO) {
         return Response.success(platformOrgService.deleteWorkflowVersion(orgWorkflowVersionDTO.getId()));
+    }
+
+    @PostMapping("org/workflow/version/exec")
+    public Response<Map<String, Object>> executeWorkflowVersion(@RequestBody OrgWorkflowVersionDTO orgWorkflowVersionDTO) {
+        return Response.success(platformOrgService.executeWorkflowVersion(orgWorkflowVersionDTO.getId()));
     }
 
     @GetMapping("org/workflow/version/get")

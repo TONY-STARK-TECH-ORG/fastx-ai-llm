@@ -39,6 +39,9 @@ export type AppState = {
 
     onSave: () => { nodes: AppNode[], edges: Edge[] };
     onInit: (jsonData: string) => boolean;
+
+    executeResult: any;
+    setExecuteResult: (result: any) => void;
 };
 
 const useWorkflowStore = createWithEqualityFn<AppState>((set, get) => ({
@@ -46,6 +49,21 @@ const useWorkflowStore = createWithEqualityFn<AppState>((set, get) => ({
     edges: [],
     reLayout: 0,
     zoomCenter: undefined,
+    executeResult: {},
+    setExecuteResult: (result) => {
+        set({
+            executeResult: result ?? {}
+        })
+        // set execute result to nodes.
+        for (const k in result.outputs) {
+            const value = result.outputs[k];
+            get().nodes.forEach(node => {
+                if (node.data.name == k) {
+                    node.data.executeResult = value;
+                }
+            })
+        }
+    },
     onNodesChange: (changes) => {
         set({
             nodes: applyNodeChanges(changes, get().nodes),
@@ -169,6 +187,12 @@ const useWorkflowStore = createWithEqualityFn<AppState>((set, get) => ({
     },
     onSave: () => {
         get().onLayout()
+
+        // clear executeResult.
+        get().nodes.forEach(node => {
+            node.data.executeResult = -1;
+        })
+
         return  {
             nodes: get().nodes || [],
             edges: get().edges || [],

@@ -1,6 +1,12 @@
 import {List, Button, Divider, message, Spin, Popconfirm} from 'antd';
 import {
-    AppstoreAddOutlined, DeleteOutlined, LayoutOutlined, RadiusUprightOutlined, SaveOutlined, ZoomInOutlined
+    AppstoreAddOutlined,
+    DeleteOutlined,
+    LayoutOutlined,
+    PlaySquareOutlined,
+    RadiusUprightOutlined,
+    SaveOutlined,
+    ZoomInOutlined
 } from "@ant-design/icons";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import {
@@ -29,7 +35,8 @@ export default function WorkflowPage() {
         onZoomSelected,
         onSave,
         onInit,
-    ] = useWorkflowStore(state => [state.onLayout, state.onZoomSelected, state.onSave, state.onInit])
+        setExecuteResult
+    ] = useWorkflowStore(state => [state.onLayout, state.onZoomSelected, state.onSave, state.onInit, state.setExecuteResult])
 
     const [pageLoading, setPageLoading] = useState(false)
 
@@ -144,6 +151,19 @@ export default function WorkflowPage() {
             await loadWorkflowVersionList(selectedWorkFlowVersion.workflowId)
         } else {
             message.error("工作流版本删除失败，请重试: " + res.msg)
+        }
+    }
+
+    const execWorkflowVersion = async () => {
+        // exec workflow version.
+        const res = await http.post("workflow/org/workflow/version/exec", {
+            id: selectedWorkFlowVersion?.id
+        })
+        if (res.success) {
+            setExecuteResult(res.data)
+            message.success("工作流执行成功")
+        } else {
+            message.error("工作流执行失败，请重试: " + res.msg)
         }
     }
 
@@ -294,6 +314,14 @@ export default function WorkflowPage() {
                                 <Divider type="vertical"/>
                                 <Button
                                     className="hover:!border-green-500"
+                                    size="small"
+                                    onClick={async () => {
+                                        await execWorkflowVersion();
+                                    }}
+                                    icon={<PlaySquareOutlined className="text-red-600" />}
+                                />
+                                <Button
+                                    className="hover:!border-green-500  mr-2"
                                     size="small"
                                     onClick={async () => {
                                         const data = onSave();

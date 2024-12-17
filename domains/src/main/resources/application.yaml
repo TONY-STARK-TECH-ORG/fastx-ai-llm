@@ -8,5 +8,11 @@ logging:
     root: info
   pattern:
     console: '[%X{traceId:-}, %X{spanId:-}] %date %green(%level) %yellow([%thread]) %cyan(%logger{10}) [%file:%line] %msg%n'
-  file:
-    path: ./logs
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      total-size-cap: 1GB
+      max-history: 1
+      archive: true
+      clean-history-on-start: true
+      file-name-pattern: ./logs/fastx-llm-domain.%d{yyyy-MM-dd}.%i.gz.log

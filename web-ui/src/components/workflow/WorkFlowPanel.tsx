@@ -14,16 +14,13 @@ import '@xyflow/react/dist/style.css';
 import useWorkflowStore, {AppNode} from "../../store/WorkflowStore.ts";
 import {useEffect} from "react";
 import SimpleEdge from "./SimpleEdge.tsx";
-import ConnectionLine from "./ConnectionLine.tsx";
-import SimpleNode from "./SimpleNode.tsx";
+import LLM_ModelNode from "./nodes/LLM_ModelNode.tsx";
 import {useDrag} from "./DragContext.tsx";
+import {v4 as uuidv4} from 'uuid';
+import ToolPanel from "./ToolPanel.tsx";
+import LLM_FunctionNode from "./nodes/LLM_FunctionNode.tsx";
 
 export type ClosestNode = {distance: number; node: AppNode | undefined }
-
-// @TODO (stark) change id to uuid.
-let id = 0;
-const getId = () => `dndnode_${id++}`;
-
 
 export default function WorkflowPanel () {
     const [
@@ -59,7 +56,7 @@ export default function WorkflowPanel () {
         setCenter,
         screenToFlowPosition
     } = useReactFlow();
-    const { type, setType } = useDrag()
+    const { type, tool, orgTool } = useDrag()
 
     const getClosestEdge =  (node: AppNode) => {
         const { nodeLookup } = store.getState()!!;
@@ -112,11 +109,12 @@ export default function WorkflowPanel () {
             x: event.clientX,
             y: event.clientY,
         });
+        const id = uuidv4()
         const newNode = {
-            id: getId(),
+            id: id,
             type: type,
             position,
-            data: { label: `${type} node` },
+            data: { label: `${type} node`, tool, orgTool, name: id, innerData: {} },
         } as AppNode;
         setNodes(nodes.concat(newNode));
     }
@@ -132,11 +130,6 @@ export default function WorkflowPanel () {
         // Auto connect closer handler.
         onCloseNodeDragStop(closestEdge);
     }
-
-    const onDragStart = (event: React.DragEvent<HTMLDivElement>, nodeType: string) => {
-        setType(nodeType);
-        event.dataTransfer.effectAllowed = 'move';
-    };
 
     useEffect(() => {
         if (zoomCenter) {
@@ -160,7 +153,8 @@ export default function WorkflowPanel () {
                         simpleEdge: SimpleEdge
                     }}
                     nodeTypes={{
-                        simpleNode: SimpleNode
+                        "llm-model": LLM_ModelNode,
+                        "llm-function": LLM_FunctionNode,
                     }}
                     fitView
                     fitViewOptions={{
@@ -169,6 +163,7 @@ export default function WorkflowPanel () {
                     defaultEdgeOptions={{
                         animated: true,
                     }}
+                    zoomOnDoubleClick
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
@@ -176,7 +171,6 @@ export default function WorkflowPanel () {
                     onNodeDragStop={onNodeDragStopInner}
                     onDrop={onDrop}
                     onDragOver={onDragOver}
-                    connectionLineComponent={ConnectionLine}
                     isValidConnection={isValidConnection}
                 >
                     <Controls/>
@@ -185,16 +179,8 @@ export default function WorkflowPanel () {
                     <DevTools/>
                 </ReactFlow>
             </div>
-            <div className="w-[200px] h-full border border-gray-100 bg-white hover:shadow hover:shadow-blue-50 ml-2">
-                <div className="dndnode input" onDragStart={(event) => onDragStart(event, 'input')} draggable>
-                    Input Node
-                </div>
-                <div className="dndnode" onDragStart={(event) => onDragStart(event, 'default')} draggable>
-                    Default Node
-                </div>
-                <div className="dndnode output" onDragStart={(event) => onDragStart(event, 'output')} draggable>
-                    Output Node
-                </div>
+            <div className="w-[200px] h-full border border-gray-100 bg-white hover:shadow hover:shadow-blue-50 ml-2 p-1 rounded">
+                <ToolPanel />
             </div>
         </div>
     )

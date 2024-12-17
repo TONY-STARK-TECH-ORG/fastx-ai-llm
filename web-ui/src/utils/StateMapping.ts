@@ -2,6 +2,7 @@ export class StateMapping {
 
     private static taskMapping: Map<string, string> = new Map()
     private static colorMapping: Map<String, string> = new Map()
+    private static toolMapping: Map<String, string> = new Map()
 
     static init() {
         this.taskMapping.set("wait", "等待中")
@@ -17,6 +18,22 @@ export class StateMapping {
         this.colorMapping.set("active", "#00AA00")
         this.colorMapping.set("inactive", "#AA0000")
         this.colorMapping.set("finish", "#00AA00")
+
+        this.toolMapping.set("llm-model", "LLM 模型")
+        this.toolMapping.set("llm-function", "LLM 函数")
+        this.toolMapping.set("llm-tool", "LLM 工具")
+        this.toolMapping.set("train-dataset", "数据预处理")
+        this.toolMapping.set("train-post", "后处理")
+        this.toolMapping.set("train-upload", "上传/下载")
+        this.toolMapping.set("train-tokenizer", "Tokenizer")
+        this.toolMapping.set("train-finetune", "微调")
+        this.toolMapping.set("train-hyperParams", "超参数")
+        this.toolMapping.set("train-benchmark", "评测")
+        this.toolMapping.set("other", "其他")
+    }
+
+    static getToolName(key: string) {
+        return this.toolMapping.get(key) ?? "未知工具: " + key
     }
 
     static getTaskStatusZh(status: string) {
