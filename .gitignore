@@ -43,3 +43,4 @@ web-ui/.next
 web-ui/.env
 
 web/src/main/resources/application-upload.yaml
+/seata-server/application.yml
