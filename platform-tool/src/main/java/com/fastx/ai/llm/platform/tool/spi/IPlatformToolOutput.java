@@ -11,7 +11,7 @@ public interface IPlatformToolOutput {
      * get JSON data for input
      * @return return JSON
      */
-    String getData();
+    String getOutputs();
 
     /**
      * if with error

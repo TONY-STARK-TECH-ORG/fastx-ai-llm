@@ -44,15 +44,10 @@ public class LLMStartNode extends BaseLlmFunction {
 
     @Override
     public LLMOutput exec(LLMInput input) {
-        if (StringUtils.isAnyBlank(input.getData())) {
+        if (StringUtils.isAnyBlank(input.getInputs())) {
             throw new ToolExecException("llm start node need input data.");
         }
-        return LLMOutput.of(input.getData());
-    }
-
-    @Override
-    public String getIcon() {
-        return "https://oss.fastx-ai.com/fastx-ai-llm/123/logo.png";
+        return LLMOutput.of(input.getInputs());
     }
 
     @Override

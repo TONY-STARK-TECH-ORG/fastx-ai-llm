@@ -50,13 +50,13 @@ public class LLMEndNode extends BaseLlmFunction {
 
     @Override
     public LLMOutput exec(LLMInput input) {
-        if (StringUtils.isAnyBlank(input.getData())) {
+        if (StringUtils.isAnyBlank(input.getInputs())) {
             throw new ToolExecException("llm end node need input data.");
         }
         String content = "";
         String modelId = "";
         try {
-            OpenAIRequest request = JSON.parseObject(input.getData(), OpenAIRequest.class);
+            OpenAIRequest request = JSON.parseObject(input.getInputs(), OpenAIRequest.class);
             modelId = request.getModelId();
             Optional<OpenAIMessage> assistant =
                     request.getMessages().stream().filter(openAIMessage -> openAIMessage.getRole().equals("assistant")).findFirst();
@@ -67,11 +67,6 @@ public class LLMEndNode extends BaseLlmFunction {
             content = e.getMessage();
         }
         return LLMOutput.of(JSON.toJSONString(Map.of("content", content, "modelId", modelId)));
-    }
-
-    @Override
-    public String getIcon() {
-        return "https://oss.fastx-ai.com/fastx-ai-llm/123/logo.png";
     }
 
     @Override

@@ -7,17 +7,17 @@ import com.fastx.ai.llm.platform.tool.spi.IPlatformToolOutput;
  */
 public class LLMOutput implements IPlatformToolOutput {
 
-    private String data;
+    private String outputs;
 
     private String error;
 
-    public void setData(String data) {
-        this.data = data;
+    public void setOutputs(String outputs) {
+        this.outputs = outputs;
     }
 
     @Override
-    public String getData() {
-        return data;
+    public String getOutputs() {
+        return outputs;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class LLMOutput implements IPlatformToolOutput {
 
     public static LLMOutput of(String data) {
         LLMOutput output = empty();
-        output.setData(data);
+        output.setOutputs(data);
         return output;
     }
 

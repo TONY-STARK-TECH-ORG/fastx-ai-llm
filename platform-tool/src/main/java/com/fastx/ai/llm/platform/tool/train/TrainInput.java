@@ -34,12 +34,12 @@ public class TrainInput implements IPlatformToolInput {
     }
 
     @Override
-    public void setData(String data) {
-        this.data = data;
+    public void setInputs(String inputs) {
+        this.data = inputs;
     }
 
     @Override
-    public String getData() {
+    public String getInputs() {
         return data;
     }
 }
