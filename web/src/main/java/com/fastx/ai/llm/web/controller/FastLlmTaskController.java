@@ -65,7 +65,7 @@ public class FastLlmTaskController {
     }
 
     @GetMapping("org/task/exec/node/list")
-    public Response<PlatformPageDTO<OrgTaskNodeExecDTO>> listTaskNodeExecs(Long page, Long size, String status, Boolean checkPrevNodes) {
+    public Response<PlatformPageDTO<OrgTaskNodeExecDTO>> listTaskNodeExecsByPage(Long page, Long size, String status, Boolean checkPrevNodes) {
         return Response.success(
                 platformOrgService.getTaskNodeExecs(page, size, status, checkPrevNodes)
         );

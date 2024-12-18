@@ -27,14 +27,14 @@ public class PlatformTaskRunner {
      */
     @Scheduled(fixedRate = 10, timeUnit = TimeUnit.MINUTES)
     public void scheduleFixedRunnerForKnowledgeBaseTask() {
-        log.info("scheduleFixedRunnerForKnowledgeBaseTask::started");
+        log.error("scheduleFixedRunnerForKnowledgeBaseTask::started");
         PageDTO<TaskExecDTO> taskExecs =
                 taskService.getTaskExecs(1L, 5L, IConstant.WAIT, IConstant.KNOWLEDGE_BASE);
         taskExecs.getList().forEach(taskExec -> {
-            log.info("scheduleFixedRunnerForKnowledgeBaseTask::taskExec:{}", taskExec);
+            log.error("scheduleFixedRunnerForKnowledgeBaseTask::taskExec:{}", taskExec);
             // Modified this state to.
         });
-        log.info("scheduleFixedRunnerForKnowledgeBaseTask::started");
+        log.error("scheduleFixedRunnerForKnowledgeBaseTask::started");
     }
 
 }
