@@ -2,6 +2,7 @@ package com.fastx.ai.llm.domains.api;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fastx.ai.llm.domains.config.lock.RedisLock;
 import com.fastx.ai.llm.domains.constant.IConstant;
 import com.fastx.ai.llm.domains.dto.PageDTO;
 import com.fastx.ai.llm.domains.dto.TaskDTO;
@@ -142,6 +143,7 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
     }
 
     @Override
+    @RedisLock(key = "taskNodeExecLock::${#taskNodeExecDTO.id}")
     public Boolean updateTaskNodeExecs(TaskNodeExecDTO taskNodeExecDTO) {
         Assert.isTrue(isValidated(taskNodeExecDTO), "task not dto basic info not validated.");
         Assert.notNull(taskNodeExecDTO.getId(), "id is null");
