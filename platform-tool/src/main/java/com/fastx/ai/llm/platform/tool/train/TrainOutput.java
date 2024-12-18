@@ -16,7 +16,7 @@ public class TrainOutput implements IPlatformToolOutput {
     }
 
     @Override
-    public String getData() {
+    public String getOutputs() {
         return data;
     }
 

@@ -121,14 +121,14 @@ public class WorkflowInContextExecutor {
                 }
             }
             context.getModifiedInputs().put(nodeName, executeInputs);
-            in.setData(JSON.toJSONString(executeInputs));
+            in.setInputs(JSON.toJSONString(executeInputs));
         } else {
-            in.setData(JSON.toJSONString(innerData.get("inputs")));
+            in.setInputs(JSON.toJSONString(innerData.get("inputs")));
         }
         IPlatformToolOutput output = tool.exec(in);
         // set to context, for next use.
-        innerData.put("outputs", JSON.parseObject(output.getData(), Map.class));
-        context.getOutputs().put(nodeName, output.isSuccess() ? JSON.parseObject(output.getData()) : output.getError());
+        innerData.put("outputs", JSON.parseObject(output.getOutputs(), Map.class));
+        context.getOutputs().put(nodeName, output.isSuccess() ? JSON.parseObject(output.getOutputs()) : output.getError());
         // set executed!
         node.setExecuted(true);
     }

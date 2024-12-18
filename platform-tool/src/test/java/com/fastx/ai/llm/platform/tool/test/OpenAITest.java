@@ -40,7 +40,7 @@ public class OpenAITest {
         request.setMessages(List.of(openAIMessage));
 
         input.setConfig(JSON.toJSONString(config));
-        input.setData(JSON.toJSONString(request));
+        input.setInputs(JSON.toJSONString(request));
         PipedOutputStream stream = new PipedOutputStream();
         input.setStream(stream);
 

@@ -17,4 +17,9 @@ public abstract class BaseLlmFunction extends BaseLlmTool {
         return "llm-function";
     }
 
+    @Override
+    public String getIcon() {
+        return "https://oss.fastx-ai.com/fastx-ai-llm/123/logo.png";
+    }
+
 }

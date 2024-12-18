@@ -9,15 +9,15 @@ public interface IPlatformToolInput {
 
     /**
      * set JSON data
-     * @param data d
+     * @param inputs d
      */
-    void setData(String data);
+    void setInputs(String inputs);
 
     /**
      * get JSON data for input
      * @return return JSON
      */
-    String getData();
+    String getInputs();
 
     /**
      * set config data

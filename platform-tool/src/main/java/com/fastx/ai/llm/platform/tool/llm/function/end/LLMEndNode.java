@@ -3,7 +3,6 @@ package com.fastx.ai.llm.platform.tool.llm.function.end;
 import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.platform.tool.entity.Fields;
 import com.fastx.ai.llm.platform.tool.entity.Prototype;
-import com.fastx.ai.llm.platform.tool.exception.ToolExecException;
 import com.fastx.ai.llm.platform.tool.llm.LLMInput;
 import com.fastx.ai.llm.platform.tool.llm.LLMOutput;
 import com.fastx.ai.llm.platform.tool.llm.function.BaseLlmFunction;
@@ -50,13 +49,14 @@ public class LLMEndNode extends BaseLlmFunction {
 
     @Override
     public LLMOutput exec(LLMInput input) {
-        if (StringUtils.isAnyBlank(input.getData())) {
-            throw new ToolExecException("llm end node need input data.");
+        if (StringUtils.isAnyBlank(input.getInputs())) {
+            return LLMOutput.ofError("llm end node need input data.");
         }
+
         String content = "";
         String modelId = "";
         try {
-            OpenAIRequest request = JSON.parseObject(input.getData(), OpenAIRequest.class);
+            OpenAIRequest request = JSON.parseObject(input.getInputs(), OpenAIRequest.class);
             modelId = request.getModelId();
             Optional<OpenAIMessage> assistant =
                     request.getMessages().stream().filter(openAIMessage -> openAIMessage.getRole().equals("assistant")).findFirst();
@@ -67,11 +67,6 @@ public class LLMEndNode extends BaseLlmFunction {
             content = e.getMessage();
         }
         return LLMOutput.of(JSON.toJSONString(Map.of("content", content, "modelId", modelId)));
-    }
-
-    @Override
-    public String getIcon() {
-        return "https://oss.fastx-ai.com/fastx-ai-llm/123/logo.png";
     }
 
     @Override
@@ -86,7 +81,7 @@ public class LLMEndNode extends BaseLlmFunction {
 
     @Override
     public String getCode() {
-        return "llm.end";
+        return "llm.function.end";
     }
 
     @Override

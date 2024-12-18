@@ -1,5 +1,7 @@
 package com.fastx.ai.llm.platform.tool.llm.model.openai.types;
 
+import org.springframework.util.Assert;
+
 import java.io.Serial;
 import java.io.Serializable;
 
@@ -16,6 +18,11 @@ public class OpenAIConfig implements Serializable {
     private String baseUrl;
 
     private boolean streaming = false;
+
+    public void validate() {
+        Assert.notNull(apiKey, "apiKey can not be null");
+        Assert.notNull(baseUrl, "baseUrl can not be null");
+    }
 
     public String getApiKey() {
         return apiKey;

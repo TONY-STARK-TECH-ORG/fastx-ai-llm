@@ -9,7 +9,7 @@ import java.io.OutputStream;
  */
 public class LLMInput implements IPlatformToolInput {
 
-    private String data;
+    private String inputs;
 
     private String config;
 
@@ -27,13 +27,13 @@ public class LLMInput implements IPlatformToolInput {
 
 
     @Override
-    public void setData(String data) {
-        this.data = data;
+    public void setInputs(String inputs) {
+        this.inputs = inputs;
     }
 
     @Override
-    public String getData() {
-        return data;
+    public String getInputs() {
+        return inputs;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class LLMInput implements IPlatformToolInput {
 
     public static LLMInput of(String data, String config) {
         LLMInput llmInput = new LLMInput();
-        llmInput.setData(data);
+        llmInput.setInputs(data);
         llmInput.setConfig(config);
         return llmInput;
     }

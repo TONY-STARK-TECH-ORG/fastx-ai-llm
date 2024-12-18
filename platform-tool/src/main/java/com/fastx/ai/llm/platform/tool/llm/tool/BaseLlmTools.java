@@ -12,4 +12,9 @@ public abstract class BaseLlmTools extends BaseLlmTool {
         return "llm-tool";
     }
 
+    @Override
+    public String getIcon() {
+        return "https://oss.fastx-ai.com/fastx-ai-llm/123/logo.png";
+    }
+
 }

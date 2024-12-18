@@ -11,8 +11,8 @@ public class SimplePlatformToolInput implements IPlatformToolInput {
     private String config;
     private OutputStream stream;
 
-    public void setData(String data) {
-        this.data = data;
+    public void setInputs(String inputs) {
+        this.data = inputs;
     }
 
     public void setConfig(String config) {
@@ -24,7 +24,7 @@ public class SimplePlatformToolInput implements IPlatformToolInput {
     }
 
     @Override
-    public String getData() {
+    public String getInputs() {
         return data;
     }
 

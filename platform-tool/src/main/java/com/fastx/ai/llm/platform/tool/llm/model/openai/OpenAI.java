@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * @author stark
@@ -78,7 +77,7 @@ public class OpenAI extends BaseLlmModel {
 
     @Override
     public String getCode() {
-        return "openai.chat";
+        return "llm.model.openai.chat";
     }
 
     @Override
@@ -93,13 +92,13 @@ public class OpenAI extends BaseLlmModel {
 
     @Override
     public LLMOutput exec(LLMInput input) {
-        if (StringUtils.isAnyBlank(input.getConfig(), input.getData())) {
+        if (StringUtils.isAnyBlank(input.getConfig(), input.getInputs())) {
             throw new ToolExecException("openai need config and input data.");
         }
 
         // send request
         OpenAIConfig config = JSON.parseObject(input.getConfig(), OpenAIConfig.class);
-        OpenAIRequest request = JSON.parseObject(input.getData(), OpenAIRequest.class);
+        OpenAIRequest request = JSON.parseObject(input.getInputs(), OpenAIRequest.class);
 
         try {
             OpenAIClient client = OpenAIOkHttpClient.builder()
@@ -171,7 +170,7 @@ public class OpenAI extends BaseLlmModel {
                     choices.setMessage(message);
                     // to json result.
                     String jsonString = JSON.toJSONString(OpenAIResponse.of(id.get(), created.get(), List.of(choices), usage.get()));
-                    output.setData(jsonString);
+                    output.setOutputs(jsonString);
                     writer.write(jsonString);
 
                     // close writer and stream.
