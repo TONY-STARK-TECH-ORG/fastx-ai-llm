@@ -34,6 +34,7 @@ public class TaskExecServiceImpl extends ServiceImpl<TaskExecMapper, TaskExec> i
             wrapper.eq(TaskExec::getStatus, status);
         }
         // @TODO (yedong) select t_task t where t.type = type
+        // @TODO (yedong) select t_task t where t.status = 'active'
         wrapper.orderByDesc(TaskExec::getCreateTime);
         Page<TaskExec> paged = this.page(new Page<>(page, size), wrapper);
         if (CollectionUtils.isEmpty(paged.getRecords())) {

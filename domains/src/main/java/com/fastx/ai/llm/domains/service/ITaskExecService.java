@@ -20,6 +20,7 @@ public interface ITaskExecService extends IService<TaskExec> {
      * @param page page
      * @param size size
      * @param status status
+     * @param type type
      * @return list with page info
      */
     Page<TaskExec> getTaskExecs(Long taskId, Long page, Long size, String status, String type);

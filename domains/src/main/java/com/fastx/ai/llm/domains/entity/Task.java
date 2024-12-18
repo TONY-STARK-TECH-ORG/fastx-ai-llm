@@ -34,7 +34,7 @@ public class Task extends BaseDO implements Serializable {
 
     private String cron;
 
-    private Long workflowId;
+    private Long workflowVersionId;
 
     private String status;
 

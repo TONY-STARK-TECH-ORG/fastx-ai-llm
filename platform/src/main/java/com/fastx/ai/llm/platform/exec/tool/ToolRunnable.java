@@ -3,6 +3,7 @@ package com.fastx.ai.llm.platform.exec.tool;
 import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.platform.config.ToolsLoader;
 import com.fastx.ai.llm.platform.tool.llm.LLMInput;
+import com.fastx.ai.llm.platform.tool.llm.LLMOutput;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformTool;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformToolOutput;
 import org.apache.dubbo.common.stream.StreamObserver;
@@ -18,7 +19,7 @@ import java.util.Map;
 /**
  * @author stark
  */
-public class ToolContext {
+public class ToolRunnable implements Runnable {
 
     private String toolCode;
     private String toolVersion;
@@ -35,22 +36,22 @@ public class ToolContext {
     private LLMInput llmInput;
     private IPlatformToolOutput llmOutput;
 
-    public ToolContext(String toolCode, String toolVersion, String type, Map<String, Object> input) {
+    public ToolRunnable(String toolCode, String toolVersion, String type, Map<String, Object> input) {
         this.toolCode = toolCode;
         this.toolVersion = toolVersion;
         this.type = type;
         this.input = input;
     }
 
-    public static ToolContext of(Map<String, Object> params) throws IOException {
+    public static ToolRunnable of(Map<String, Object> params) throws IOException {
         String toolCode = (String) params.get("toolCode");
         String toolVersion = (String) params.get("toolVersion");
         String type = (String) params.get("type");
         Map<String, Object> input = (Map<String, Object>) params.get("input");
         Assert.isTrue("llm-model".equals(type), "only support llm-model stream exec");
         // set used tool
-        ToolContext toolContext = new ToolContext(toolCode, toolVersion, type, input);
-        toolContext.setTool(ToolsLoader.getTool(toolCode, toolVersion, type));
+        ToolRunnable toolRunnable = new ToolRunnable(toolCode, toolVersion, type, input);
+        toolRunnable.setTool(ToolsLoader.getTool(toolCode, toolVersion, type));
 
         LLMInput in = new LLMInput();
         in.setConfig(JSON.toJSONString(input.get("config")));
@@ -61,11 +62,11 @@ public class ToolContext {
         // set reader and stream
         PipedInputStream inputStream = new PipedInputStream(stream);
 
-        toolContext.setInputStream(inputStream);
-        toolContext.setReader(new InputStreamReader(inputStream));
+        toolRunnable.setInputStream(inputStream);
+        toolRunnable.setReader(new InputStreamReader(inputStream));
         // set tool input
-        toolContext.setLlmInput(in);
-        return toolContext;
+        toolRunnable.setLlmInput(in);
+        return toolRunnable;
     }
 
     public void readTo(StreamObserver<String> observer, Logger logger) {
@@ -89,7 +90,7 @@ public class ToolContext {
         } finally {
             // ignored
         }
-        PlatformToolExecutor.EXEC_CONTEXT.remove();
+        ToolExecutor.EXEC_CONTEXT.remove();
     }
 
     public IPlatformToolOutput getLlmOutput() {
@@ -162,5 +163,17 @@ public class ToolContext {
 
     public void setInputStream(PipedInputStream inputStream) {
         this.inputStream = inputStream;
+    }
+
+    @Override
+    public void run() {
+        try {
+            // exec
+            IPlatformToolOutput exec = tool.exec(llmInput);
+            // set output
+            setLlmOutput(exec);
+        } catch (Exception e) {
+            setLlmOutput(LLMOutput.ofError(e.getMessage()));
+        }
     }
 }

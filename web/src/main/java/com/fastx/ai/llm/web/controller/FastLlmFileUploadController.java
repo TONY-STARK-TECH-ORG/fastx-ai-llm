@@ -69,7 +69,8 @@ public class FastLlmFileUploadController {
                     taskDTO.setOrganizationId(knowledgeById.getOrganizationId());
                     // system workflow (process file)
                     // @TODO (stark) 组织增加配置项，可以配置默认的数据处理 workflow
-                    taskDTO.setWorkflowId(99999999999990L);
+                    // @TODO (stark) create task auto in platform inner service.
+                    taskDTO.setWorkflowVersionId(99999999999990L);
                     taskDTO.setType("knowledge");
                     platformOrgService.createTask(taskDTO);
                 }

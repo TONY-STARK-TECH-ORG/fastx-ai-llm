@@ -46,6 +46,13 @@ public interface IDubboTaskService {
     List<TaskDTO> getTasksByOrganizationId(Long organizationId);
 
     /**
+     * get task byId
+     * @param taskId task id
+     * @return single task
+     */
+    TaskDTO getTaskById(Long taskId);
+
+    /**
      * create new task exec
      * @param taskExecDTO exec info
      * @return created task exec
