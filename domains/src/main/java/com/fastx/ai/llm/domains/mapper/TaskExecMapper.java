@@ -1,6 +1,6 @@
 package com.fastx.ai.llm.domains.mapper;
 
-import com.fastx.ai.llm.domains.entity.TaskLog;
+import com.fastx.ai.llm.domains.entity.TaskExec;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author stark
  * @since 2024-12-07
  */
-public interface TaskLogMapper extends BaseMapper<TaskLog> {
+public interface TaskExecMapper extends BaseMapper<TaskExec> {
 
 }

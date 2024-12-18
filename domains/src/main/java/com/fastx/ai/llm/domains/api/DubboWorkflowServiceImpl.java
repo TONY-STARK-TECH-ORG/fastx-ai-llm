@@ -72,7 +72,7 @@ public class DubboWorkflowServiceImpl extends DubboBaseDomainService implements 
         // delete workflow version
         List<WorkflowVersion> versions = workflowVersionService.getWorkflowVersionByWorkflowId(workflowId);
         if (CollectionUtils.isNotEmpty(versions)) {
-            List<Long> versionIds = versions.stream().map(WorkflowVersion::getId).collect(Collectors.toList());
+            List<Long> versionIds = versions.stream().map(WorkflowVersion::getId).toList();
             Assert.isTrue(workflowVersionService.removeByIds(versionIds), "delete workflow version failed");
             // remove exec logs
             Assert.isTrue(workflowExecLogService.removeWorkflowExecLogByWorkflowVersionIds(versionIds),
@@ -85,7 +85,7 @@ public class DubboWorkflowServiceImpl extends DubboBaseDomainService implements 
     @SentinelResource("workflow.get")
     public List<WorkflowDTO> getWorkflowsByOrganizationId(Long organizationId) {
         List<Workflow> workflows = workflowService.getWorkflowsByOrganizationId(organizationId);
-        return workflows.stream().map(Workflow::to).collect(Collectors.toList());
+        return workflows.stream().map(Workflow::to).toList();
     }
 
     @Override
@@ -138,7 +138,7 @@ public class DubboWorkflowServiceImpl extends DubboBaseDomainService implements 
     public List<WorkflowVersionDTO> getWorkflowVersionsByWorkflowId(Long workFlowId) {
         Assert.notNull(workFlowId, "workflow id was null");
         List<WorkflowVersion> workflowVersions = workflowVersionService.getWorkflowVersionByWorkflowId(workFlowId);
-        return workflowVersions.stream().map(WorkflowVersion::to).collect(Collectors.toList());
+        return workflowVersions.stream().map(WorkflowVersion::to).toList();
     }
 
     @Override
@@ -168,7 +168,7 @@ public class DubboWorkflowServiceImpl extends DubboBaseDomainService implements 
         Page<WorkflowExecLog> execLogs =
                 workflowExecLogService.getWorkflowExecLogsByWorkflowVersionId(workflowVersionId, page, size);
         return PageDTO.of(execLogs.getCurrent(), execLogs.getSize(), execLogs.getTotal(),
-                execLogs.getRecords().stream().map(WorkflowExecLog::to).collect(Collectors.toList()));
+                execLogs.getRecords().stream().map(WorkflowExecLog::to).toList());
     }
 
     private void isValidated(WorkflowDTO workflow) {

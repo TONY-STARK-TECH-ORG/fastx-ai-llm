@@ -2,7 +2,7 @@ package com.fastx.ai.llm.domains.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fastx.ai.llm.domains.base.BaseDO;
-import com.fastx.ai.llm.domains.dto.TaskLogDTO;
+import com.fastx.ai.llm.domains.dto.TaskExecDTO;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.BeanUtils;
@@ -21,8 +21,8 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-@TableName("t_task_log")
-public class TaskLog extends BaseDO implements Serializable {
+@TableName("t_task_exec")
+public class TaskExec extends BaseDO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -35,15 +35,15 @@ public class TaskLog extends BaseDO implements Serializable {
 
     private String log;
 
-    public static TaskLog of(TaskLogDTO taskLogDTO) {
-        TaskLog taskLog = new TaskLog();
-        BeanUtils.copyProperties(taskLogDTO, taskLog);
-        return taskLog;
+    public static TaskExec of(TaskExecDTO taskExecDTO) {
+        TaskExec taskExec = new TaskExec();
+        BeanUtils.copyProperties(taskExecDTO, taskExec);
+        return taskExec;
     }
 
-    public TaskLogDTO to() {
-        TaskLogDTO taskLogDTO = new TaskLogDTO();
-        BeanUtils.copyProperties(this, taskLogDTO);
-        return taskLogDTO;
+    public TaskExecDTO to() {
+        TaskExecDTO taskExecDTO = new TaskExecDTO();
+        BeanUtils.copyProperties(this, taskExecDTO);
+        return taskExecDTO;
     }
 }

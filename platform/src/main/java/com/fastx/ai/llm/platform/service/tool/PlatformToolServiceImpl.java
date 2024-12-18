@@ -59,7 +59,7 @@ public class PlatformToolServiceImpl implements IPlatformToolService {
             toolDTO.setDescription(tool.getDescription());
             toolDTO.setIcon(tool.getIcon());
             return toolDTO;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     @Override

@@ -67,7 +67,7 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
             OrgDTO org = new OrgDTO();
             BeanUtils.copyProperties(o, org);
             return org;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     @Override
@@ -124,7 +124,7 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
                 orgTool.setConfigData(JSON.toJSONString(configData));
             }
             return orgTool;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     @Override
@@ -166,31 +166,31 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
             OrgTaskDTO orgTask = new OrgTaskDTO();
             BeanUtils.copyProperties(t, orgTask);
             return orgTask;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     @Override
     @SentinelResource("org.task.log.create")
-    public OrgTaskLogDTO createTaskLog(OrgTaskLogDTO taskLogDTO) {
+    public OrgTaskExecDTO createTaskExec(OrgTaskExecDTO taskLogDTO) {
         Assert.notNull(taskLogDTO, "taskLogDTO is null");
         // create dto
-        TaskLogDTO taskLog = new TaskLogDTO();
+        TaskExecDTO taskLog = new TaskExecDTO();
         BeanUtils.copyProperties(taskLogDTO, taskLog);
         // return new task obj
-        OrgTaskLogDTO orgTaskLog = new OrgTaskLogDTO();
-        BeanUtils.copyProperties(taskService.createTaskLog(taskLog), orgTaskLog);
+        OrgTaskExecDTO orgTaskLog = new OrgTaskExecDTO();
+        BeanUtils.copyProperties(taskService.createTaskExec(taskLog), orgTaskLog);
         return orgTaskLog;
     }
 
     @Override
     @SentinelResource("org.task.log.get")
-    public PlatformPagaDTO<OrgTaskLogDTO> getTaskLogsByTaskId(Long taskId, Long page, Long size, String status) {
-        PageDTO<TaskLogDTO> pageTaskLogs = taskService.getTaskLogsByTaskId(taskId, page, size, status);
-        return PlatformPagaDTO.of(page, size, pageTaskLogs.getTotal(), pageTaskLogs.getList().stream().map(t -> {
-            OrgTaskLogDTO orgTaskLog = new OrgTaskLogDTO();
+    public PlatformPageDTO<OrgTaskExecDTO> getTaskExecsByTaskId(Long taskId, Long page, Long size, String status) {
+        PageDTO<TaskExecDTO> pageTaskLogs = taskService.getTaskExecsByTaskId(taskId, page, size, status);
+        return PlatformPageDTO.of(page, size, pageTaskLogs.getTotal(), pageTaskLogs.getList().stream().map(t -> {
+            OrgTaskExecDTO orgTaskLog = new OrgTaskExecDTO();
             BeanUtils.copyProperties(t, orgTaskLog);
             return orgTaskLog;
-        }).collect(Collectors.toList()));
+        }).toList());
     }
 
     @Override
@@ -242,7 +242,7 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
             }
 
             return orgWorkflow;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     @Override
@@ -292,7 +292,7 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
             OrgWorkflowVersionDTO orgWorkflowVersion = new OrgWorkflowVersionDTO();
             BeanUtils.copyProperties(w, orgWorkflowVersion);
             return orgWorkflowVersion;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     @Override
@@ -318,7 +318,7 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
 
     @Override
     @SentinelResource("org.workflow.exec.log.get")
-    public PlatformPagaDTO<OrgWorkflowExecLogDTO> getWorkflowExecLogsByWorkflowVersionId(
+    public PlatformPageDTO<OrgWorkflowExecLogDTO> getWorkflowExecLogsByWorkflowVersionId(
             Long orgWorkflowVersionId, Long page, Long size) {
         Assert.notNull(orgWorkflowVersionId, "orgWorkflowVersionId is null");
         Assert.notNull(page, "page is null");
@@ -326,12 +326,12 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
 
         PageDTO<WorkflowExecLogDTO> execLogs =
                 workflowService.getWorkflowExecLogsByWorkflowVersionId(orgWorkflowVersionId, page, size);
-        return PlatformPagaDTO.of(execLogs.getPage(), execLogs.getSize(), execLogs.getTotal(),
+        return PlatformPageDTO.of(execLogs.getPage(), execLogs.getSize(), execLogs.getTotal(),
                 execLogs.getList().stream().map(w -> {
                     OrgWorkflowExecLogDTO orgWorkflowExecLog = new OrgWorkflowExecLogDTO();
                     BeanUtils.copyProperties(w, orgWorkflowExecLog);
                     return orgWorkflowExecLog;
-        }).collect(Collectors.toList()));
+        }).toList());
     }
 
     @Override

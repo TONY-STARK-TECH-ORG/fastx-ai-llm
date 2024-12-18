@@ -93,7 +93,7 @@ public interface IPlatformOrgService {
      * @param taskLogDTO log info
      * @return created task log
      */
-    OrgTaskLogDTO createTaskLog(OrgTaskLogDTO taskLogDTO);
+    OrgTaskExecDTO createTaskExec(OrgTaskExecDTO taskLogDTO);
 
     /**
      * all task logs
@@ -103,7 +103,7 @@ public interface IPlatformOrgService {
      * @param status status
      * @return task list with page info
      */
-    PlatformPagaDTO<OrgTaskLogDTO> getTaskLogsByTaskId(Long taskId, Long page, Long size, String status);
+    PlatformPageDTO<OrgTaskExecDTO> getTaskExecsByTaskId(Long taskId, Long page, Long size, String status);
 
     //-----------------------------------------------------------------------------------------
     // flow
@@ -201,7 +201,7 @@ public interface IPlatformOrgService {
      * @param size size
      * @return page
      */
-    PlatformPagaDTO<OrgWorkflowExecLogDTO> getWorkflowExecLogsByWorkflowVersionId(Long orgWorkflowVersionId, Long page, Long size);
+    PlatformPageDTO<OrgWorkflowExecLogDTO> getWorkflowExecLogsByWorkflowVersionId(Long orgWorkflowVersionId, Long page, Long size);
 
     /**
      * test execute workflow version.

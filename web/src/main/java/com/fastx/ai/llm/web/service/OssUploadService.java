@@ -84,7 +84,7 @@ public class OssUploadService {
             map.put("type", type);
             map.put("updateTime", DateFormatUtils.format(lastModified, "yyyy-MM-dd HH:mm:ss"));
             return map;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
 }

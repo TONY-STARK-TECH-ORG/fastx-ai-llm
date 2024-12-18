@@ -37,7 +37,7 @@ public class DubboOrganizationServiceImpl extends DubboBaseDomainService impleme
     @SentinelResource("org.findBy.user")
     public List<OrganizationDTO> findByUserId(Long userId) {
         return organizationService.findByUserId(userId)
-                .stream().map(Organization::to).collect(Collectors.toList());
+                .stream().map(Organization::to).toList();
     }
 
 }

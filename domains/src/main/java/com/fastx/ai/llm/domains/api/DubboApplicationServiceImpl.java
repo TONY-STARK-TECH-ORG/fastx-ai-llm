@@ -63,7 +63,7 @@ public class DubboApplicationServiceImpl extends DubboBaseDomainService implemen
     public List<ApplicationDTO> getApplications(Long orgId) {
         Assert.notNull(orgId, "organization id is null");
         // find all application under org
-        return applicationService.findByOrgIds(List.of(orgId)).stream().map(Application::to).collect(Collectors.toList());
+        return applicationService.findByOrgIds(List.of(orgId)).stream().map(Application::to).toList();
     }
 
     @SentinelResource("application.update")
@@ -84,7 +84,7 @@ public class DubboApplicationServiceImpl extends DubboBaseDomainService implemen
             Assert.isTrue(
                     applicationVersionService.removeByIds(
                             Lists.createWhenNull(applicationVersions).stream().map(ApplicationVersionDTO::getId)
-                                    .collect(Collectors.toList())),
+                                    .toList()),
                     "delete application version failed");
         }
         return true;
@@ -94,7 +94,7 @@ public class DubboApplicationServiceImpl extends DubboBaseDomainService implemen
     @Override
     public List<ApplicationVersionDTO> getApplicationVersions(Long applicationId) {
         return applicationVersionService.findByAppId(applicationId)
-                .stream().map(ApplicationVersion::to).collect(Collectors.toList());
+                .stream().map(ApplicationVersion::to).toList();
     }
 
     @SentinelResource("application.version.create")

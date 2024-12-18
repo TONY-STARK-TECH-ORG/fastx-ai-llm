@@ -2,7 +2,7 @@ package com.fastx.ai.llm.domains.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.fastx.ai.llm.domains.entity.TaskLog;
+import com.fastx.ai.llm.domains.entity.TaskExec;
 
 /**
  * <p>
@@ -12,7 +12,7 @@ import com.fastx.ai.llm.domains.entity.TaskLog;
  * @author stark
  * @since 2024-12-07
  */
-public interface ITaskLogService extends IService<TaskLog> {
+public interface ITaskExecService extends IService<TaskExec> {
 
     /**
      * get task logs by id and page params
@@ -22,12 +22,12 @@ public interface ITaskLogService extends IService<TaskLog> {
      * @param status status
      * @return list with page info
      */
-    Page<TaskLog> getTaskLogsByTaskId(Long taskId, Long page, Long size, String status);
+    Page<TaskExec> getTaskExecs(Long taskId, Long page, Long size, String status);
 
     /**
      * remote logs under a task
      * @param taskId task id
      * @return true or false
      */
-    boolean removeLogsByTaskId(Long taskId);
+    boolean removeExecsByTaskId(Long taskId);
 }

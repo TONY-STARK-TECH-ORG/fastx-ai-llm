@@ -31,7 +31,7 @@ export default function TaskLogDrawer(
     const loadTaskLog = async (page: number, size: number) => {
         setLoading(true)
         // Long taskId, Long page, Long size, String status
-        const res = await http.getWithParams<Page<OrgTaskLog>>("task/org/task/log/list", {
+        const res = await http.getWithParams<Page<OrgTaskLog>>("task/org/task/exec/list", {
             taskId: current?.id,
             page: page,
             size: size,
@@ -49,7 +49,7 @@ export default function TaskLogDrawer(
     // run current task once.
     const createTaskLogManually = async () => {
         setLoading(true)
-        const res = await http.post<OrgTaskLog>("task/org/task/log/create", {
+        const res = await http.post<OrgTaskLog>("task/org/task/exec/create", {
             taskId: current?.id
         })
         if (res.success) {

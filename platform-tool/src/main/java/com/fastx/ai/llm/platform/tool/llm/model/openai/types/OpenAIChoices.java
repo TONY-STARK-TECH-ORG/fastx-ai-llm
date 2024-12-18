@@ -48,7 +48,7 @@ public class OpenAIChoices implements Serializable {
     }
 
     public static List<OpenAIChoices> of(List<ChatCompletion.Choice> choices) {
-        return choices.stream().map(OpenAIChoices::of).collect(Collectors.toList());
+        return choices.stream().map(OpenAIChoices::of).toList();
     }
 
     public static OpenAIChoices of(ChatCompletion.Choice choice) {
@@ -65,7 +65,7 @@ public class OpenAIChoices implements Serializable {
         }
         if (message.toolCalls().isPresent()) {
             List<ChatCompletionMessageToolCall> toolCalls = message.toolCalls().get();
-            openAIMessage.setToolCalls(toolCalls.stream().map(OpenAIToolCall::of).collect(Collectors.toList()));
+            openAIMessage.setToolCalls(toolCalls.stream().map(OpenAIToolCall::of).toList());
         }
         return result;
     }

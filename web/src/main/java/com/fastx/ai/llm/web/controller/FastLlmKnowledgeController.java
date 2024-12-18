@@ -64,7 +64,7 @@ public class FastLlmKnowledgeController {
         Assert.notEmpty(knowledgeFiles, "knowledgeFiles is empty");
         return Response.success(
                 platformKnowledgeService.deleteKnowledgeFile(
-                        knowledgeFiles.stream().map(KnowledgeFileDTO::getId).collect(Collectors.toList()))
+                        knowledgeFiles.stream().map(KnowledgeFileDTO::getId).toList())
         );
     }
 

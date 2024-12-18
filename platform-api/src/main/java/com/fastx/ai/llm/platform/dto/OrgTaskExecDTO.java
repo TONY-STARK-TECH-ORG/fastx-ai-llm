@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 /**
  * @author stark
  */
-public class OrgTaskLogDTO extends BaseDTO implements Serializable {
+public class OrgTaskExecDTO extends BaseDTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

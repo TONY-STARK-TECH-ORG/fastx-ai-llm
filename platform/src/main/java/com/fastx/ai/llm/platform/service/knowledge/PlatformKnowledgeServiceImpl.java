@@ -33,7 +33,7 @@ public class PlatformKnowledgeServiceImpl implements IPlatformKnowledgeService {
             KnowledgeDTO knowledgeDTO = new KnowledgeDTO();
             BeanUtils.copyProperties(knowledgeBaseDTO, knowledgeDTO);
             return knowledgeDTO;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     @Override
@@ -53,7 +53,7 @@ public class PlatformKnowledgeServiceImpl implements IPlatformKnowledgeService {
             KnowledgeFileDTO knowledgeFileDTO = new KnowledgeFileDTO();
             BeanUtils.copyProperties(knowledgeBaseFileDTO, knowledgeFileDTO);
             return knowledgeFileDTO;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     @Override
@@ -78,7 +78,7 @@ public class PlatformKnowledgeServiceImpl implements IPlatformKnowledgeService {
             KnowledgeBaseFileDTO knowledgeBaseFileDTO = new KnowledgeBaseFileDTO();
             BeanUtils.copyProperties(kf, knowledgeBaseFileDTO);
             return knowledgeBaseFileDTO;
-        }).collect(Collectors.toList());
+        }).toList();
         List<KnowledgeBaseFileDTO> knowledgeBaseFileDTOS =
                 dubboKnowledgeBaseService.batchCreateKnowledgeBaseFiles(collect);
         // return create result
@@ -86,7 +86,7 @@ public class PlatformKnowledgeServiceImpl implements IPlatformKnowledgeService {
             KnowledgeFileDTO knowledgeFileDTO = new KnowledgeFileDTO();
             BeanUtils.copyProperties(kbf, knowledgeFileDTO);
             return knowledgeFileDTO;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     @Override

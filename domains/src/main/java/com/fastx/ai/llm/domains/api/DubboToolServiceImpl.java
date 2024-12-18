@@ -73,7 +73,7 @@ public class DubboToolServiceImpl implements IDubboToolService {
                 organizationToolsService.getOrganizationToolsByOrganizationIds(
                         List.of(orgId)
                 );
-        return organizationTools.stream().map(OrganizationTools::to).collect(Collectors.toList());
+        return organizationTools.stream().map(OrganizationTools::to).toList();
     }
 
     @Override

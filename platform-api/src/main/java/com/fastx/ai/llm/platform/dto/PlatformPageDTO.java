@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author stark
  */
-public class PlatformPagaDTO<T> implements Serializable {
+public class PlatformPageDTO<T> implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -18,15 +18,15 @@ public class PlatformPagaDTO<T> implements Serializable {
 
     private List<T> list;
 
-    public PlatformPagaDTO(Long page, Long size, Long total, List<T> list) {
+    public PlatformPageDTO(Long page, Long size, Long total, List<T> list) {
         this.page = page;
         this.size = size;
         this.total = total;
         this.list = list;
     }
 
-    public static <T> PlatformPagaDTO<T> of(Long page, Long size, Long total, List<T> list) {
-        return new PlatformPagaDTO<>(page, size, total, list);
+    public static <T> PlatformPageDTO<T> of(Long page, Long size, Long total, List<T> list) {
+        return new PlatformPageDTO<>(page, size, total, list);
     }
 
     public Long getPage() {

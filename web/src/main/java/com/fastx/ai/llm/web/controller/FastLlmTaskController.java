@@ -2,8 +2,8 @@ package com.fastx.ai.llm.web.controller;
 
 import com.fastx.ai.llm.platform.api.IPlatformOrgService;
 import com.fastx.ai.llm.platform.dto.OrgTaskDTO;
-import com.fastx.ai.llm.platform.dto.OrgTaskLogDTO;
-import com.fastx.ai.llm.platform.dto.PlatformPagaDTO;
+import com.fastx.ai.llm.platform.dto.OrgTaskExecDTO;
+import com.fastx.ai.llm.platform.dto.PlatformPageDTO;
 import com.fastx.ai.llm.web.controller.entity.Response;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.web.bind.annotation.*;
@@ -44,15 +44,15 @@ public class FastLlmTaskController {
         );
     }
 
-    @PostMapping("org/task/log/create")
-    public Response<OrgTaskLogDTO> update(@RequestBody OrgTaskLogDTO orgTaskLogDTO) {
-        return Response.success(platformOrgService.createTaskLog(orgTaskLogDTO));
+    @PostMapping("org/task/exec/create")
+    public Response<OrgTaskExecDTO> createTaskExec(@RequestBody OrgTaskExecDTO orgTaskExecDTO) {
+        return Response.success(platformOrgService.createTaskExec(orgTaskExecDTO));
     }
 
-    @GetMapping("org/task/log/list")
-    public Response<PlatformPagaDTO<OrgTaskLogDTO>> listTaskLogs(Long taskId, Long page, Long size, String status) {
+    @GetMapping("org/task/exec/list")
+    public Response<PlatformPageDTO<OrgTaskExecDTO>> listTaskExecs(Long taskId, Long page, Long size, String status) {
         return Response.success(
-                platformOrgService.getTaskLogsByTaskId(taskId, page, size, status)
+                platformOrgService.getTaskExecsByTaskId(taskId, page, size, status)
         );
     }
 

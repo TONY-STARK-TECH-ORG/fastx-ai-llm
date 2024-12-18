@@ -5,10 +5,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fastx.ai.llm.domains.constant.IConstant;
 import com.fastx.ai.llm.domains.dto.PageDTO;
 import com.fastx.ai.llm.domains.dto.TaskDTO;
-import com.fastx.ai.llm.domains.dto.TaskLogDTO;
+import com.fastx.ai.llm.domains.dto.TaskExecDTO;
+import com.fastx.ai.llm.domains.dto.TaskNodeExecDTO;
 import com.fastx.ai.llm.domains.entity.Task;
-import com.fastx.ai.llm.domains.entity.TaskLog;
-import com.fastx.ai.llm.domains.service.ITaskLogService;
+import com.fastx.ai.llm.domains.entity.TaskExec;
+import com.fastx.ai.llm.domains.entity.TaskNodeExec;
+import com.fastx.ai.llm.domains.service.ITaskExecService;
+import com.fastx.ai.llm.domains.service.ITaskNodeExecService;
 import com.fastx.ai.llm.domains.service.ITaskService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 /**
  * <p>
@@ -33,7 +36,10 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
     ITaskService taskService;
 
     @Autowired
-    ITaskLogService taskLogService;
+    ITaskExecService taskExecService;
+
+    @Autowired
+    ITaskNodeExecService taskNodeExecService;
 
     @Override
     @SentinelResource("task.create")
@@ -60,7 +66,7 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
     public boolean deleteTask(Long taskId) {
         Assert.notNull(taskId, "taskId is null");
         Assert.isTrue(taskService.removeById(taskId), "delete task failed!");
-        Assert.isTrue(taskLogService.removeLogsByTaskId(taskId), "delete log failed!");
+        Assert.isTrue(taskExecService.removeExecsByTaskId(taskId), "delete log failed!");
         return true;
     }
 
@@ -69,32 +75,91 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
     public List<TaskDTO> getTasksByOrganizationId(Long organizationId) {
         Assert.notNull(organizationId, "organizationId is null");
         List<Task> taskList = taskService.getTasksByOrganizationId(organizationId);
-        return taskList.stream().map(Task::to).collect(Collectors.toList());
+        return taskList.stream().map(Task::to).toList();
     }
 
     @Override
-    @SentinelResource("task.log.create")
-    public TaskLogDTO createTaskLog(TaskLogDTO taskLogDTO) {
-        isValidated(taskLogDTO);
-        taskLogDTO.setStatus(IConstant.WAIT);
-        TaskLog taskLog = TaskLog.of(taskLogDTO);
-        Assert.isTrue(taskLogService.save(taskLog), "save task log failed!");
-        return taskLog.to();
+    @SentinelResource("task.exec.create")
+    public TaskExecDTO createTaskExec(TaskExecDTO taskExecDTO) {
+        isValidated(taskExecDTO);
+        taskExecDTO.setStatus(IConstant.WAIT);
+        TaskExec taskExec = TaskExec.of(taskExecDTO);
+        Assert.isTrue(taskExecService.save(taskExec), "save task exec failed!");
+        return taskExec.to();
     }
 
     @Override
-    @SentinelResource("task.log.get")
-    public PageDTO<TaskLogDTO> getTaskLogsByTaskId(Long taskId, Long page, Long size, String status) {
+    @SentinelResource("task.exec.get")
+    public PageDTO<TaskExecDTO> getTaskExecsByTaskId(Long taskId, Long page, Long size, String status) {
         Assert.notNull(taskId, "taskId is null");
         Assert.notNull(page, "page is null");
         Assert.notNull(size, "size is null");
         // search page
-        Page<TaskLog> taskLogPage = taskLogService.getTaskLogsByTaskId(taskId, page, size, status);
+        Page<TaskExec> taskExecPage = taskExecService.getTaskExecs(taskId, page, size, status);
         return PageDTO.of(
                 page,
                 size,
-                taskLogPage.getTotal(),
-                taskLogPage.getRecords().stream().map(TaskLog::to).collect(Collectors.toList()));
+                taskExecPage.getTotal(),
+                taskExecPage.getRecords().stream().map(TaskExec::to).toList());
+    }
+
+    @Override
+    public PageDTO<TaskExecDTO> getTaskExecs(Long page, Long size, String status) {
+        Assert.notNull(page, "page is null");
+        Assert.notNull(size, "size is null");
+        // search page
+        Page<TaskExec> taskExecPage = taskExecService.getTaskExecs(null, page, size, status);
+        return PageDTO.of(
+                page,
+                size,
+                taskExecPage.getTotal(),
+                taskExecPage.getRecords().stream().map(TaskExec::to).toList());
+    }
+
+    @Override
+    public List<TaskNodeExecDTO> createTaskExecNodes(List<TaskNodeExecDTO> taskNodeExecDTOList) {
+        Assert.isTrue(taskNodeExecDTOList.stream().allMatch(this::isValidated), "task not dto basic info not validated.");
+        List<TaskNodeExec> taskNodeExecs =
+                taskNodeExecDTOList.stream().map(TaskNodeExec::of).toList();
+        Assert.isTrue(
+                taskNodeExecService.saveBatch(taskNodeExecs),
+                "save task node exec failed!"
+        );
+        return taskNodeExecs.stream().map(TaskNodeExec::to).toList();
+    }
+
+    @Override
+    public Boolean updateTaskExecNodes(List<TaskNodeExecDTO> taskNodeExecDTOList) {
+        Assert.isTrue(taskNodeExecDTOList.stream().allMatch(t ->
+            isValidated(t) && Objects.nonNull(t.getId())
+        ), "task not dto basic info not validated.");
+        List<TaskNodeExec> taskNodeExecs =
+                taskNodeExecDTOList.stream().map(TaskNodeExec::of).toList();
+        Assert.isTrue(
+                taskNodeExecService.updateBatchById(taskNodeExecs),
+                "update task node exec failed!"
+        );
+        return null;
+    }
+
+    @Override
+    public List<TaskNodeExecDTO> getTaskExecNodes(Long taskExecId) {
+        List<TaskNodeExec> taskExecNodes = taskNodeExecService.getTaskExecNodes(taskExecId);
+        return taskExecNodes.stream().map(TaskNodeExec::to).toList();
+    }
+
+    @Override
+    public PageDTO<TaskNodeExecDTO> getTaskExecNodes(
+            Long page, Long size, String status, Boolean checkPrevNodes) {
+        Assert.notNull(page, "page is null");
+        Assert.notNull(size, "size is null");
+        Page<TaskNodeExec> taskNodeExecPage =
+                taskNodeExecService.getTaskExecNodes(page, size, status, checkPrevNodes);
+        return PageDTO.of(
+                page,
+                size,
+                taskNodeExecPage.getTotal(),
+                taskNodeExecPage.getRecords().stream().map(TaskNodeExec::to).toList());
     }
 
     private void isValidated(TaskDTO taskDTO) {
@@ -107,9 +172,16 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
         Assert.notNull(taskDTO.getType(), "type is null");
     }
 
-    private void isValidated(TaskLogDTO taskLogDTO) {
-        Assert.notNull(taskLogDTO, "taskLog is null");
-        Assert.notNull(taskLogDTO.getTaskId(), "taskId is null");
+    private void isValidated(TaskExecDTO taskExecDTO) {
+        Assert.notNull(taskExecDTO, "taskLog is null");
+        Assert.notNull(taskExecDTO.getTaskId(), "taskId is null");
+    }
+
+    private boolean isValidated(TaskNodeExecDTO taskNodeExecDTO) {
+        Assert.notNull(taskNodeExecDTO, "taskNodeExec is null");
+        Assert.notNull(taskNodeExecDTO.getTaskExecId(), "taskExecId is null");
+        Assert.notNull(taskNodeExecDTO.getNodeId(), "nodeId is null");
+        return true;
     }
 
 }

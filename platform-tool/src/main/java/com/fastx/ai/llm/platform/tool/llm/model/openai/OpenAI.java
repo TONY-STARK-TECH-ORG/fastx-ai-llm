@@ -115,7 +115,7 @@ public class OpenAI extends BaseLlmModel {
                                             .role(ChatCompletionUserMessageParam.Role.of(openAIMessage.getRole()))
                                             .content(ChatCompletionUserMessageParam.Content.ofTextContent(openAIMessage.getContent()))
                                             .build()
-                            )).collect(Collectors.toList()))
+                            )).toList())
                     .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
                     .build();
             if (config.isStreaming()) {

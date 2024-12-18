@@ -73,7 +73,7 @@ public class DubboKnowledgeDubboBaseServiceImpl extends DubboBaseDomainService i
         List<KnowledgeBase> knowledgeBases = knowledgeBaseService.getKnowledgeBaseByOrganizationIds(
                 List.of(orgId)
         );
-        return knowledgeBases.stream().map(KnowledgeBase::to).collect(Collectors.toList());
+        return knowledgeBases.stream().map(KnowledgeBase::to).toList();
     }
 
     @Override
@@ -101,7 +101,7 @@ public class DubboKnowledgeDubboBaseServiceImpl extends DubboBaseDomainService i
         Assert.notNull(knowledgeBaseId, "knowledgeBaseId is null");
         List<KnowledgeBaseFile> knowledgeBaseFiles =
                 knowledgeBaseFileService.getKnowledgeBaseFileByKnowledgeBaseId(knowledgeBaseId);
-        return knowledgeBaseFiles.stream().map(KnowledgeBaseFile::to).collect(Collectors.toList());
+        return knowledgeBaseFiles.stream().map(KnowledgeBaseFile::to).toList();
     }
 
     @Override
@@ -109,9 +109,9 @@ public class DubboKnowledgeDubboBaseServiceImpl extends DubboBaseDomainService i
     public List<KnowledgeBaseFileDTO> batchCreateKnowledgeBaseFiles(List<KnowledgeBaseFileDTO> knowledgeBaseFileDTOs) {
         Assert.notNull(knowledgeBaseFileDTOs, "knowledgeBaseFileDTOs is null");
         knowledgeBaseFileDTOs.forEach(this::isValidated);
-        List<KnowledgeBaseFile> knowledgeBaseFiles = knowledgeBaseFileDTOs.stream().map(KnowledgeBaseFile::of).collect(Collectors.toList());
+        List<KnowledgeBaseFile> knowledgeBaseFiles = knowledgeBaseFileDTOs.stream().map(KnowledgeBaseFile::of).toList();
         Assert.isTrue(knowledgeBaseFileService.saveBatch(knowledgeBaseFiles), "save knowledge files failed");
-        return knowledgeBaseFiles.stream().map(KnowledgeBaseFile::to).collect(Collectors.toList());
+        return knowledgeBaseFiles.stream().map(KnowledgeBaseFile::to).toList();
     }
 
     @Override

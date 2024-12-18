@@ -62,11 +62,11 @@ public class PlatformAppServiceImpl implements IPlatformAppService {
                                 appDTO.setActiveVersion(appVersionDTO);
                             }
                             return appVersionDTO;
-                        }).collect(Collectors.toList())
+                        }).toList()
                 );
             }
             return appDTO;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     @Override
@@ -175,7 +175,7 @@ public class PlatformAppServiceImpl implements IPlatformAppService {
             appVersionDTO.setConfig(versionData);
             BeanUtils.copyProperties(av, appVersionDTO);
             return appVersionDTO;
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     private OrganizationDTO isValidatedOrganization(Long organizationId) {
