@@ -10,6 +10,8 @@ import com.fastx.ai.llm.platform.tool.llm.function.BaseLlmFunction;
 import com.fastx.ai.llm.platform.tool.llm.function.imagine.types.OpenAIImagineRequest;
 import com.fastx.ai.llm.platform.tool.llm.function.imagine.types.OpenAIImagineResponse;
 import com.fastx.ai.llm.platform.tool.llm.model.openai.types.OpenAIConfig;
+import com.fastx.ai.llm.platform.tool.spi.IPlatformTool;
+import com.google.auto.service.AutoService;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.Image;
@@ -24,6 +26,7 @@ import java.util.List;
 /**
  * @author stark
  */
+@AutoService(IPlatformTool.class)
 public class OpenAIImagineTool extends BaseLlmFunction {
 
     public static Prototype _prototype = new Prototype();
