@@ -1,4 +1,4 @@
-package com.fastx.ai.llm.platform.exec.workflow;
+package com.fastx.ai.llm.platform.in.exec.workflow;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.extern.slf4j.Slf4j;
@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-public class WorkflowExecuteContext {
-    public static TransmittableThreadLocal<WorkflowContext> CONTEXT = new TransmittableThreadLocal<>();
+public class WorkflowInContextHolder {
+    public static TransmittableThreadLocal<WorkflowInContext> CONTEXT = new TransmittableThreadLocal<>();
 
-    public static void setContext(WorkflowContext context) {
+    public static void setContext(WorkflowInContext context) {
         CONTEXT.set(context);
     }
 
-    public static WorkflowContext getContext() {
+    public static WorkflowInContext getContext() {
         return CONTEXT.get();
     }
 

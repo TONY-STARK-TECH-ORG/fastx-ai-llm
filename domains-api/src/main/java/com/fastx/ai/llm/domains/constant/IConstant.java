@@ -20,4 +20,6 @@ public interface IConstant {
     String LOGIN_AUTH = "auth";
 
     String NORMAL = "normal";
+    String KNOWLEDGE_BASE = "knowledge";
+    String TRAIN = "train";
 }

@@ -5,9 +5,8 @@ import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.platform.api.IPlatformToolService;
 import com.fastx.ai.llm.platform.config.ToolsLoader;
 import com.fastx.ai.llm.platform.dto.ToolDTO;
-import com.fastx.ai.llm.platform.exec.tool.PlatformToolExecutor;
-import com.fastx.ai.llm.platform.exec.tool.ToolContext;
-import com.fastx.ai.llm.platform.exec.tool.ToolRunner;
+import com.fastx.ai.llm.platform.in.exec.tool.ToolInContextExecutor;
+import com.fastx.ai.llm.platform.in.exec.tool.ToolInContext;
 import com.fastx.ai.llm.platform.tool.llm.LLMInput;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformTool;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformToolInput;
@@ -27,7 +26,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author stark
@@ -41,7 +39,7 @@ public class PlatformToolServiceImpl implements IPlatformToolService {
     ToolsLoader toolsLoader;
 
     @Autowired
-    PlatformToolExecutor toolExecutor;
+    ToolInContextExecutor toolInContextExecutor;
 
     @Override
     @SentinelResource("platform.tool.get")
@@ -90,13 +88,13 @@ public class PlatformToolServiceImpl implements IPlatformToolService {
     @Override
     @SentinelResource("platform.tool.exec")
     public void streamExecTool(String request, StreamObserver<String> response) throws IOException, InterruptedException {
-        ToolContext context = ToolContext.of(JSON.parseObject(request, Map.class));
+        ToolInContext runnable = ToolInContext.of(JSON.parseObject(request, Map.class));
         // set context and execute tool.
-        toolExecutor.setContext(context);
-        toolExecutor.execute(new ToolRunner());
+        toolInContextExecutor.setContext(runnable);
+        toolInContextExecutor.execute(runnable);
         // read to stream
-        context.readTo(response, logger);
-        context.clean();
+        runnable.readTo(response, logger);
+        runnable.clean();
         // complete stream
         response.onCompleted();
     }

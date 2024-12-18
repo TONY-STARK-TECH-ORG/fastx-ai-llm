@@ -14,3 +14,7 @@ dubbo:
     base-packages:
       - org.apache.seata
       - com.fastx.ai.llm
+  provider:
+    retries: 0
+  consumer:
+    retries: 0

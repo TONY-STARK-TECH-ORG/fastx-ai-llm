@@ -1,4 +1,4 @@
-package com.fastx.ai.llm.platform.exec.tool;
+package com.fastx.ai.llm.platform.in.exec.tool;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import com.alibaba.ttl.TtlRunnable;
@@ -19,22 +19,22 @@ import java.util.concurrent.*;
  *
  */
 @Component
-public class PlatformToolExecutor {
+public class ToolInContextExecutor {
 
-    private static Logger log = LoggerFactory.getLogger(PlatformToolExecutor.class);
+    private static Logger log = LoggerFactory.getLogger(ToolInContextExecutor.class);
 
     private static ExecutorService TOOL_EXECUTOR;
 
     private static ThreadFactory THREAD_FACTORY;
 
     private static Thread.UncaughtExceptionHandler uncaughtExceptionHandler = (t, e) -> {
-        if (Objects.nonNull(PlatformToolExecutor.EXEC_CONTEXT.get())) {
-            PlatformToolExecutor.EXEC_CONTEXT.get().setLlmOutput(LLMOutput.of(e.getMessage()));
+        if (Objects.nonNull(ToolInContextExecutor.EXEC_CONTEXT.get())) {
+            ToolInContextExecutor.EXEC_CONTEXT.get().setLlmOutput(LLMOutput.of(e.getMessage()));
         }
         log.error("tool exec error: {} ", e.getMessage());
     };
 
-    public static TransmittableThreadLocal<ToolContext> EXEC_CONTEXT = new TransmittableThreadLocal<>();
+    public static TransmittableThreadLocal<ToolInContext> EXEC_CONTEXT = new TransmittableThreadLocal<>();
 
     static {
         // get cup num
@@ -61,18 +61,18 @@ public class PlatformToolExecutor {
         );
     }
 
-    public void execute(ToolRunner toolRunner) {
+    public void execute(ToolInContext toolInContext) {
         // wrap runnable with ttl, send value to child thread.
-        Runnable ttlRunnable = TtlRunnable.get(toolRunner);
+        Runnable ttlRunnable = TtlRunnable.get(toolInContext);
         TOOL_EXECUTOR.execute(ttlRunnable);
     }
 
-    public void setContext(ToolContext context) {
-        PlatformToolExecutor.EXEC_CONTEXT.set(context);
+    public void setContext(ToolInContext context) {
+        ToolInContextExecutor.EXEC_CONTEXT.set(context);
     }
 
     public void remove() {
-        PlatformToolExecutor.EXEC_CONTEXT.remove();
+        ToolInContextExecutor.EXEC_CONTEXT.remove();
     }
 
     @PreDestroy

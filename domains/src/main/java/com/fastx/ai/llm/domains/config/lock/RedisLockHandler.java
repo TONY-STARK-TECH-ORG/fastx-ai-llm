@@ -1,5 +1,6 @@
 package com.fastx.ai.llm.domains.config.lock;
 
+import com.fastx.ai.llm.domains.exception.DomainServiceLockException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -43,7 +44,7 @@ public class RedisLockHandler {
         RLock rLock = redissonClient.getLock(key);
         boolean tryLock = rLock.tryLock(waitTime, leaseTime, TimeUnit.SECONDS);
         if (!tryLock) {
-            throw new RuntimeException(errorDesc);
+            throw new DomainServiceLockException(errorDesc);
         }
         try{
             return joinPoint.proceed();

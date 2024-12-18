@@ -25,7 +25,7 @@ import java.util.Objects;
 public class TaskExecServiceImpl extends ServiceImpl<TaskExecMapper, TaskExec> implements ITaskExecService {
 
     @Override
-    public Page<TaskExec> getTaskExecs(Long taskId, Long page, Long size, String status) {
+    public Page<TaskExec> getTaskExecs(Long taskId, Long page, Long size, String status, String type) {
         LambdaQueryWrapper<TaskExec> wrapper = new LambdaQueryWrapper<>();
         if (Objects.nonNull(taskId)) {
             wrapper.eq(TaskExec::getTaskId, taskId);
@@ -33,6 +33,8 @@ public class TaskExecServiceImpl extends ServiceImpl<TaskExecMapper, TaskExec> i
         if (StringUtils.isNotBlank(status)) {
             wrapper.eq(TaskExec::getStatus, status);
         }
+        // @TODO (yedong) select t_task t where t.type = type
+        // @TODO (yedong) select t_task t where t.status = 'active'
         wrapper.orderByDesc(TaskExec::getCreateTime);
         Page<TaskExec> paged = this.page(new Page<>(page, size), wrapper);
         if (CollectionUtils.isEmpty(paged.getRecords())) {

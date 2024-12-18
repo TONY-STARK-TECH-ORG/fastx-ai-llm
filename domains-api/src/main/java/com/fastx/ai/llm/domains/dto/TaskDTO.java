@@ -24,7 +24,7 @@ public class TaskDTO extends BaseDTO implements Serializable {
 
     private String cron;
 
-    private Long workflowId;
+    private Long workflowVersionId;
 
     private String status;
 
@@ -70,12 +70,12 @@ public class TaskDTO extends BaseDTO implements Serializable {
         this.cron = cron;
     }
 
-    public Long getWorkflowId() {
-        return workflowId;
+    public Long getWorkflowVersionId() {
+        return workflowVersionId;
     }
 
-    public void setWorkflowId(Long workflowId) {
-        this.workflowId = workflowId;
+    public void setWorkflowVersionId(Long workflowVersionId) {
+        this.workflowVersionId = workflowVersionId;
     }
 
     public String getStatus() {

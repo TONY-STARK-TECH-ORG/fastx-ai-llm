@@ -80,6 +80,15 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
     }
 
     @Override
+    @SentinelResource("task.get")
+    public TaskDTO getTaskById(Long taskId) {
+        Assert.notNull(taskId, "taskId is null");
+        Task task = taskService.getById(taskId);
+        Assert.notNull(task, "task is null");
+        return task.to();
+    }
+
+    @Override
     @SentinelResource("task.exec.create")
     public TaskExecDTO createTaskExec(TaskExecDTO taskExecDTO) {
         isValidated(taskExecDTO);
@@ -91,12 +100,12 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
 
     @Override
     @SentinelResource("task.exec.get")
-    public PageDTO<TaskExecDTO> getTaskExecsByTaskId(Long taskId, Long page, Long size, String status) {
+    public PageDTO<TaskExecDTO> getTaskExecsByTaskId(Long taskId, Long page, Long size, String status, String type) {
         Assert.notNull(taskId, "taskId is null");
         Assert.notNull(page, "page is null");
         Assert.notNull(size, "size is null");
         // search page
-        Page<TaskExec> taskExecPage = taskExecService.getTaskExecs(taskId, page, size, status);
+        Page<TaskExec> taskExecPage = taskExecService.getTaskExecs(taskId, page, size, status, type);
         return PageDTO.of(
                 page,
                 size,
@@ -106,16 +115,33 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
 
     @Override
     @SentinelResource("task.exec.get")
-    public PageDTO<TaskExecDTO> getTaskExecs(Long page, Long size, String status) {
+    public PageDTO<TaskExecDTO> getTaskExecs(Long page, Long size, String status, String type) {
         Assert.notNull(page, "page is null");
         Assert.notNull(size, "size is null");
         // search page
-        Page<TaskExec> taskExecPage = taskExecService.getTaskExecs(null, page, size, status);
+        Page<TaskExec> taskExecPage = taskExecService.getTaskExecs(null, page, size, status, type);
         return PageDTO.of(
                 page,
                 size,
                 taskExecPage.getTotal(),
                 taskExecPage.getRecords().stream().map(TaskExec::to).toList());
+    }
+
+    @Override
+    @SentinelResource("task.exec.update")
+    @RedisLock(key = "taskExecLock::${#taskExecDTO.id}")
+    public Boolean updateTaskExec(TaskExecDTO taskExecDTO) {
+        isValidated(taskExecDTO);
+        Assert.notNull(taskExecDTO.getId(), "id is null");
+        if (IConstant.RUNNING.equals(taskExecDTO.getStatus())) {
+            TaskExec taskExec = taskExecService.getById(taskExecDTO.getId());
+            // check states not WAIT now
+            Assert.isTrue(
+                    IConstant.WAIT.equals(taskExec) || IConstant.ERROR.equals(taskExec),
+                    "update task exec status failed! not (WAIT, ERROR) now!"
+            );
+        }
+        return taskExecService.updateById(TaskExec.of(taskExecDTO));
     }
 
     @Override
@@ -153,8 +179,8 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
             // validate status was wait now.
             TaskNodeExec nodeExec = taskNodeExecService.getById(taskNodeExecDTO.getId());
             Assert.isTrue(
-                    IConstant.WAIT.equals(nodeExec.getStatus()),
-                    "task node exec status not validated (wait) now!"
+                    IConstant.WAIT.equals(nodeExec.getStatus()) || IConstant.ERROR.equals(nodeExec.getStatus()),
+                    "task node exec status not validated (WAIT, ERROR) now!"
             );
         }
         TaskNodeExec taskNodeExec = TaskNodeExec.of(taskNodeExecDTO);
@@ -183,13 +209,20 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
                 taskNodeExecPage.getRecords().stream().map(TaskNodeExec::to).toList());
     }
 
+    @Override
+    @SentinelResource("task.exec.node.remove")
+    public boolean deleteTaskNodeExecs(Long taskExecId) {
+        Assert.notNull(taskExecId, "taskExecId is null");
+        return taskNodeExecService.removeByExecId(taskExecId);
+    }
+
     private void isValidated(TaskDTO taskDTO) {
         Assert.notNull(taskDTO, "task is null");
         Assert.notNull(taskDTO.getOrganizationId(), "organizationId is null");
         Assert.hasText(taskDTO.getName(), "name is null");
         Assert.hasText(taskDTO.getDescription(), "description is null");
         Assert.hasText(taskDTO.getCron(), "cron is null");
-        Assert.notNull(taskDTO.getWorkflowId(), "workflow is null");
+        Assert.notNull(taskDTO.getWorkflowVersionId(), "workflow version is null");
         Assert.notNull(taskDTO.getType(), "type is null");
     }
 

@@ -51,9 +51,9 @@ public class FastLlmTaskController {
     }
 
     @GetMapping("org/task/exec/list")
-    public Response<PlatformPageDTO<OrgTaskExecDTO>> listTaskExecs(Long taskId, Long page, Long size, String status) {
+    public Response<PlatformPageDTO<OrgTaskExecDTO>> listTaskExecs(Long taskId, Long page, Long size, String status, String type) {
         return Response.success(
-                platformOrgService.getTaskExecsByTaskId(taskId, page, size, status)
+                platformOrgService.getTaskExecsByTaskId(taskId, page, size, status, type)
         );
     }
 
@@ -64,8 +64,8 @@ public class FastLlmTaskController {
         );
     }
 
-    @GetMapping("org/task/exec/node/list")
-    public Response<PlatformPageDTO<OrgTaskNodeExecDTO>> listTaskNodeExecs(Long page, Long size, String status, Boolean checkPrevNodes) {
+    @GetMapping("org/task/exec/node/page")
+    public Response<PlatformPageDTO<OrgTaskNodeExecDTO>> listTaskNodeExecsByPage(Long page, Long size, String status, Boolean checkPrevNodes) {
         return Response.success(
                 platformOrgService.getTaskNodeExecs(page, size, status, checkPrevNodes)
         );
