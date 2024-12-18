@@ -38,7 +38,9 @@ public class HttpSend extends BaseLlmTools {
         inputs.add(Fields.of("mediaType", String.class));
 
         List<Fields> outputs = new ArrayList<>();
-        outputs.add(Fields.of("response", Map.class));
+        outputs.add(Fields.of("response", String.class));
+        outputs.add(Fields.of("success", Boolean.class));
+        outputs.add(Fields.of("message", String.class));
 
         _prototype.setConfig(config);
         _prototype.setInputs(inputs);
@@ -77,7 +79,11 @@ public class HttpSend extends BaseLlmTools {
                         .build();
             }
             try (Response response = client.newCall(request).execute()) {
-                return LLMOutput.of(response.body().string());
+                return LLMOutput.of(JSON.toJSONString(Map.of(
+                        "response", response.body().string(),
+                        "success", response.isSuccessful(),
+                        "message",  StringUtils.defaultIfBlank(response.message(), "")
+                )));
             }
         } catch (Exception e) {
             return LLMOutput.ofError(e.getMessage());
