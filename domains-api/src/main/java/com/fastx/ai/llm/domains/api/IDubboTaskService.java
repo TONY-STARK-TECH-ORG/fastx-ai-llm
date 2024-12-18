@@ -58,18 +58,27 @@ public interface IDubboTaskService {
      * @param page page
      * @param size size
      * @param status status
+     * @param type type
      * @return task list with page info
      */
-    PageDTO<TaskExecDTO> getTaskExecsByTaskId(Long taskId, Long page, Long size, String status);
+    PageDTO<TaskExecDTO> getTaskExecsByTaskId(Long taskId, Long page, Long size, String status, String type);
 
     /**
      * all task logs
      * @param page page
      * @param size size
      * @param status status
+     * @param type type
      * @return task list with page info
      */
-    PageDTO<TaskExecDTO> getTaskExecs(Long page, Long size, String status);
+    PageDTO<TaskExecDTO> getTaskExecs(Long page, Long size, String status, String type);
+
+    /**
+     * update task exec state
+     * @param taskExecDTO task exec
+     * @return true or false.
+     */
+    Boolean updateTaskExec(TaskExecDTO taskExecDTO);
 
     //--------------------------------------------------
     // task node exec.

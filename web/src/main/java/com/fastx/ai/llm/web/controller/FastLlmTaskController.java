@@ -51,9 +51,9 @@ public class FastLlmTaskController {
     }
 
     @GetMapping("org/task/exec/list")
-    public Response<PlatformPageDTO<OrgTaskExecDTO>> listTaskExecs(Long taskId, Long page, Long size, String status) {
+    public Response<PlatformPageDTO<OrgTaskExecDTO>> listTaskExecs(Long taskId, Long page, Long size, String status, String type) {
         return Response.success(
-                platformOrgService.getTaskExecsByTaskId(taskId, page, size, status)
+                platformOrgService.getTaskExecsByTaskId(taskId, page, size, status, type)
         );
     }
 

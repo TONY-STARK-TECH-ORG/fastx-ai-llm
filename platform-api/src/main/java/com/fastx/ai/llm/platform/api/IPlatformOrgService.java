@@ -100,10 +100,11 @@ public interface IPlatformOrgService {
      * @param taskId task id
      * @param page page
      * @param size size
+     * @param type type
      * @param status status
      * @return task list with page info
      */
-    PlatformPageDTO<OrgTaskExecDTO> getTaskExecsByTaskId(Long taskId, Long page, Long size, String status);
+    PlatformPageDTO<OrgTaskExecDTO> getTaskExecsByTaskId(Long taskId, Long page, Long size, String status, String type);
 
     /**
      * all task execs
@@ -112,7 +113,7 @@ public interface IPlatformOrgService {
      * @param status status
      * @return task list with page info
      */
-    PlatformPageDTO<OrgTaskExecDTO> getTaskExecs(Long page, Long size, String status);
+    PlatformPageDTO<OrgTaskExecDTO> getTaskExecs(Long page, Long size, String status, String type);
 
     //--------------------------------------------------
     // task node exec.

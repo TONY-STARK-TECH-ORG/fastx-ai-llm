@@ -183,8 +183,8 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
 
     @Override
     @SentinelResource("org.task.exec.get")
-    public PlatformPageDTO<OrgTaskExecDTO> getTaskExecsByTaskId(Long taskId, Long page, Long size, String status) {
-        PageDTO<TaskExecDTO> pageTaskLogs = taskService.getTaskExecsByTaskId(taskId, page, size, status);
+    public PlatformPageDTO<OrgTaskExecDTO> getTaskExecsByTaskId(Long taskId, Long page, Long size, String status, String type) {
+        PageDTO<TaskExecDTO> pageTaskLogs = taskService.getTaskExecsByTaskId(taskId, page, size, status, type);
         return PlatformPageDTO.of(page, size, pageTaskLogs.getTotal(), pageTaskLogs.getList().stream().map(t -> {
             OrgTaskExecDTO orgTaskLog = new OrgTaskExecDTO();
             BeanUtils.copyProperties(t, orgTaskLog);
@@ -194,8 +194,8 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
 
     @Override
     @SentinelResource("org.task.exec.get")
-    public PlatformPageDTO<OrgTaskExecDTO> getTaskExecs(Long page, Long size, String status) {
-        PageDTO<TaskExecDTO> pageTaskLogs = taskService.getTaskExecs(page, size, status);
+    public PlatformPageDTO<OrgTaskExecDTO> getTaskExecs(Long page, Long size, String status, String type) {
+        PageDTO<TaskExecDTO> pageTaskLogs = taskService.getTaskExecs(page, size, status, type);
         return PlatformPageDTO.of(page, size, pageTaskLogs.getTotal(), pageTaskLogs.getList().stream().map(t -> {
             OrgTaskExecDTO orgTaskLog = new OrgTaskExecDTO();
             BeanUtils.copyProperties(t, orgTaskLog);

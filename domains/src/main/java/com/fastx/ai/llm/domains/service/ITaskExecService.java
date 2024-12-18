@@ -22,7 +22,7 @@ public interface ITaskExecService extends IService<TaskExec> {
      * @param status status
      * @return list with page info
      */
-    Page<TaskExec> getTaskExecs(Long taskId, Long page, Long size, String status);
+    Page<TaskExec> getTaskExecs(Long taskId, Long page, Long size, String status, String type);
 
     /**
      * remote logs under a task

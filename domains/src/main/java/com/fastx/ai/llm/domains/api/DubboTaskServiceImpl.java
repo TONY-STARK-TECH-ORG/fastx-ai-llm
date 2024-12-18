@@ -91,12 +91,12 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
 
     @Override
     @SentinelResource("task.exec.get")
-    public PageDTO<TaskExecDTO> getTaskExecsByTaskId(Long taskId, Long page, Long size, String status) {
+    public PageDTO<TaskExecDTO> getTaskExecsByTaskId(Long taskId, Long page, Long size, String status, String type) {
         Assert.notNull(taskId, "taskId is null");
         Assert.notNull(page, "page is null");
         Assert.notNull(size, "size is null");
         // search page
-        Page<TaskExec> taskExecPage = taskExecService.getTaskExecs(taskId, page, size, status);
+        Page<TaskExec> taskExecPage = taskExecService.getTaskExecs(taskId, page, size, status, type);
         return PageDTO.of(
                 page,
                 size,
@@ -106,16 +106,32 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
 
     @Override
     @SentinelResource("task.exec.get")
-    public PageDTO<TaskExecDTO> getTaskExecs(Long page, Long size, String status) {
+    public PageDTO<TaskExecDTO> getTaskExecs(Long page, Long size, String status, String type) {
         Assert.notNull(page, "page is null");
         Assert.notNull(size, "size is null");
         // search page
-        Page<TaskExec> taskExecPage = taskExecService.getTaskExecs(null, page, size, status);
+        Page<TaskExec> taskExecPage = taskExecService.getTaskExecs(null, page, size, status, type);
         return PageDTO.of(
                 page,
                 size,
                 taskExecPage.getTotal(),
                 taskExecPage.getRecords().stream().map(TaskExec::to).toList());
+    }
+
+    @Override
+    @SentinelResource("task.exec.update")
+    public Boolean updateTaskExec(TaskExecDTO taskExecDTO) {
+        isValidated(taskExecDTO);
+        Assert.notNull(taskExecDTO.getId(), "id is null");
+        if (IConstant.RUNNING.equals(taskExecDTO.getStatus())) {
+            TaskExec taskExec = taskExecService.getById(taskExecDTO.getId());
+            // check states not WAIT now
+            Assert.isTrue(
+                    IConstant.WAIT.equals(taskExec),
+                    "update task exec status failed! (NOT WAIT) NOW!"
+            );
+        }
+        return taskExecService.updateById(TaskExec.of(taskExecDTO));
     }
 
     @Override
