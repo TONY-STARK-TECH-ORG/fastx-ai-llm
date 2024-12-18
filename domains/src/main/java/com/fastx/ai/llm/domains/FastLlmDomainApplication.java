@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -12,6 +13,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @EnableDubbo
 @EnableCaching
+
+// used for clean db in fixed time.
+@EnableScheduling
+
 @EnableTransactionManagement
 @EnableConfigurationProperties
 @SpringBootApplication(scanBasePackages = "com.fastx.ai.llm")

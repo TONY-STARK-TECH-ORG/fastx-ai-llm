@@ -120,6 +120,7 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
 
     @Override
     @SentinelResource("task.exec.node.create")
+    @Transactional(rollbackFor = Exception.class)
     public List<TaskNodeExecDTO> createTaskNodeExecs(List<TaskNodeExecDTO> taskNodeExecDTOList) {
         Assert.isTrue(taskNodeExecDTOList.stream().allMatch(this::isValidated), "task not dto basic info not validated.");
         List<TaskNodeExec> taskNodeExecs =
@@ -133,6 +134,7 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
 
     @Override
     @SentinelResource("task.exec.node.update")
+    @Transactional(rollbackFor = Exception.class)
     public Boolean updateTaskNodeExecs(List<TaskNodeExecDTO> taskNodeExecDTOList) {
         Assert.isTrue(taskNodeExecDTOList.stream().allMatch(t ->
             isValidated(t) && Objects.nonNull(t.getId())
