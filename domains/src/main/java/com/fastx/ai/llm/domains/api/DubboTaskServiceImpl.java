@@ -142,10 +142,18 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
     }
 
     @Override
-    public Boolean updateTaskNodeExecs(TaskNodeExecDTO taskNodeExecDTOList) {
-        Assert.isTrue(isValidated(taskNodeExecDTOList), "task not dto basic info not validated.");
-        Assert.notNull(taskNodeExecDTOList.getId(), "id is null");
-        TaskNodeExec taskNodeExec = TaskNodeExec.of(taskNodeExecDTOList);
+    public Boolean updateTaskNodeExecs(TaskNodeExecDTO taskNodeExecDTO) {
+        Assert.isTrue(isValidated(taskNodeExecDTO), "task not dto basic info not validated.");
+        Assert.notNull(taskNodeExecDTO.getId(), "id is null");
+        if (IConstant.RUNNING.equals(taskNodeExecDTO.getStatus())) {
+            // validate status was wait now.
+            TaskNodeExec nodeExec = taskNodeExecService.getById(taskNodeExecDTO.getId());
+            Assert.isTrue(
+                    IConstant.WAIT.equals(nodeExec.getStatus()),
+                    "task node exec status not validated (wait) now!"
+            );
+        }
+        TaskNodeExec taskNodeExec = TaskNodeExec.of(taskNodeExecDTO);
         return taskNodeExecService.updateById(taskNodeExec);
     }
 
