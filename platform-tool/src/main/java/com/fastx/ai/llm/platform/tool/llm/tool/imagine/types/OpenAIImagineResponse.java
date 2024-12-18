@@ -1,4 +1,4 @@
-package com.fastx.ai.llm.platform.tool.llm.function.imagine.types;
+package com.fastx.ai.llm.platform.tool.llm.tool.imagine.types;
 
 import java.io.Serial;
 import java.io.Serializable;
