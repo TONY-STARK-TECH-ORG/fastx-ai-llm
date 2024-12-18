@@ -1,4 +1,4 @@
-package com.fastx.ai.llm.platform.tool.llm.function.embedding;
+package com.fastx.ai.llm.platform.tool.llm.function.imagine;
 
 import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.platform.tool.entity.Fields;
@@ -7,16 +7,14 @@ import com.fastx.ai.llm.platform.tool.exception.ToolExecException;
 import com.fastx.ai.llm.platform.tool.llm.LLMInput;
 import com.fastx.ai.llm.platform.tool.llm.LLMOutput;
 import com.fastx.ai.llm.platform.tool.llm.function.BaseLlmFunction;
-import com.fastx.ai.llm.platform.tool.llm.function.embedding.types.OpenAIEmbeddingRequest;
-import com.fastx.ai.llm.platform.tool.llm.function.embedding.types.OpenAIEmbeddingResult;
-import com.fastx.ai.llm.platform.tool.llm.function.embedding.types.OpenAIEmbeddingUsage;
+import com.fastx.ai.llm.platform.tool.llm.function.imagine.types.OpenAIImagineRequest;
+import com.fastx.ai.llm.platform.tool.llm.function.imagine.types.OpenAIImagineResponse;
 import com.fastx.ai.llm.platform.tool.llm.model.openai.types.OpenAIConfig;
-import com.fastx.ai.llm.platform.tool.spi.IPlatformTool;
-import com.google.auto.service.AutoService;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.models.CreateEmbeddingResponse;
-import com.openai.models.EmbeddingCreateParams;
+import com.openai.models.Image;
+import com.openai.models.ImageGenerateParams;
+import com.openai.models.ImagesResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -26,8 +24,7 @@ import java.util.List;
 /**
  * @author stark
  */
-@AutoService(IPlatformTool.class)
-public class OpenAIEmbeddingTool extends BaseLlmFunction {
+public class OpenAIImageGenerateTool extends BaseLlmFunction {
 
     public static Prototype _prototype = new Prototype();
 
@@ -37,7 +34,8 @@ public class OpenAIEmbeddingTool extends BaseLlmFunction {
     private static String API_KEY = "apiKey";
 
     private static String MODEL_ID = "modelId";
-    private static String INPUT = "input";
+    private static String PROMPT = "prompt";
+    private static String SIZE = "size";
 
     static {
         // for config
@@ -46,14 +44,13 @@ public class OpenAIEmbeddingTool extends BaseLlmFunction {
         config.add(Fields.of(API_BASE_URL, String.class, "https://api.openai.com/v1"));
         // for inputs.
         List<Fields> inputs = new ArrayList<>();
-        inputs.add(Fields.of(MODEL_ID, String.class, "text-embedding-3-small"));
-        inputs.add(Fields.of(INPUT, String.class, "hello world"));
+        inputs.add(Fields.of(MODEL_ID, String.class, "dall-e-3"));
+        inputs.add(Fields.of(PROMPT, String.class, "generate a man play game in fly."));
+        inputs.add(Fields.of(SIZE, String.class, "512x512"));
 
         // for outputs.
         List<Fields> outputs = new ArrayList<>();
-        outputs.add(Fields.of("model", String.class));
-        outputs.add(Fields.of("embeddings", List.class));
-        outputs.add(Fields.of("usage", OpenAIEmbeddingUsage.class));
+        outputs.add(Fields.of("urls", List.class));
 
         // add to
         _prototype.setConfig(config);
@@ -68,33 +65,35 @@ public class OpenAIEmbeddingTool extends BaseLlmFunction {
                 throw new ToolExecException("openai need config and input data.");
             }
 
+            // send request
             OpenAIConfig config = JSON.parseObject(input.getConfig(), OpenAIConfig.class);
-            OpenAIEmbeddingRequest request = JSON.parseObject(input.getInputs(), OpenAIEmbeddingRequest.class);
+            OpenAIImagineRequest request = JSON.parseObject(input.getInputs(), OpenAIImagineRequest.class);
 
-            if (StringUtils.isAnyBlank(request.getModelId(), request.getInput())) {
-                throw new ToolExecException("openai embedding request need modelId and input.");
-            }
+            config.validate();
+            request.validate();
 
             OpenAIClient client = OpenAIOkHttpClient.builder()
                     .apiKey(config.getApiKey())
                     .baseUrl(config.getBaseUrl())
                     .build();
-            // 1536 dimensions for ada v2 and suffix with `-small` embedding models.
-            int dimensions = 1536;
-            if (request.getModelId().endsWith("-large")) {
-                dimensions = 3072;
-            }
-            EmbeddingCreateParams embeddingCreateParams = EmbeddingCreateParams.builder()
+            ImageGenerateParams imageGenerateParams = ImageGenerateParams.builder()
                     .model(request.getModelId())
-                    .input(request.getInput())
-                    // text dimensions fixed to 1536. large fixed to 3072.
-                    .dimensions(dimensions)
+                    .size(ImageGenerateParams.Size.of(request.getSize()))
+                    .prompt(request.getPrompt())
+                    .quality(ImageGenerateParams.Quality.HD)
                     .build();
-            CreateEmbeddingResponse response = client.embeddings().create(embeddingCreateParams);
-            if (CollectionUtils.isEmpty(response.data())) {
+            ImagesResponse generate = client.images().generate(imageGenerateParams);
+            if (CollectionUtils.isEmpty(generate.data())) {
                 throw new ToolExecException("openai embedding response data is empty.");
             }
-            return LLMOutput.of(JSON.toJSONString(OpenAIEmbeddingResult.of(response)));
+            List<Image> images = generate.data();
+            List<String> urls = new ArrayList<>();
+            images.forEach(i -> {
+                if (i.url().isPresent()) {
+                    urls.add(i.url().get());
+                }
+            });
+            return LLMOutput.of(JSON.toJSONString(OpenAIImagineResponse.of(urls)));
         } catch (Exception e) {
             return LLMOutput.ofError(e.getMessage());
         }
@@ -102,21 +101,21 @@ public class OpenAIEmbeddingTool extends BaseLlmFunction {
 
     @Override
     public String getName() {
-        return "OpenAI Embedding";
+        return "OpenAI Dall.E";
     }
 
     @Override
     public String getDescription() {
-        return "OpenAI Embedding API";
+        return "OpenAI Image generations API";
     }
 
     @Override
     public String getCode() {
-        return "llm.openai.embedding";
+        return "llm.openai.imagine";
     }
 
     @Override
     public String getPrototype() {
-        return _prototype.toJSONString();
+        return "";
     }
 }

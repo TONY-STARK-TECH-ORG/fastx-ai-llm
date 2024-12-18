@@ -2,7 +2,6 @@ package com.fastx.ai.llm.platform.tool.llm.function.start;
 
 import com.fastx.ai.llm.platform.tool.entity.Fields;
 import com.fastx.ai.llm.platform.tool.entity.Prototype;
-import com.fastx.ai.llm.platform.tool.exception.ToolExecException;
 import com.fastx.ai.llm.platform.tool.llm.LLMInput;
 import com.fastx.ai.llm.platform.tool.llm.LLMOutput;
 import com.fastx.ai.llm.platform.tool.llm.function.BaseLlmFunction;
@@ -45,7 +44,7 @@ public class LLMStartNode extends BaseLlmFunction {
     @Override
     public LLMOutput exec(LLMInput input) {
         if (StringUtils.isAnyBlank(input.getInputs())) {
-            throw new ToolExecException("llm start node need input data.");
+            return LLMOutput.ofError("llm start node need input data.");
         }
         return LLMOutput.of(input.getInputs());
     }

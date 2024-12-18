@@ -3,7 +3,6 @@ package com.fastx.ai.llm.platform.tool.llm.function.end;
 import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.platform.tool.entity.Fields;
 import com.fastx.ai.llm.platform.tool.entity.Prototype;
-import com.fastx.ai.llm.platform.tool.exception.ToolExecException;
 import com.fastx.ai.llm.platform.tool.llm.LLMInput;
 import com.fastx.ai.llm.platform.tool.llm.LLMOutput;
 import com.fastx.ai.llm.platform.tool.llm.function.BaseLlmFunction;
@@ -51,8 +50,9 @@ public class LLMEndNode extends BaseLlmFunction {
     @Override
     public LLMOutput exec(LLMInput input) {
         if (StringUtils.isAnyBlank(input.getInputs())) {
-            throw new ToolExecException("llm end node need input data.");
+            return LLMOutput.ofError("llm end node need input data.");
         }
+
         String content = "";
         String modelId = "";
         try {
