@@ -89,14 +89,14 @@ public interface IPlatformOrgService {
     List<OrgTaskDTO> getTasksByOrgId(Long organizationId);
 
     /**
-     * create new task log
+     * create new task exec
      * @param taskLogDTO log info
      * @return created task log
      */
     OrgTaskExecDTO createTaskExec(OrgTaskExecDTO taskLogDTO);
 
     /**
-     * all task logs
+     * all task execs
      * @param taskId task id
      * @param page page
      * @param size size
@@ -104,6 +104,55 @@ public interface IPlatformOrgService {
      * @return task list with page info
      */
     PlatformPageDTO<OrgTaskExecDTO> getTaskExecsByTaskId(Long taskId, Long page, Long size, String status);
+
+    /**
+     * all task execs
+     * @param page page
+     * @param size size
+     * @param status status
+     * @return task list with page info
+     */
+    PlatformPageDTO<OrgTaskExecDTO> getTaskExecs(Long page, Long size, String status);
+
+    //--------------------------------------------------
+    // task node exec.
+    //--------------------------------------------------
+
+    /**
+     * create a new task exec for run.
+     * @param taskNodeExecDTOList task node exec dto list.
+     * @return update result.
+     */
+    List<OrgTaskNodeExecDTO> createTaskExecNodes(List<OrgTaskNodeExecDTO> taskNodeExecDTOList);
+
+    /**
+     * update task node exec status.
+     * @param taskNodeExecDTOList task node exec dto list.
+     * @return update result.
+     */
+    Boolean updateTaskExecNodes(List<OrgTaskNodeExecDTO> taskNodeExecDTOList);
+
+    /**
+     * get all task node exec by task id.
+     * @param taskExecId task exec id.
+     * @return taskId
+     */
+    List<OrgTaskNodeExecDTO> getTaskExecNodes(Long taskExecId);
+
+    /**
+     * query task exec nodes with condition.
+     * @param page page
+     * @param size size
+     * @param status node exec status
+     * @param checkPrevNodes check prev node execute state == 'finish'
+     * @return result
+     */
+    PlatformPageDTO<OrgTaskNodeExecDTO> getTaskExecNodes(
+            Long page,
+            Long size,
+            String status,
+            Boolean checkPrevNodes
+    );
 
     //-----------------------------------------------------------------------------------------
     // flow

@@ -25,7 +25,6 @@ import org.springframework.util.Assert;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author stark
@@ -170,7 +169,7 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
     }
 
     @Override
-    @SentinelResource("org.task.log.create")
+    @SentinelResource("org.task.exec.create")
     public OrgTaskExecDTO createTaskExec(OrgTaskExecDTO taskLogDTO) {
         Assert.notNull(taskLogDTO, "taskLogDTO is null");
         // create dto
@@ -183,11 +182,76 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
     }
 
     @Override
-    @SentinelResource("org.task.log.get")
+    @SentinelResource("org.task.exec.get")
     public PlatformPageDTO<OrgTaskExecDTO> getTaskExecsByTaskId(Long taskId, Long page, Long size, String status) {
         PageDTO<TaskExecDTO> pageTaskLogs = taskService.getTaskExecsByTaskId(taskId, page, size, status);
         return PlatformPageDTO.of(page, size, pageTaskLogs.getTotal(), pageTaskLogs.getList().stream().map(t -> {
             OrgTaskExecDTO orgTaskLog = new OrgTaskExecDTO();
+            BeanUtils.copyProperties(t, orgTaskLog);
+            return orgTaskLog;
+        }).toList());
+    }
+
+    @Override
+    @SentinelResource("org.task.exec.get")
+    public PlatformPageDTO<OrgTaskExecDTO> getTaskExecs(Long page, Long size, String status) {
+        PageDTO<TaskExecDTO> pageTaskLogs = taskService.getTaskExecs(page, size, status);
+        return PlatformPageDTO.of(page, size, pageTaskLogs.getTotal(), pageTaskLogs.getList().stream().map(t -> {
+            OrgTaskExecDTO orgTaskLog = new OrgTaskExecDTO();
+            BeanUtils.copyProperties(t, orgTaskLog);
+            return orgTaskLog;
+        }).toList());
+    }
+
+    @Override
+    @SentinelResource("org.task.exec.node.create")
+    public List<OrgTaskNodeExecDTO> createTaskExecNodes(List<OrgTaskNodeExecDTO> taskNodeExecDTOList) {
+        Assert.notEmpty(taskNodeExecDTOList, "task node exec was empty!");
+        List<TaskNodeExecDTO> list = taskNodeExecDTOList.stream().map(taskNodeExec -> {
+            TaskNodeExecDTO t = new TaskNodeExecDTO();
+            BeanUtils.copyProperties(taskNodeExec, t);
+            return t;
+        }).toList();
+        return Lists.createWhenNull(taskService.createTaskExecNodes(list)).stream().map(t -> {
+            OrgTaskNodeExecDTO orgTaskNodeExec = new OrgTaskNodeExecDTO();
+            BeanUtils.copyProperties(t, orgTaskNodeExec);
+            return orgTaskNodeExec;
+        }).toList();
+    }
+
+    @Override
+    @SentinelResource("org.task.exec.node.update")
+    public Boolean updateTaskExecNodes(List<OrgTaskNodeExecDTO> taskNodeExecDTOList) {
+        Assert.notEmpty(taskNodeExecDTOList, "task node exec was empty!");
+        List<TaskNodeExecDTO> list = taskNodeExecDTOList.stream().map(taskNodeExec -> {
+            TaskNodeExecDTO t = new TaskNodeExecDTO();
+            BeanUtils.copyProperties(taskNodeExec, t);
+            return t;
+        }).toList();
+        return taskService.updateTaskExecNodes(list);
+    }
+
+    @Override
+    @SentinelResource("org.task.exec.node.get")
+    public List<OrgTaskNodeExecDTO> getTaskExecNodes(Long taskExecId) {
+        Assert.notNull(taskExecId, "taskExecId is null");
+        List<TaskNodeExecDTO> taskNodeExecs = taskService.getTaskExecNodes(taskExecId);
+        return Lists.createWhenNull(taskNodeExecs).stream().map(t -> {
+            OrgTaskNodeExecDTO orgTaskNodeExec = new OrgTaskNodeExecDTO();
+            BeanUtils.copyProperties(t, orgTaskNodeExec);
+            return orgTaskNodeExec;
+        }).toList();
+    }
+
+    @Override
+    @SentinelResource("org.task.exec.node.get")
+    public PlatformPageDTO<OrgTaskNodeExecDTO> getTaskExecNodes(Long page, Long size, String status, Boolean checkPrevNodes) {
+        Assert.notNull(page, "page is null");
+        Assert.notNull(size, "size is null");
+        PageDTO<TaskNodeExecDTO> taskNodeExecPage =
+                taskService.getTaskExecNodes(page, size, status, checkPrevNodes);
+        return PlatformPageDTO.of(page, size, taskNodeExecPage.getTotal(), taskNodeExecPage.getList().stream().map(t -> {
+            OrgTaskNodeExecDTO orgTaskLog = new OrgTaskNodeExecDTO();
             BeanUtils.copyProperties(t, orgTaskLog);
             return orgTaskLog;
         }).toList());

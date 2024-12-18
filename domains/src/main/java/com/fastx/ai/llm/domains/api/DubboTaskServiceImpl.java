@@ -104,6 +104,7 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
     }
 
     @Override
+    @SentinelResource("task.exec.get")
     public PageDTO<TaskExecDTO> getTaskExecs(Long page, Long size, String status) {
         Assert.notNull(page, "page is null");
         Assert.notNull(size, "size is null");
@@ -117,6 +118,7 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
     }
 
     @Override
+    @SentinelResource("task.exec.node.create")
     public List<TaskNodeExecDTO> createTaskExecNodes(List<TaskNodeExecDTO> taskNodeExecDTOList) {
         Assert.isTrue(taskNodeExecDTOList.stream().allMatch(this::isValidated), "task not dto basic info not validated.");
         List<TaskNodeExec> taskNodeExecs =
@@ -129,26 +131,25 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
     }
 
     @Override
+    @SentinelResource("task.exec.node.update")
     public Boolean updateTaskExecNodes(List<TaskNodeExecDTO> taskNodeExecDTOList) {
         Assert.isTrue(taskNodeExecDTOList.stream().allMatch(t ->
             isValidated(t) && Objects.nonNull(t.getId())
         ), "task not dto basic info not validated.");
         List<TaskNodeExec> taskNodeExecs =
                 taskNodeExecDTOList.stream().map(TaskNodeExec::of).toList();
-        Assert.isTrue(
-                taskNodeExecService.updateBatchById(taskNodeExecs),
-                "update task node exec failed!"
-        );
-        return null;
+        return taskNodeExecService.updateBatchById(taskNodeExecs);
     }
 
     @Override
+    @SentinelResource("task.exec.node.get")
     public List<TaskNodeExecDTO> getTaskExecNodes(Long taskExecId) {
         List<TaskNodeExec> taskExecNodes = taskNodeExecService.getTaskExecNodes(taskExecId);
         return taskExecNodes.stream().map(TaskNodeExec::to).toList();
     }
 
     @Override
+    @SentinelResource("task.exec.node.get")
     public PageDTO<TaskNodeExecDTO> getTaskExecNodes(
             Long page, Long size, String status, Boolean checkPrevNodes) {
         Assert.notNull(page, "page is null");
