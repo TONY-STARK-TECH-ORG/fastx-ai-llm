@@ -68,4 +68,9 @@ public class LLMStartNode extends BaseLlmFunction {
     public String getPrototype() {
         return _prototype.toJSONString();
     }
+
+    @Override
+    public boolean needConfig() {
+        return false;
+    }
 }

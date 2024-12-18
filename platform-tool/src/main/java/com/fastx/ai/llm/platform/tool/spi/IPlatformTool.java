@@ -6,6 +6,14 @@ package com.fastx.ai.llm.platform.tool.spi;
 public interface IPlatformTool<Input extends IPlatformToolInput, Output extends IPlatformToolOutput> {
 
     /**
+     * default need config.
+     * @return
+     */
+    default boolean needConfig() {
+        return true;
+    }
+
+    /**
      * icon
      * @return icon full url
      */

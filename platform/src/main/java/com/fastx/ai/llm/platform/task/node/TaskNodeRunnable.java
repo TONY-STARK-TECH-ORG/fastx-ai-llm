@@ -3,14 +3,15 @@ package com.fastx.ai.llm.platform.task.node;
 import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.domains.api.IDubboTaskService;
 import com.fastx.ai.llm.domains.api.IDubboToolService;
-import com.fastx.ai.llm.domains.api.IDubboWorkflowService;
 import com.fastx.ai.llm.domains.constant.IConstant;
-import com.fastx.ai.llm.domains.dto.*;
+import com.fastx.ai.llm.domains.dto.OrganizationToolsDTO;
+import com.fastx.ai.llm.domains.dto.TaskDTO;
+import com.fastx.ai.llm.domains.dto.TaskExecDTO;
+import com.fastx.ai.llm.domains.dto.TaskNodeExecDTO;
 import com.fastx.ai.llm.platform.config.ToolsLoader;
 import com.fastx.ai.llm.platform.context.AppContext;
 import com.fastx.ai.llm.platform.exception.TaskNodeExecException;
 import com.fastx.ai.llm.platform.tool.nodes.NodeTool;
-import com.fastx.ai.llm.platform.tool.nodes.WorkflowGraph;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformTool;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformToolInput;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformToolOutput;
@@ -45,6 +46,7 @@ public class TaskNodeRunnable implements Runnable {
     private TaskNodeExecDTO taskNodeExec;
     private TaskExecDTO taskExec;
     private TaskDTO task;
+    private String orgToolConfig;
 
     @Override
     public void run() {
@@ -52,46 +54,42 @@ public class TaskNodeRunnable implements Runnable {
             return ;
         }
         try {
+            NodeTool currentTool = getTool();
+            IPlatformTool tool =
+                    ToolsLoader.getTool(currentTool.getCode(), currentTool.getVersion(), currentTool.getType());;
             String startTime =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date());
             // find organization configuration for this tool.
-            // @TODO (stark) system tools which not need config should be auto configured.
-            IDubboToolService toolService = AppContext.getBean(IDubboToolService.class);
-            OrganizationToolsDTO orgTool =
-                    toolService.getOrganizationToolById(Long.parseLong(getOrganizationToolId()));
-            Assert.notNull(orgTool, "tool not found");
+            if (tool.needConfig()) {
+                IDubboToolService toolService = AppContext.getBean(IDubboToolService.class);
+                OrganizationToolsDTO orgTool =
+                        toolService.getOrganizationToolById(Long.parseLong(getOrganizationToolId()));
+                Assert.notNull(orgTool, "org tool config not found");
+                orgToolConfig = orgTool.getConfigData();
+            }
             // tool execute.
             IDubboTaskService taskService = AppContext.getBean(IDubboTaskService.class);
             List<TaskNodeExecDTO> parentNodes =
                     Lists.createWhenNull(
                             taskService.getParentChainTaskNodeExecByNodeId(taskNodeExec.getNodeId()));
-            IDubboWorkflowService workflowService = AppContext.getBean(IDubboWorkflowService.class);
-            WorkflowVersionDTO workflowVersion =
-                    workflowService.getWorkflowVersion(task.getWorkflowVersionId());
-            if (Objects.isNull(workflowVersion)) {
-                throw new TaskNodeExecException("workflow version not found");
-            }
-            WorkflowGraph graph = WorkflowGraph.of(workflowVersion.getVersionData());
-
+            // build exec used context.
             ExpressionParser parser = new SpelExpressionParser();
             StandardEvaluationContext context = new StandardEvaluationContext();
             context.addPropertyAccessor(new MapAccessor());
-
             for (TaskNodeExecDTO parentNode : parentNodes) {
                 context.setVariable(getNodeName(parentNode), JSON.parseObject(parentNode.getOutputs(), Map.class));
             }
             // prepare spel context
             Map<String, Object> executableInputs = AppExpressionParser.getInputs(
                     parser, context, taskNodeExec.getInputs());
-            NodeTool currentTool = getTool();
-            IPlatformTool tool =
-                    ToolsLoader.getTool(currentTool.getCode(), currentTool.getVersion(), currentTool.getType());
             // build input.
             IPlatformToolInput in = new SimplePlatformToolInput();
             in.setInputs(JSON.toJSONString(executableInputs));
-            // remove stream config.
-            Map<String, Object> _config = JSON.parseObject(orgTool.getConfigData(), Map.class);
-            _config.remove("streaming");
-            in.setConfig(JSON.toJSONString(_config));
+            if (tool.needConfig()) {
+                // remove stream config.
+                Map<String, Object> _config = JSON.parseObject(orgToolConfig, Map.class);
+                _config.remove("streaming");
+                in.setConfig(JSON.toJSONString(_config));
+            }
             // exec this tool.
             IPlatformToolOutput exec = tool.exec(in);
             if (exec.isSuccess()) {
