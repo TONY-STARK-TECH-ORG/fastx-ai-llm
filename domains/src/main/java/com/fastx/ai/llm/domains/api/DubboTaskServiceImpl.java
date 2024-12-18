@@ -225,6 +225,22 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
         return taskNodeExecService.removeByExecId(taskExecId);
     }
 
+    @Override
+    @SentinelResource("task.exec.node.get")
+    public List<TaskNodeExecDTO> getParentChainTaskNodeExecByNodeId(String nodeId) {
+        Assert.notNull(nodeId, "nodeId is null");
+        List<TaskNodeExec> parentChainTaskNodeExec = taskNodeExecService.getParentChainTaskNodeExecByNodeId(nodeId);
+        Assert.isTrue(!parentChainTaskNodeExec.isEmpty(), "parent chain task node exec not found!");
+        return parentChainTaskNodeExec.stream().map(TaskNodeExec::to).toList();
+    }
+
+    @Override
+    public boolean isParentTaskNodeFinished(String nodeId) {
+        Assert.notNull(nodeId, "nodeId is null");
+        List<TaskNodeExec> parentTaskNodeExec = taskNodeExecService.getParentTaskNodeExec(nodeId);
+        return parentTaskNodeExec.stream().allMatch(t -> IConstant.FINISH.equals(t.getStatus()));
+    }
+
     private void isValidated(TaskDTO taskDTO) {
         Assert.notNull(taskDTO, "task is null");
         Assert.notNull(taskDTO.getOrganizationId(), "organizationId is null");

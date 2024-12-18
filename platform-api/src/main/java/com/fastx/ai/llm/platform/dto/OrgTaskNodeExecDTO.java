@@ -20,7 +20,7 @@ public class OrgTaskNodeExecDTO extends BaseDTO implements Serializable {
 
     private String nodeId;
 
-    private String nextNodeIds;
+    private String parentNodeIds;
 
     private String startTime;
 
@@ -42,12 +42,12 @@ public class OrgTaskNodeExecDTO extends BaseDTO implements Serializable {
         this.taskExecId = taskExecId;
     }
 
-    public String getNextNodeIds() {
-        return nextNodeIds;
+    public String getParentNodeIds() {
+        return parentNodeIds;
     }
 
-    public void setNextNodeIds(String nextNodeIds) {
-        this.nextNodeIds = nextNodeIds;
+    public void setParentNodeIds(String parentNodeIds) {
+        this.parentNodeIds = parentNodeIds;
     }
 
     public String getNodeId() {

@@ -1,13 +1,15 @@
-package com.fastx.ai.llm.domains.service;
+package com.fastx.ai.llm.domains.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fastx.ai.llm.domains.entity.TaskNodeExec;
 import com.fastx.ai.llm.domains.mapper.TaskNodeExecMapper;
+import com.fastx.ai.llm.domains.service.ITaskNodeExecService;
 import com.rometools.utils.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +24,9 @@ import java.util.List;
  */
 @Service
 public class TaskNodeExecServiceImpl extends ServiceImpl<TaskNodeExecMapper, TaskNodeExec> implements ITaskNodeExecService {
+
+    @Autowired
+    private TaskNodeExecMapper mapper;
 
     @Override
     public List<TaskNodeExec> getTaskNodeExecs(Long taskExecId) {
@@ -52,5 +57,15 @@ public class TaskNodeExecServiceImpl extends ServiceImpl<TaskNodeExecMapper, Tas
         LambdaQueryWrapper<TaskNodeExec> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(TaskNodeExec::getTaskExecId, taskExecId);
         return remove(queryWrapper);
+    }
+
+    @Override
+    public List<TaskNodeExec> getParentChainTaskNodeExecByNodeId(String nodeId) {
+        return mapper.getParentChainTaskNodeExecByNodeId(nodeId);
+    }
+
+    @Override
+    public List<TaskNodeExec> getParentTaskNodeExec(String nodeId) {
+        return mapper.getParentTaskNodeExec(nodeId);
     }
 }

@@ -40,4 +40,18 @@ public interface ITaskNodeExecService extends IService<TaskNodeExec> {
      * @return true or false
      */
     boolean removeByExecId(Long taskExecId);
+
+    /**
+     * get executable nodes by node id.
+     * @param nodeId node id
+     * @return node list
+     */
+    List<TaskNodeExec> getParentChainTaskNodeExecByNodeId(String nodeId);
+
+    /**
+     * get parent nodes by node id.
+     * @param nodeId
+     * @return
+     */
+    List<TaskNodeExec> getParentTaskNodeExec(String nodeId);
 }

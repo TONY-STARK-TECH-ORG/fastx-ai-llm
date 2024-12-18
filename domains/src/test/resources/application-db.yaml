@@ -1,5 +1,6 @@
 spring:
   datasource:
+    type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://localhost:3306/fast-llm?useSSL=false&serverTimezone=UTC
     hikari:
       username: root
@@ -27,3 +28,27 @@ decorator:
       log-format: "\ntime:%(executionTime) || sql:%(sql)\n"
       logging: custom
       custom-appender-class: com.fastx.ai.llm.domains.config.SqlDebugLogger
+seata:
+  enabled: true
+  application-id: fastx-ai-llm-domains
+  tx-service-group: default_tx_group
+  service:
+    default:
+      grouplist:
+        default: 127.0.0.1:8091
+    grouplist:
+      default: 127.0.0.1:8091
+    # 事务分组与集群映射关系
+    vgroup-mapping:
+      default_tx_group: default
+  registry:
+    type: file
+  config:
+    type: file
+domain:
+  milvus:
+    # just for demo usage. do not use in production env.
+    host: https://in03-099d4d04797b236.serverless.gcp-us-west1.cloud.zilliz.com
+    token: 31e9ebc8e5f562f78924dd7f06c652afe52bed46b2b4a123bcb395f5b27e9b71a450727e7b31da71187dffccc3a87a26b89dcf65
+    username: db_099d4d04797b236
+    password: Et2|(>)/g)6cd-fp

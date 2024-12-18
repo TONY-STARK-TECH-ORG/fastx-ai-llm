@@ -1,0 +1,20 @@
+dubbo:
+  registry:
+    address: zookeeper://127.0.0.1:2181
+  protocol:
+    name: tri
+    port: 40051
+  application:
+    name: fastx-llm-domains
+    logger: slf4j
+    qos-port: 32221
+  tracing:
+    enabled: true
+  scan:
+    base-packages:
+      - org.apache.seata
+      - com.fastx.ai.llm
+  provider:
+    retries: 0
+  consumer:
+    retries: 0

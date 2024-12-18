@@ -30,7 +30,7 @@ public class TaskNodeExec extends BaseDO implements Serializable {
 
     private String nodeId;
 
-    private String nextNodeIds;
+    private String parentNodeIds;
 
     private String startTime;
 

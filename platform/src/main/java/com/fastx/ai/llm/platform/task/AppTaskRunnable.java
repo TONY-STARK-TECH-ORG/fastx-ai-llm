@@ -95,11 +95,11 @@ public class AppTaskRunnable implements Runnable {
                 )));
             }
             // add target to next source ids.
-            String nextNodeIds = StringUtils.defaultIfBlank(n.getNextNodeIds(), "");
-            String[] split = nextNodeIds.split(",");
-            Set<String> nextNodeIdSet = new HashSet<>(Arrays.asList(split));
-            nextNodeIdSet.add(edge.getTarget());
-            n.setNextNodeIds(StringUtils.join(nextNodeIdSet, ","));
+            String parentNodeIds = StringUtils.defaultIfBlank(n.getParentNodeIds(), "");
+            String[] split = parentNodeIds.split(",");
+            Set<String> parentNodeIdSet = new HashSet<>(Arrays.asList(split));
+            parentNodeIdSet.add(edge.getTarget());
+            n.setParentNodeIds(StringUtils.join(parentNodeIdSet, ","));
             // add to taskNode List.
             taskNodeExecList.add(n);
         }
