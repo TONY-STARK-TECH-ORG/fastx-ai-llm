@@ -164,4 +164,6 @@ public interface IDubboTaskService {
      * @return
      */
     boolean isParentTaskNodeFinished(String nodeId);
+
+    Boolean isTaskExecNodeFinished(Long taskExecId);
 }

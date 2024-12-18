@@ -14,6 +14,7 @@ import com.fastx.ai.llm.domains.entity.TaskNodeExec;
 import com.fastx.ai.llm.domains.service.ITaskExecService;
 import com.fastx.ai.llm.domains.service.ITaskNodeExecService;
 import com.fastx.ai.llm.domains.service.ITaskService;
+import com.rometools.utils.Lists;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -230,15 +231,26 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
     public List<TaskNodeExecDTO> getParentChainTaskNodeExecByNodeId(String nodeId) {
         Assert.notNull(nodeId, "nodeId is null");
         List<TaskNodeExec> parentChainTaskNodeExec = taskNodeExecService.getParentChainTaskNodeExecByNodeId(nodeId);
-        Assert.isTrue(!parentChainTaskNodeExec.isEmpty(), "parent chain task node exec not found!");
-        return parentChainTaskNodeExec.stream().map(TaskNodeExec::to).toList();
+        return Lists.createWhenNull(parentChainTaskNodeExec.stream().map(TaskNodeExec::to).toList());
     }
 
     @Override
     public boolean isParentTaskNodeFinished(String nodeId) {
         Assert.notNull(nodeId, "nodeId is null");
+        List<TaskNodeExec> lists = taskNodeExecService.getTaskNodeExecs(nodeId);
+        //判断阶段存不存在
+        Assert.isTrue(!lists.isEmpty(), "isParentTaskNodeFinished current node is null");
         List<TaskNodeExec> parentTaskNodeExec = taskNodeExecService.getParentTaskNodeExec(nodeId);
         return parentTaskNodeExec.stream().allMatch(t -> IConstant.FINISH.equals(t.getStatus()));
+    }
+
+    @Override
+    public Boolean isTaskExecNodeFinished(Long taskExecId) {
+        Assert.notNull(taskExecId, "taskExecId is null");
+        Assert.notNull(taskExecService.getById(taskExecId), "isTaskExecNodeFinished task exec is null");
+        List<TaskNodeExec> TaskNodeExecs = taskNodeExecService.getTaskNodeExecs(taskExecId);
+        Assert.notEmpty(TaskNodeExecs, "isTaskExecNodeFinished task node execs is empty");
+        return TaskNodeExecs.stream().allMatch(t -> IConstant.FINISH.equals(t.getStatus()));
     }
 
     private void isValidated(TaskDTO taskDTO) {
