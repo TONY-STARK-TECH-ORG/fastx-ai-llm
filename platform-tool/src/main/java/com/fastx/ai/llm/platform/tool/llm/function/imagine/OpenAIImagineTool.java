@@ -119,6 +119,6 @@ public class OpenAIImagineTool extends BaseLlmFunction {
 
     @Override
     public String getPrototype() {
-        return "";
+        return _prototype.toJSONString();
     }
 }
