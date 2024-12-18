@@ -3,6 +3,7 @@ package com.fastx.ai.llm.web.controller;
 import com.fastx.ai.llm.platform.api.IPlatformOrgService;
 import com.fastx.ai.llm.platform.dto.OrgTaskDTO;
 import com.fastx.ai.llm.platform.dto.OrgTaskExecDTO;
+import com.fastx.ai.llm.platform.dto.OrgTaskNodeExecDTO;
 import com.fastx.ai.llm.platform.dto.PlatformPageDTO;
 import com.fastx.ai.llm.web.controller.entity.Response;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -53,6 +54,20 @@ public class FastLlmTaskController {
     public Response<PlatformPageDTO<OrgTaskExecDTO>> listTaskExecs(Long taskId, Long page, Long size, String status) {
         return Response.success(
                 platformOrgService.getTaskExecsByTaskId(taskId, page, size, status)
+        );
+    }
+
+    @GetMapping("org/task/exec/node/list")
+    public Response<List<OrgTaskNodeExecDTO>> listTaskNodeExecs(Long taskExecId) {
+        return Response.success(
+                platformOrgService.getTaskNodeExecs(taskExecId)
+        );
+    }
+
+    @GetMapping("org/task/exec/node/list")
+    public Response<PlatformPageDTO<OrgTaskNodeExecDTO>> listTaskNodeExecs(Long page, Long size, String status, Boolean checkPrevNodes) {
+        return Response.success(
+                platformOrgService.getTaskNodeExecs(page, size, status, checkPrevNodes)
         );
     }
 

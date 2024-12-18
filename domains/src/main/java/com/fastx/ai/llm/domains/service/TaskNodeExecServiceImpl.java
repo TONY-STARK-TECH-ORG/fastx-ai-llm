@@ -24,7 +24,7 @@ import java.util.List;
 public class TaskNodeExecServiceImpl extends ServiceImpl<TaskNodeExecMapper, TaskNodeExec> implements ITaskNodeExecService {
 
     @Override
-    public List<TaskNodeExec> getTaskExecNodes(Long taskExecId) {
+    public List<TaskNodeExec> getTaskNodeExecs(Long taskExecId) {
         LambdaQueryWrapper<TaskNodeExec> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(TaskNodeExec::getTaskExecId, taskExecId);
         queryWrapper.orderByDesc(TaskNodeExec::getCreateTime);
@@ -32,7 +32,7 @@ public class TaskNodeExecServiceImpl extends ServiceImpl<TaskNodeExecMapper, Tas
     }
 
     @Override
-    public Page<TaskNodeExec> getTaskExecNodes(Long page, Long size, String status, Boolean checkPrevNodes) {
+    public Page<TaskNodeExec> getTaskNodeExecs(Long page, Long size, String status, Boolean checkPrevNodes) {
         LambdaQueryWrapper<TaskNodeExec> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(TaskNodeExec::getStatus, status);
         queryWrapper.orderByDesc(TaskNodeExec::getCreateTime);

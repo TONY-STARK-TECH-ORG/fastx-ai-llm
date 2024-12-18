@@ -123,21 +123,21 @@ public interface IPlatformOrgService {
      * @param taskNodeExecDTOList task node exec dto list.
      * @return update result.
      */
-    List<OrgTaskNodeExecDTO> createTaskExecNodes(List<OrgTaskNodeExecDTO> taskNodeExecDTOList);
+    List<OrgTaskNodeExecDTO> createTaskNodeExecs(List<OrgTaskNodeExecDTO> taskNodeExecDTOList);
 
     /**
      * update task node exec status.
      * @param taskNodeExecDTOList task node exec dto list.
      * @return update result.
      */
-    Boolean updateTaskExecNodes(List<OrgTaskNodeExecDTO> taskNodeExecDTOList);
+    Boolean updateTaskNodeExecs(List<OrgTaskNodeExecDTO> taskNodeExecDTOList);
 
     /**
      * get all task node exec by task id.
      * @param taskExecId task exec id.
      * @return taskId
      */
-    List<OrgTaskNodeExecDTO> getTaskExecNodes(Long taskExecId);
+    List<OrgTaskNodeExecDTO> getTaskNodeExecs(Long taskExecId);
 
     /**
      * query task exec nodes with condition.
@@ -147,7 +147,7 @@ public interface IPlatformOrgService {
      * @param checkPrevNodes check prev node execute state == 'finish'
      * @return result
      */
-    PlatformPageDTO<OrgTaskNodeExecDTO> getTaskExecNodes(
+    PlatformPageDTO<OrgTaskNodeExecDTO> getTaskNodeExecs(
             Long page,
             Long size,
             String status,

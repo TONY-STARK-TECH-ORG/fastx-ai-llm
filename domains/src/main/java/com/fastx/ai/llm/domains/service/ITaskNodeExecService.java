@@ -21,7 +21,7 @@ public interface ITaskNodeExecService extends IService<TaskNodeExec> {
      * @param taskExecId task exec id
      * @return node exec list.
      */
-    List<TaskNodeExec> getTaskExecNodes(Long taskExecId);
+    List<TaskNodeExec> getTaskNodeExecs(Long taskExecId);
 
     /**
      * page search exec nodes.
@@ -31,6 +31,6 @@ public interface ITaskNodeExecService extends IService<TaskNodeExec> {
      * @param checkPrevNodes check prev.
      * @return result
      */
-    Page<TaskNodeExec> getTaskExecNodes(
+    Page<TaskNodeExec> getTaskNodeExecs(
             Long page, Long size, String status, Boolean checkPrevNodes);
 }

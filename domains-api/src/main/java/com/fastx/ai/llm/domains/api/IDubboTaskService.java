@@ -80,21 +80,21 @@ public interface IDubboTaskService {
      * @param taskNodeExecDTOList task node exec dto list.
      * @return update result.
      */
-    List<TaskNodeExecDTO> createTaskExecNodes(List<TaskNodeExecDTO> taskNodeExecDTOList);
+    List<TaskNodeExecDTO> createTaskNodeExecs(List<TaskNodeExecDTO> taskNodeExecDTOList);
 
     /**
      * update task node exec status.
      * @param taskNodeExecDTOList task node exec dto list.
      * @return update result.
      */
-    Boolean updateTaskExecNodes(List<TaskNodeExecDTO> taskNodeExecDTOList);
+    Boolean updateTaskNodeExecs(List<TaskNodeExecDTO> taskNodeExecDTOList);
 
     /**
      * get all task node exec by task id.
      * @param taskExecId task exec id.
      * @return taskId
      */
-    List<TaskNodeExecDTO> getTaskExecNodes(Long taskExecId);
+    List<TaskNodeExecDTO> getTaskNodeExecs(Long taskExecId);
 
     /**
      * query task exec nodes with condition.
@@ -104,7 +104,7 @@ public interface IDubboTaskService {
      * @param checkPrevNodes check prev node execute state == 'finish'
      * @return result
      */
-    PageDTO<TaskNodeExecDTO> getTaskExecNodes(
+    PageDTO<TaskNodeExecDTO> getTaskNodeExecs(
             Long page,
             Long size,
             String status,

@@ -119,7 +119,7 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
 
     @Override
     @SentinelResource("task.exec.node.create")
-    public List<TaskNodeExecDTO> createTaskExecNodes(List<TaskNodeExecDTO> taskNodeExecDTOList) {
+    public List<TaskNodeExecDTO> createTaskNodeExecs(List<TaskNodeExecDTO> taskNodeExecDTOList) {
         Assert.isTrue(taskNodeExecDTOList.stream().allMatch(this::isValidated), "task not dto basic info not validated.");
         List<TaskNodeExec> taskNodeExecs =
                 taskNodeExecDTOList.stream().map(TaskNodeExec::of).toList();
@@ -132,7 +132,7 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
 
     @Override
     @SentinelResource("task.exec.node.update")
-    public Boolean updateTaskExecNodes(List<TaskNodeExecDTO> taskNodeExecDTOList) {
+    public Boolean updateTaskNodeExecs(List<TaskNodeExecDTO> taskNodeExecDTOList) {
         Assert.isTrue(taskNodeExecDTOList.stream().allMatch(t ->
             isValidated(t) && Objects.nonNull(t.getId())
         ), "task not dto basic info not validated.");
@@ -143,19 +143,19 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
 
     @Override
     @SentinelResource("task.exec.node.get")
-    public List<TaskNodeExecDTO> getTaskExecNodes(Long taskExecId) {
-        List<TaskNodeExec> taskExecNodes = taskNodeExecService.getTaskExecNodes(taskExecId);
-        return taskExecNodes.stream().map(TaskNodeExec::to).toList();
+    public List<TaskNodeExecDTO> getTaskNodeExecs(Long taskExecId) {
+        List<TaskNodeExec> TaskNodeExecs = taskNodeExecService.getTaskNodeExecs(taskExecId);
+        return TaskNodeExecs.stream().map(TaskNodeExec::to).toList();
     }
 
     @Override
     @SentinelResource("task.exec.node.get")
-    public PageDTO<TaskNodeExecDTO> getTaskExecNodes(
+    public PageDTO<TaskNodeExecDTO> getTaskNodeExecs(
             Long page, Long size, String status, Boolean checkPrevNodes) {
         Assert.notNull(page, "page is null");
         Assert.notNull(size, "size is null");
         Page<TaskNodeExec> taskNodeExecPage =
-                taskNodeExecService.getTaskExecNodes(page, size, status, checkPrevNodes);
+                taskNodeExecService.getTaskNodeExecs(page, size, status, checkPrevNodes);
         return PageDTO.of(
                 page,
                 size,

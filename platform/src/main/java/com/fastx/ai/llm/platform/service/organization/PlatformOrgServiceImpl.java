@@ -205,14 +205,14 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
 
     @Override
     @SentinelResource("org.task.exec.node.create")
-    public List<OrgTaskNodeExecDTO> createTaskExecNodes(List<OrgTaskNodeExecDTO> taskNodeExecDTOList) {
+    public List<OrgTaskNodeExecDTO> createTaskNodeExecs(List<OrgTaskNodeExecDTO> taskNodeExecDTOList) {
         Assert.notEmpty(taskNodeExecDTOList, "task node exec was empty!");
         List<TaskNodeExecDTO> list = taskNodeExecDTOList.stream().map(taskNodeExec -> {
             TaskNodeExecDTO t = new TaskNodeExecDTO();
             BeanUtils.copyProperties(taskNodeExec, t);
             return t;
         }).toList();
-        return Lists.createWhenNull(taskService.createTaskExecNodes(list)).stream().map(t -> {
+        return Lists.createWhenNull(taskService.createTaskNodeExecs(list)).stream().map(t -> {
             OrgTaskNodeExecDTO orgTaskNodeExec = new OrgTaskNodeExecDTO();
             BeanUtils.copyProperties(t, orgTaskNodeExec);
             return orgTaskNodeExec;
@@ -221,21 +221,21 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
 
     @Override
     @SentinelResource("org.task.exec.node.update")
-    public Boolean updateTaskExecNodes(List<OrgTaskNodeExecDTO> taskNodeExecDTOList) {
+    public Boolean updateTaskNodeExecs(List<OrgTaskNodeExecDTO> taskNodeExecDTOList) {
         Assert.notEmpty(taskNodeExecDTOList, "task node exec was empty!");
         List<TaskNodeExecDTO> list = taskNodeExecDTOList.stream().map(taskNodeExec -> {
             TaskNodeExecDTO t = new TaskNodeExecDTO();
             BeanUtils.copyProperties(taskNodeExec, t);
             return t;
         }).toList();
-        return taskService.updateTaskExecNodes(list);
+        return taskService.updateTaskNodeExecs(list);
     }
 
     @Override
     @SentinelResource("org.task.exec.node.get")
-    public List<OrgTaskNodeExecDTO> getTaskExecNodes(Long taskExecId) {
+    public List<OrgTaskNodeExecDTO> getTaskNodeExecs(Long taskExecId) {
         Assert.notNull(taskExecId, "taskExecId is null");
-        List<TaskNodeExecDTO> taskNodeExecs = taskService.getTaskExecNodes(taskExecId);
+        List<TaskNodeExecDTO> taskNodeExecs = taskService.getTaskNodeExecs(taskExecId);
         return Lists.createWhenNull(taskNodeExecs).stream().map(t -> {
             OrgTaskNodeExecDTO orgTaskNodeExec = new OrgTaskNodeExecDTO();
             BeanUtils.copyProperties(t, orgTaskNodeExec);
@@ -245,11 +245,11 @@ public class PlatformOrgServiceImpl implements IPlatformOrgService {
 
     @Override
     @SentinelResource("org.task.exec.node.get")
-    public PlatformPageDTO<OrgTaskNodeExecDTO> getTaskExecNodes(Long page, Long size, String status, Boolean checkPrevNodes) {
+    public PlatformPageDTO<OrgTaskNodeExecDTO> getTaskNodeExecs(Long page, Long size, String status, Boolean checkPrevNodes) {
         Assert.notNull(page, "page is null");
         Assert.notNull(size, "size is null");
         PageDTO<TaskNodeExecDTO> taskNodeExecPage =
-                taskService.getTaskExecNodes(page, size, status, checkPrevNodes);
+                taskService.getTaskNodeExecs(page, size, status, checkPrevNodes);
         return PlatformPageDTO.of(page, size, taskNodeExecPage.getTotal(), taskNodeExecPage.getList().stream().map(t -> {
             OrgTaskNodeExecDTO orgTaskLog = new OrgTaskNodeExecDTO();
             BeanUtils.copyProperties(t, orgTaskLog);
