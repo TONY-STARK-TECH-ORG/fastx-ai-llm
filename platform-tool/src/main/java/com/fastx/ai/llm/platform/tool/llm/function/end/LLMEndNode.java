@@ -28,7 +28,6 @@ public class LLMEndNode extends BaseLlmFunction {
     private static String MODEL_ID = "modelId";
     private static String MESSAGES = "messages";
     private static String CONTENT = "content";
-    private static String USAGE = "usage";
 
     static {
         // build prototype to openAI
