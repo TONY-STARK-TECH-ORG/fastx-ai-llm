@@ -15,22 +15,24 @@ import com.fastx.ai.llm.platform.tool.spi.IPlatformTool;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformToolInput;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformToolOutput;
 import com.fastx.ai.llm.platform.tool.spi.SimplePlatformToolInput;
+import com.fastx.ai.llm.platform.utils.AppExpressionParser;
 import com.rometools.utils.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.expression.MapAccessor;
-import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author stark
@@ -78,8 +80,8 @@ public class TaskNodeRunnable implements Runnable {
                 context.setVariable(getNodeName(parentNode), JSON.parseObject(parentNode.getOutputs(), Map.class));
             }
             // prepare spel context
-            Map<String, Object> executableInputs =
-                    getExecutableInputs(parser, context, JSON.parseObject(taskNodeExec.getInputs(), Map.class), parentNodes);
+            Map<String, Object> executableInputs = AppExpressionParser.getInputs(
+                    parser, context, taskNodeExec.getInputs());
             NodeTool currentTool = getTool();
             IPlatformTool tool =
                     ToolsLoader.getTool(currentTool.getCode(), currentTool.getVersion(), currentTool.getType());
@@ -114,107 +116,6 @@ public class TaskNodeRunnable implements Runnable {
         } catch (Exception e) {
             log.error("execute tool node meet exception", e);
         }
-    }
-
-    private Map<String, Object> getExecutableInputs(
-            ExpressionParser parser, StandardEvaluationContext _context, Map<String, Object> _inputs, List<TaskNodeExecDTO> _nodes) {
-        Map<String, Object> inputs = new HashMap<>();
-        for (Map.Entry<String, Object> entry : _inputs.entrySet()) {
-            Object _value = entry.getValue();
-            if (_value instanceof String) {
-                // parse string type
-                String v = (String) _value;
-                Optional<TaskNodeExecDTO> _find = _nodes.stream()
-                        .filter(n -> v.startsWith(getNodeName(n) + ".")).findFirst();
-                if (_find.isPresent()) {
-                    try {
-                        Expression exp = parser.parseExpression("#" + v);
-                        inputs.put(entry.getKey(), exp.getValue(_context));
-                    } catch (Exception e) {
-                        inputs.put(entry.getKey(), _value);
-                    }
-                } else {
-                    inputs.put(entry.getKey(), _value);
-                }
-            } else if (_value instanceof Collection) {
-                // parse list type
-                List<Object> v = (List<Object>) _value;
-                if (CollectionUtils.isEmpty(v)) {
-                    continue ;
-                }
-                if (v.get(0) instanceof String) {
-                    List<String> _iv = (List<String>) _value;
-                    List<Object> executableList = new ArrayList<>();
-                    _iv.forEach(_iiv -> {
-                        Optional<TaskNodeExecDTO> _find = _nodes.stream()
-                                .filter(n -> _iiv.startsWith(getNodeName(n) + ".")).findFirst();
-                        if (_find.isPresent()) {
-                            try {
-                                Expression exp = parser.parseExpression("#" + v);
-                                executableList.add(exp.getValue(_context));
-                            } catch (Exception e) {
-                                executableList.add(_iiv);
-                            }
-                        } else {
-                            executableList.add(_iiv);
-                        }
-                    });
-                    inputs.put(entry.getKey(), executableList);
-                } else if (v.get(0) instanceof Map) {
-                    List<Map<String, Object>> _iv = (List<Map<String, Object>>) _value;
-                    List<Map<String, Object>> executableList = new ArrayList<>();
-                    _iv.forEach(_iiv -> {
-                        Map<String, Object> _executableInnerMap = new HashMap<>();
-                        for (Map.Entry<String, Object> _iive : _iiv.entrySet()) {
-                            if (_iive.getValue() instanceof String) {
-                                String _iivee = (String) _iive.getValue();
-                                Optional<TaskNodeExecDTO> _find = _nodes.stream()
-                                        .filter(n -> _iivee.startsWith(getNodeName(n) + ".")).findFirst();
-                                if (_find.isPresent()) {
-                                    try {
-                                        Expression exp = parser.parseExpression("#" + _iivee);
-                                        _executableInnerMap.put(_iive.getKey(), exp.getValue(_context));
-                                    } catch (Exception e) {
-                                        _executableInnerMap.put(_iive.getKey(), _iive.getValue());
-                                    }
-                                } else {
-                                    _executableInnerMap.put(_iive.getKey(), _iive.getValue());
-                                }
-                            }
-                        }
-                        executableList.add(_executableInnerMap);
-                    });
-                    inputs.put(entry.getKey(), executableList);
-                } else {
-                    inputs.put(entry.getKey(), _value);
-                }
-            } else if (_value instanceof Map) {
-                // parse map type
-                Map<String, Object> _iv = (Map<String, Object>) _value;
-                Map<String, Object> executableInnerMap = new HashMap<>();
-                for (Map.Entry<String, Object> _ive : _iv.entrySet()) {
-                    if (_ive.getValue() instanceof String) {
-                        String _ivee = (String) _ive.getValue();
-                        Optional<TaskNodeExecDTO> _find = _nodes.stream()
-                                .filter(n -> _ivee.startsWith(getNodeName(n) + ".")).findFirst();
-                        if (_find.isPresent()) {
-                            try {
-                                Expression exp = parser.parseExpression("#" + _ivee);
-                                executableInnerMap.put(_ive.getKey(), exp.getValue(_context));
-                            } catch (Exception e) {
-                                executableInnerMap.put(_ive.getKey(), _ive.getValue());
-                            }
-                        } else {
-                            executableInnerMap.put(_ive.getKey(), _ive.getValue());
-                        }
-                    }
-                }
-                inputs.put(entry.getKey(), executableInnerMap);
-            } else {
-                inputs.put(entry.getKey(), _value);
-            }
-        }
-        return inputs;
     }
 
     private NodeTool getTool() {
