@@ -1,10 +1,11 @@
-package com.fastx.ai.llm.domains.service;
+package com.fastx.ai.llm.domains.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fastx.ai.llm.domains.entity.TaskNodeExec;
 import com.fastx.ai.llm.domains.mapper.TaskNodeExecMapper;
+import com.fastx.ai.llm.domains.service.ITaskNodeExecService;
 import com.rometools.utils.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
