@@ -3,7 +3,7 @@ package com.fastx.ai.llm.platform.tool.test;
 import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.platform.tool.llm.LLMInput;
 import com.fastx.ai.llm.platform.tool.llm.LLMOutput;
-import com.fastx.ai.llm.platform.tool.llm.function.imagine.OpenAIImageGenerateTool;
+import com.fastx.ai.llm.platform.tool.llm.function.imagine.OpenAIImagineTool;
 import com.fastx.ai.llm.platform.tool.llm.function.imagine.types.OpenAIImagineRequest;
 import com.fastx.ai.llm.platform.tool.llm.function.imagine.types.OpenAIImagineResponse;
 import com.fastx.ai.llm.platform.tool.llm.model.openai.types.OpenAIConfig;
@@ -16,7 +16,7 @@ import java.io.IOException;
 public class OpenAIImagineTest {
 
     public static void main(String[] args) throws IOException {
-        OpenAIImageGenerateTool openAIEmbeddingTool = new OpenAIImageGenerateTool();
+        OpenAIImagineTool openAIEmbeddingTool = new OpenAIImagineTool();
 
         LLMInput input = new LLMInput();
 

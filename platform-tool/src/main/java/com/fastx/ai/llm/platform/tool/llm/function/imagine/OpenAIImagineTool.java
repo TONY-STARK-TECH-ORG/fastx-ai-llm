@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * @author stark
  */
-public class OpenAIImageGenerateTool extends BaseLlmFunction {
+public class OpenAIImagineTool extends BaseLlmFunction {
 
     public static Prototype _prototype = new Prototype();
 
