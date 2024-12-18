@@ -1,4 +1,4 @@
-package com.fastx.ai.llm.domains.config.lock;
+package com.fastx.ai.llm.platform.config.lock;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
