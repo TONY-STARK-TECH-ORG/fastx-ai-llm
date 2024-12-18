@@ -19,6 +19,15 @@ public class WorkflowGraph {
         return JSON.parseObject(jsonData, WorkflowGraph.class);
     }
 
+    public List<Node> findMultipleNode() {
+        try {
+            return nodes.stream().filter(node -> node.getData().getTool().getCode().endsWith(".start")).toList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
     public Node findStartNode() {
         try {
             return nodes.stream().filter(node -> node.getData().getTool().getCode().endsWith(".start")).findFirst().orElse(null);

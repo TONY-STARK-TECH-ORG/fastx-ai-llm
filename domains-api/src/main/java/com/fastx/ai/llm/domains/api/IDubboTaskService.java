@@ -133,4 +133,10 @@ public interface IDubboTaskService {
             String status,
             Boolean checkPrevNodes
     );
+
+    /**
+     * delete task node execs before by execId
+     * @param taskExecId task exec id
+     */
+    boolean deleteTaskNodeExecs(Long taskExecId);
 }

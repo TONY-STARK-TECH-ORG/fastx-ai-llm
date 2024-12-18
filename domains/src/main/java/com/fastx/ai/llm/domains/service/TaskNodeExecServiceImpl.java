@@ -46,4 +46,11 @@ public class TaskNodeExecServiceImpl extends ServiceImpl<TaskNodeExecMapper, Tas
         }
         return paged;
     }
+
+    @Override
+    public boolean removeByExecId(Long taskExecId) {
+        LambdaQueryWrapper<TaskNodeExec> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(TaskNodeExec::getTaskExecId, taskExecId);
+        return remove(queryWrapper);
+    }
 }

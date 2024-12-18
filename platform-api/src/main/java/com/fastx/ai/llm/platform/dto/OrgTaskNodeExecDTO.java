@@ -22,9 +22,7 @@ public class OrgTaskNodeExecDTO extends BaseDTO implements Serializable {
 
     private String nextNodeIds;
 
-    private String name;
-
-    private String startName;
+    private String startTime;
 
     private String endTime;
 
@@ -60,20 +58,12 @@ public class OrgTaskNodeExecDTO extends BaseDTO implements Serializable {
         this.nodeId = nodeId;
     }
 
-    public String getName() {
-        return name;
+    public String getStartTime() {
+        return startTime;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getStartName() {
-        return startName;
-    }
-
-    public void setStartName(String startName) {
-        this.startName = startName;
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 
     public String getEndTime() {

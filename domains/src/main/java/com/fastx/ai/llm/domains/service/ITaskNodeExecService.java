@@ -33,4 +33,11 @@ public interface ITaskNodeExecService extends IService<TaskNodeExec> {
      */
     Page<TaskNodeExec> getTaskNodeExecs(
             Long page, Long size, String status, Boolean checkPrevNodes);
+
+    /**
+     * remove by task exec id
+     * @param taskExecId task exec id
+     * @return true or false
+     */
+    boolean removeByExecId(Long taskExecId);
 }

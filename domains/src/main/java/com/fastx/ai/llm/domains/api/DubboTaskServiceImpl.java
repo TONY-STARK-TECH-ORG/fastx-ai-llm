@@ -209,6 +209,13 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
                 taskNodeExecPage.getRecords().stream().map(TaskNodeExec::to).toList());
     }
 
+    @Override
+    @SentinelResource("task.exec.node.remove")
+    public boolean deleteTaskNodeExecs(Long taskExecId) {
+        Assert.notNull(taskExecId, "taskExecId is null");
+        return taskNodeExecService.removeByExecId(taskExecId);
+    }
+
     private void isValidated(TaskDTO taskDTO) {
         Assert.notNull(taskDTO, "task is null");
         Assert.notNull(taskDTO.getOrganizationId(), "organizationId is null");
