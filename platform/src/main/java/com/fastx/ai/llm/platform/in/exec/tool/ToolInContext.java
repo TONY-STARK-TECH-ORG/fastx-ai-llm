@@ -1,4 +1,4 @@
-package com.fastx.ai.llm.platform.exec.tool;
+package com.fastx.ai.llm.platform.in.exec.tool;
 
 import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.platform.config.ToolsLoader;
@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * @author stark
  */
-public class ToolRunnable implements Runnable {
+public class ToolInContext implements Runnable {
 
     private String toolCode;
     private String toolVersion;
@@ -36,22 +36,22 @@ public class ToolRunnable implements Runnable {
     private LLMInput llmInput;
     private IPlatformToolOutput llmOutput;
 
-    public ToolRunnable(String toolCode, String toolVersion, String type, Map<String, Object> input) {
+    public ToolInContext(String toolCode, String toolVersion, String type, Map<String, Object> input) {
         this.toolCode = toolCode;
         this.toolVersion = toolVersion;
         this.type = type;
         this.input = input;
     }
 
-    public static ToolRunnable of(Map<String, Object> params) throws IOException {
+    public static ToolInContext of(Map<String, Object> params) throws IOException {
         String toolCode = (String) params.get("toolCode");
         String toolVersion = (String) params.get("toolVersion");
         String type = (String) params.get("type");
         Map<String, Object> input = (Map<String, Object>) params.get("input");
         Assert.isTrue("llm-model".equals(type), "only support llm-model stream exec");
         // set used tool
-        ToolRunnable toolRunnable = new ToolRunnable(toolCode, toolVersion, type, input);
-        toolRunnable.setTool(ToolsLoader.getTool(toolCode, toolVersion, type));
+        ToolInContext toolInContext = new ToolInContext(toolCode, toolVersion, type, input);
+        toolInContext.setTool(ToolsLoader.getTool(toolCode, toolVersion, type));
 
         LLMInput in = new LLMInput();
         in.setConfig(JSON.toJSONString(input.get("config")));
@@ -62,11 +62,11 @@ public class ToolRunnable implements Runnable {
         // set reader and stream
         PipedInputStream inputStream = new PipedInputStream(stream);
 
-        toolRunnable.setInputStream(inputStream);
-        toolRunnable.setReader(new InputStreamReader(inputStream));
+        toolInContext.setInputStream(inputStream);
+        toolInContext.setReader(new InputStreamReader(inputStream));
         // set tool input
-        toolRunnable.setLlmInput(in);
-        return toolRunnable;
+        toolInContext.setLlmInput(in);
+        return toolInContext;
     }
 
     public void readTo(StreamObserver<String> observer, Logger logger) {
@@ -90,7 +90,7 @@ public class ToolRunnable implements Runnable {
         } finally {
             // ignored
         }
-        ToolExecutor.EXEC_CONTEXT.remove();
+        ToolInContextExecutor.EXEC_CONTEXT.remove();
     }
 
     public IPlatformToolOutput getLlmOutput() {

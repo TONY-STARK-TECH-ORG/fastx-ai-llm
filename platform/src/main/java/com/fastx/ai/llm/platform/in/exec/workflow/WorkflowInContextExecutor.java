@@ -1,4 +1,4 @@
-package com.fastx.ai.llm.platform.exec.workflow;
+package com.fastx.ai.llm.platform.in.exec.workflow;
 
 import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.domains.api.IDubboToolService;
@@ -30,7 +30,7 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class WorkflowExecutor {
+public class WorkflowInContextExecutor {
 
     @Autowired
     ToolsLoader toolsLoader;
@@ -39,7 +39,7 @@ public class WorkflowExecutor {
 
     public void execute() {
         // get context !
-        WorkflowContext context = WorkflowExecuteContext.getContext();
+        WorkflowInContext context = WorkflowInContextHolder.getContext();
         WorkflowGraph graph = context.getGraph();
         // execute nodes.
         executeNode(graph.findStartNode(), graph);
@@ -64,7 +64,7 @@ public class WorkflowExecutor {
     }
 
     public void executeNode(IPlatformTool tool, Node node, WorkflowGraph graph) {
-        WorkflowContext context = WorkflowExecuteContext.getContext();
+        WorkflowInContext context = WorkflowInContextHolder.getContext();
         IPlatformToolInput in;
         if (StringUtils.startsWith(tool.getType(), "llm-")) {
             in = new LLMInput();

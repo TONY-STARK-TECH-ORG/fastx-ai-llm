@@ -5,8 +5,8 @@ import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.platform.api.IPlatformToolService;
 import com.fastx.ai.llm.platform.config.ToolsLoader;
 import com.fastx.ai.llm.platform.dto.ToolDTO;
-import com.fastx.ai.llm.platform.exec.tool.ToolExecutor;
-import com.fastx.ai.llm.platform.exec.tool.ToolRunnable;
+import com.fastx.ai.llm.platform.in.exec.tool.ToolInContextExecutor;
+import com.fastx.ai.llm.platform.in.exec.tool.ToolInContext;
 import com.fastx.ai.llm.platform.tool.llm.LLMInput;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformTool;
 import com.fastx.ai.llm.platform.tool.spi.IPlatformToolInput;
@@ -39,7 +39,7 @@ public class PlatformToolServiceImpl implements IPlatformToolService {
     ToolsLoader toolsLoader;
 
     @Autowired
-    ToolExecutor toolExecutor;
+    ToolInContextExecutor toolInContextExecutor;
 
     @Override
     @SentinelResource("platform.tool.get")
@@ -88,10 +88,10 @@ public class PlatformToolServiceImpl implements IPlatformToolService {
     @Override
     @SentinelResource("platform.tool.exec")
     public void streamExecTool(String request, StreamObserver<String> response) throws IOException, InterruptedException {
-        ToolRunnable runnable = ToolRunnable.of(JSON.parseObject(request, Map.class));
+        ToolInContext runnable = ToolInContext.of(JSON.parseObject(request, Map.class));
         // set context and execute tool.
-        toolExecutor.setContext(runnable);
-        toolExecutor.execute(runnable);
+        toolInContextExecutor.setContext(runnable);
+        toolInContextExecutor.execute(runnable);
         // read to stream
         runnable.readTo(response, logger);
         runnable.clean();

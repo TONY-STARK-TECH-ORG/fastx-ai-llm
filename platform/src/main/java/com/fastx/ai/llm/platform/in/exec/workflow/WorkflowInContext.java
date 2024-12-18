@@ -1,4 +1,4 @@
-package com.fastx.ai.llm.platform.exec.workflow;
+package com.fastx.ai.llm.platform.in.exec.workflow;
 
 import com.fastx.ai.llm.platform.tool.nodes.WorkflowGraph;
 import lombok.Data;
@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author stark
  */
 @Data
-public class WorkflowContext {
+public class WorkflowInContext {
     private Map<String, Object> inputs = new ConcurrentHashMap<>();
     private Map<String, Object> modifiedInputs = new ConcurrentHashMap<>();
     private Map<String, Object> outputs = new ConcurrentHashMap<>();
