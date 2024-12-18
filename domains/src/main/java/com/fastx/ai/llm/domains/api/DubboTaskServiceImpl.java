@@ -142,6 +142,14 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
     }
 
     @Override
+    public Boolean updateTaskNodeExecs(TaskNodeExecDTO taskNodeExecDTOList) {
+        Assert.isTrue(isValidated(taskNodeExecDTOList), "task not dto basic info not validated.");
+        Assert.notNull(taskNodeExecDTOList.getId(), "id is null");
+        TaskNodeExec taskNodeExec = TaskNodeExec.of(taskNodeExecDTOList);
+        return taskNodeExecService.updateById(taskNodeExec);
+    }
+
+    @Override
     @SentinelResource("task.exec.node.get")
     public List<TaskNodeExecDTO> getTaskNodeExecs(Long taskExecId) {
         List<TaskNodeExec> TaskNodeExecs = taskNodeExecService.getTaskNodeExecs(taskExecId);
