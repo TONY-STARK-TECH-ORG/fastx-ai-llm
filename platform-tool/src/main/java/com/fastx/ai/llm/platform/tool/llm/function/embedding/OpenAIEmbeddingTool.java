@@ -112,7 +112,7 @@ public class OpenAIEmbeddingTool extends BaseLlmFunction {
 
     @Override
     public String getCode() {
-        return "llm.openai.embedding";
+        return "llm.function.openai.embedding";
     }
 
     @Override

@@ -111,7 +111,7 @@ public class OpenAIImagineTool extends BaseLlmFunction {
 
     @Override
     public String getCode() {
-        return "llm.openai.imagine";
+        return "llm.function.openai.imagine";
     }
 
     @Override

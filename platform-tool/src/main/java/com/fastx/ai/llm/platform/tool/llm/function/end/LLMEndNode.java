@@ -81,7 +81,7 @@ public class LLMEndNode extends BaseLlmFunction {
 
     @Override
     public String getCode() {
-        return "llm.end";
+        return "llm.function.end";
     }
 
     @Override

@@ -61,7 +61,7 @@ public class LLMStartNode extends BaseLlmFunction {
 
     @Override
     public String getCode() {
-        return "llm.start";
+        return "llm.function.start";
     }
 
     @Override

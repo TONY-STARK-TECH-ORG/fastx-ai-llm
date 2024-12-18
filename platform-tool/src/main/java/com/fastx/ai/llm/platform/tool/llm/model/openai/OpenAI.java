@@ -77,7 +77,7 @@ public class OpenAI extends BaseLlmModel {
 
     @Override
     public String getCode() {
-        return "openai.chat";
+        return "llm.model.openai.chat";
     }
 
     @Override
