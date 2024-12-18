@@ -1,4 +1,4 @@
-package com.fastx.ai.llm.platform.task;
+package com.fastx.ai.llm.platform.task.node;
 
 import com.fastx.ai.llm.platform.exception.TaskExecException;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -16,9 +16,9 @@ import java.util.concurrent.*;
  *
  */
 @Component
-public class AppTaskExecutor {
+public class TaskNodeExecutor {
 
-    private static Logger log = LoggerFactory.getLogger(AppTaskExecutor.class);
+    private static Logger log = LoggerFactory.getLogger(TaskNodeExecutor.class);
 
     private static int cpuNum = Runtime.getRuntime().availableProcessors();
 
@@ -36,11 +36,11 @@ public class AppTaskExecutor {
             .setUncaughtExceptionHandler(uncaughtExceptionHandler)
             .build();
 
-    private static LinkedBlockingQueue TASK_QUEUE = new LinkedBlockingQueue<>(5);
+    private static LinkedBlockingQueue TASK_QUEUE = new LinkedBlockingQueue<>(10);
 
     private static ExecutorService TASK_EXECUTOR = new ThreadPoolExecutor(
-            5,
-            5,
+            10,
+            10,
             15,
             TimeUnit.MINUTES,
             TASK_QUEUE,
@@ -48,11 +48,11 @@ public class AppTaskExecutor {
             new ThreadPoolExecutor.AbortPolicy()
     );
 
-    public void execute(AppTaskRunnable appTaskRunnable) {
+    public void execute(TaskNodeRunnable taskNodeRunnable) {
         if (!canSubmit()) {
             throw new TaskExecException("queue was full!");
         }
-        TASK_EXECUTOR.execute(appTaskRunnable);
+        TASK_EXECUTOR.execute(taskNodeRunnable);
     }
 
     public boolean canSubmit() {
