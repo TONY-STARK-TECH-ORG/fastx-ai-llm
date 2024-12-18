@@ -22,7 +22,7 @@ public class TaskNodeExecServiceTest {
     @Test
     public void test() {
         // 获取任务节点执行列表
-        boolean parentTaskNodeFinished = taskService.isParentTaskNodeFinished("2");
+        boolean parentTaskNodeFinished = taskService.isParentTaskNodeFinished("0");
         System.out.println(parentTaskNodeFinished);
     }
 
@@ -31,5 +31,12 @@ public class TaskNodeExecServiceTest {
         // 获取任务节点执行列表
         List<TaskNodeExecDTO> nodes = taskService.getParentChainTaskNodeExecByNodeId("2");
         System.out.println(JSON.toJSONString(nodes));
+    }
+
+    @Test
+    public void test3() {
+        // 获取任务节点执行列表
+        Boolean taskExecNodeFinished = taskService.isTaskExecNodeFinished(2L);
+        System.out.println(taskExecNodeFinished);
     }
 }

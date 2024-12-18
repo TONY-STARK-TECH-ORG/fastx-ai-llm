@@ -24,6 +24,13 @@ public interface ITaskNodeExecService extends IService<TaskNodeExec> {
     List<TaskNodeExec> getTaskNodeExecs(Long taskExecId);
 
     /**
+     * get all node execs by node id.
+     * @param nodeId
+     * @return
+     */
+    List<TaskNodeExec> getTaskNodeExecs(String nodeId);
+
+    /**
      * page search exec nodes.
      * @param page page
      * @param size size

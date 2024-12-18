@@ -37,6 +37,14 @@ public class TaskNodeExecServiceImpl extends ServiceImpl<TaskNodeExecMapper, Tas
     }
 
     @Override
+    public List<TaskNodeExec> getTaskNodeExecs(String nodeId) {
+        LambdaQueryWrapper<TaskNodeExec> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(TaskNodeExec::getNodeId, nodeId);
+        queryWrapper.orderByDesc(TaskNodeExec::getCreateTime);
+        return Lists.createWhenNull(list(queryWrapper));
+    }
+
+    @Override
     public Page<TaskNodeExec> getTaskNodeExecs(Long page, Long size, String status, Boolean checkPrevNodes) {
         LambdaQueryWrapper<TaskNodeExec> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(TaskNodeExec::getStatus, status);
