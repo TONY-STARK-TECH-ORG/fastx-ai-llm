@@ -22,5 +22,3 @@ create table t_user
         unique (email)
 );
 
-INSERT INTO `fast-llm`.t_user (email, password, role, status, username, last_login, profile_image_url, bio, expertise_areas, preferred_language, social_links, auth_provider, auth_open_id, deleted, create_time, update_time) VALUES ('x.stark.dylan@gmail.com', 'e10adc3949ba59abbe56e057f20f883e', 'normal', 'wait', 'starkdylan', null, '', null, null, null, null, 'local', null, 0, null, '2024-12-11 05:30:09');
-INSERT INTO `fast-llm`.t_user (email, password, role, status, username, last_login, profile_image_url, bio, expertise_areas, preferred_language, social_links, auth_provider, auth_open_id, deleted, create_time, update_time) VALUES ('admin@gmail.com', 'e10adc3949ba59abbe56e057f20f883e', 'normal', 'wait', null, null, null, null, null, null, null, 'local', null, 0, '2024-12-15 07:42:05', '2024-12-15 07:42:05');

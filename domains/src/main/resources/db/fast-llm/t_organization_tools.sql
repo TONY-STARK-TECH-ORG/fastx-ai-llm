@@ -14,3 +14,4 @@ create table t_organization_tools
     constraint t_organization_tools_pk
         unique (organization_id, tool_code, tool_version)
 );
+

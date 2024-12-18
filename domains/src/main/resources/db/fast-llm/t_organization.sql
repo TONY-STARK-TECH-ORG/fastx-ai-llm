@@ -10,5 +10,3 @@ create table t_organization
         unique (name)
 );
 
-INSERT INTO `fast-llm`.t_organization (name, deleted, create_time, update_time) VALUES ('x.stark.dylan@gmail.com', 0, null, '2024-12-11 05:30:09');
-INSERT INTO `fast-llm`.t_organization (name, deleted, create_time, update_time) VALUES ('admin@gmail.com', 0, '2024-12-15 07:42:05', '2024-12-15 07:42:05');
