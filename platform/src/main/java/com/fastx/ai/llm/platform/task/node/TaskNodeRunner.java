@@ -3,6 +3,7 @@ package com.fastx.ai.llm.platform.task.node;
 import com.fastx.ai.llm.domains.api.IDubboTaskService;
 import com.fastx.ai.llm.domains.constant.IConstant;
 import com.fastx.ai.llm.domains.dto.PageDTO;
+import com.fastx.ai.llm.domains.dto.TaskDTO;
 import com.fastx.ai.llm.domains.dto.TaskExecDTO;
 import com.fastx.ai.llm.domains.dto.TaskNodeExecDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +57,16 @@ public class TaskNodeRunner {
                 if (!IConstant.RUNNING.equals(taskExec.getStatus())) {
                     continue;
                 }
-                // @TODO (stark) check prev nodes all finished. and set to execute context.
+                // query task
+                TaskDTO task = taskService.getTaskById(taskExec.getTaskId());
+                // check task status
+                if (!IConstant.ACTIVE.equals(task.getStatus())) {
+                    continue;
+                }
+
+                if (!taskService.isParentTaskNodeFinished(t.getNodeId())) {
+                    continue ;
+                }
                 // before execute, check local execute pool state.
                 if (!taskNodeExecutor.canSubmit()) {
                     log.warn("scheduleFixedRunnerForTaskNodes:: task node : {}, task exec: {}, node id: {} , submit failed, local thread pool is full.",
@@ -73,6 +83,8 @@ public class TaskNodeRunner {
                 // submit to thread pool to execute.
                 TaskNodeRunnable context = new TaskNodeRunnable();
                 context.setTaskNodeExec(t);
+                context.setTaskExec(taskExec);
+                context.setTask(task);
                 taskNodeExecutor.execute(context);
             } catch (Exception e) {
                 if (StringUtils.contains(e.getMessage().toLowerCase(), "lock")) {

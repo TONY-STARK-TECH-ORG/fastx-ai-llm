@@ -75,7 +75,7 @@ public class AppTaskRunnable implements Runnable {
         List<TaskNodeExecDTO> taskNodeExecList = new ArrayList<>();
         for (Edge edge : edges) {
             Optional<TaskNodeExecDTO> node = taskNodeExecList.stream()
-                    .filter(t -> StringUtils.equals(t.getNodeId(), edge.getSource())).findFirst();
+                    .filter(t -> StringUtils.equals(t.getNodeId(), edge.getTarget())).findFirst();
             TaskNodeExecDTO n = null;
             if (node.isPresent()) {
                 n = node.get();
@@ -86,19 +86,20 @@ public class AppTaskRunnable implements Runnable {
                 }
                 n = new TaskNodeExecDTO();
                 n.setTaskExecId(taskExec.getId());
-                n.setNodeId(edge.getSource());
+                n.setNodeId(edge.getTarget());
                 n.setStatus(IConstant.WAIT);
                 n.setInputs(JSON.toJSONString(gN.getData().getInnerData().get("inputs")));
                 n.setConfig(JSON.toJSONString(Map.of(
                         "tool", gN.getData().getTool(),
-                        "organizationId", String.valueOf(task.getOrganizationId())
+                        "organizationToolId", String.valueOf(gN.getData().getOrgTool().getId()),
+                        "nodeName", gN.getData().getName()
                 )));
             }
             // add target to next source ids.
             String parentNodeIds = StringUtils.defaultIfBlank(n.getParentNodeIds(), "");
             String[] split = parentNodeIds.split(",");
             Set<String> parentNodeIdSet = new HashSet<>(Arrays.asList(split));
-            parentNodeIdSet.add(edge.getTarget());
+            parentNodeIdSet.add(edge.getSource());
             n.setParentNodeIds(StringUtils.join(parentNodeIdSet, ","));
             // add to taskNode List.
             taskNodeExecList.add(n);

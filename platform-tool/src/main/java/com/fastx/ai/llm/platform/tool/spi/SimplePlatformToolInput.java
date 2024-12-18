@@ -7,25 +7,28 @@ import java.io.OutputStream;
  */
 public class SimplePlatformToolInput implements IPlatformToolInput {
 
-    private String data;
+    private String inputs;
     private String config;
     private OutputStream stream;
 
+    @Override
     public void setInputs(String inputs) {
-        this.data = inputs;
+        this.inputs = inputs;
     }
 
+    @Override
     public void setConfig(String config) {
         this.config = config;
     }
 
+    @Override
     public void setStream(OutputStream stream) {
         this.stream = stream;
     }
 
     @Override
     public String getInputs() {
-        return data;
+        return inputs;
     }
 
     @Override

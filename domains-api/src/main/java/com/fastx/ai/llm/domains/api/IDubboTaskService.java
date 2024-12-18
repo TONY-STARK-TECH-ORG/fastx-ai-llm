@@ -29,14 +29,14 @@ public interface IDubboTaskService {
      * @param taskDTO task info
      * @return true or false
      */
-    boolean updateTask(TaskDTO taskDTO);
+    Boolean updateTask(TaskDTO taskDTO);
 
     /**
      * delete a task, will delete all task execs.
      * @param taskId task id
      * @return true or false
      */
-    boolean deleteTask(Long taskId);
+    Boolean deleteTask(Long taskId);
 
     /**
      * get all task under organization
@@ -118,10 +118,10 @@ public interface IDubboTaskService {
 
     /**
      * update task node exec status. (with lock!)
-     * @param taskNodeExecDTOList task node exec dto list.
+     * @param taskNodeExecDTO task node exec dto list.
      * @return update result.
      */
-    Boolean updateTaskNodeExecs(TaskNodeExecDTO taskNodeExecDTOList);
+    Boolean updateTaskNodeExecs(TaskNodeExecDTO taskNodeExecDTO);
 
     /**
      * get all task node exec by task id.
@@ -149,7 +149,7 @@ public interface IDubboTaskService {
      * delete task node execs before by execId
      * @param taskExecId task exec id
      */
-    boolean deleteTaskNodeExecs(Long taskExecId);
+    Boolean deleteTaskNodeExecs(Long taskExecId);
 
     /**
      * 根据 nodeId 获取所有父链路节点
@@ -163,5 +163,5 @@ public interface IDubboTaskService {
      * @param nodeId
      * @return
      */
-    boolean isParentTaskNodeFinished(String nodeId);
+    Boolean isParentTaskNodeFinished(String nodeId);
 }

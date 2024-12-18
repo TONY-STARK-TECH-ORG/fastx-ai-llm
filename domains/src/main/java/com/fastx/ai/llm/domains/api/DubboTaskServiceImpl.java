@@ -55,7 +55,7 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
 
     @Override
     @SentinelResource("task.update")
-    public boolean updateTask(TaskDTO taskDTO) {
+    public Boolean updateTask(TaskDTO taskDTO) {
         isValidated(taskDTO);
         Assert.notNull(taskDTO.getId(), "id is null");
         return taskService.updateById(Task.of(taskDTO));
@@ -64,7 +64,7 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
     @Override
     @SentinelResource("task.delete")
     @Transactional(rollbackFor = Exception.class)
-    public boolean deleteTask(Long taskId) {
+    public Boolean deleteTask(Long taskId) {
         Assert.notNull(taskId, "taskId is null");
         Assert.isTrue(taskService.removeById(taskId), "delete task failed!");
         Assert.isTrue(taskExecService.removeExecsByTaskId(taskId), "delete log failed!");
@@ -220,7 +220,7 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
 
     @Override
     @SentinelResource("task.exec.node.remove")
-    public boolean deleteTaskNodeExecs(Long taskExecId) {
+    public Boolean deleteTaskNodeExecs(Long taskExecId) {
         Assert.notNull(taskExecId, "taskExecId is null");
         return taskNodeExecService.removeByExecId(taskExecId);
     }
@@ -235,7 +235,7 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
     }
 
     @Override
-    public boolean isParentTaskNodeFinished(String nodeId) {
+    public Boolean isParentTaskNodeFinished(String nodeId) {
         Assert.notNull(nodeId, "nodeId is null");
         List<TaskNodeExec> parentTaskNodeExec = taskNodeExecService.getParentTaskNodeExec(nodeId);
         return parentTaskNodeExec.stream().allMatch(t -> IConstant.FINISH.equals(t.getStatus()));
