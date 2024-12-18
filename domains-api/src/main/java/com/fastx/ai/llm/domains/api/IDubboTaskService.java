@@ -52,6 +52,17 @@ public interface IDubboTaskService {
      */
     TaskDTO getTaskById(Long taskId);
 
+    //--------------------------------------------------
+    // task exec.
+    //--------------------------------------------------
+
+    /**
+     * get single task exec by id
+     * @param taskExecId task exec id
+     * @return task exec
+     */
+    TaskExecDTO getTaskExecById(Long taskExecId);
+
     /**
      * create new task exec
      * @param taskExecDTO exec info

@@ -33,11 +33,10 @@ public class AppTaskRunnable implements Runnable {
 
     private TaskDTO task;
     private TaskExecDTO taskExec;
-    private List<TaskNodeExecDTO> taskNodeExecList;
 
     @Override
     public void run() {
-        if (ObjectUtils.anyNull(task, taskExec) || CollectionUtils.isEmpty(taskNodeExecList)) {
+        if (ObjectUtils.anyNull(task, taskExec)) {
             return ;
         }
         try {
@@ -92,7 +91,7 @@ public class AppTaskRunnable implements Runnable {
                 n.setInputs(JSON.toJSONString(gN.getData().getInnerData().get("inputs")));
                 n.setConfig(JSON.toJSONString(Map.of(
                         "tool", gN.getData().getTool(),
-                        "organizationId", task.getOrganizationId()
+                        "organizationId", String.valueOf(task.getOrganizationId())
                 )));
             }
             // add target to next source ids.
