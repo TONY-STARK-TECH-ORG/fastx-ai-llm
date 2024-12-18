@@ -33,6 +33,9 @@ public class PlatformTaskRunner {
         taskExecs.getList().forEach(taskExec -> {
             log.error("scheduleFixedRunnerForKnowledgeBaseTask::taskExec:{}", taskExec);
             // Modified this state to.
+            taskExec.setStatus(IConstant.RUNNING);
+            Boolean taskExec1 =
+                    taskService.updateTaskExec(taskExec);
         });
         log.error("scheduleFixedRunnerForKnowledgeBaseTask::started");
     }
