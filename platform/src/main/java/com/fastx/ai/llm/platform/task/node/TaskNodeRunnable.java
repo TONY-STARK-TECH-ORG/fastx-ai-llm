@@ -29,6 +29,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -102,9 +103,14 @@ public class TaskNodeRunnable implements Runnable {
             taskNodeExec.setStartTime(startTime);
             taskNodeExec.setEndTime(endTime);
             Assert.isTrue(taskService.updateTaskNodeExecs(taskNodeExec),
-                    "exec finished, update node exec state failed!");
+                    "exec finished, update task node exec state failed!");
             // check all not execute.
-
+            if (taskService.isTaskExecNodeFinished(taskExec.getId())) {
+                taskExec.setStatus(IConstant.FINISH);
+                taskExec.setCompleteTime(LocalDateTime.now());
+                Assert.isTrue(taskService.updateTaskExec(taskExec),
+                        "exec finished, update task exec state failed!");
+            }
         } catch (Exception e) {
             log.error("execute tool node meet exception", e);
         }
