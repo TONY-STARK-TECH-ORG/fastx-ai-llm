@@ -120,6 +120,7 @@ public class DubboTaskServiceImpl extends DubboBaseDomainService implements IDub
 
     @Override
     @SentinelResource("task.exec.update")
+    @RedisLock(key = "taskExecLock::${#taskNodeExecDTO.id}")
     public Boolean updateTaskExec(TaskExecDTO taskExecDTO) {
         isValidated(taskExecDTO);
         Assert.notNull(taskExecDTO.getId(), "id is null");
