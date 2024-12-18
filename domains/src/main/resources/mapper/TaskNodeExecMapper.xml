@@ -2,4 +2,34 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fastx.ai.llm.domains.mapper.TaskNodeExecMapper">
 
+    <select id="getParentChainTaskNodeExecByNodeId" resultType="com.fastx.ai.llm.domains.entity.TaskNodeExec">
+        WITH RECURSIVE cte AS (
+            -- 起始节点
+            SELECT
+                id, task_exec_id, node_id, parent_node_ids, start_time, end_time, status, inputs, outputs, config, deleted, create_time, update_time
+            FROM
+                t_task_node_exec
+            WHERE
+                node_id = #{nodeId}
+            UNION ALL
+            -- 递归部分
+            SELECT
+                t.id, t.task_exec_id, t.node_id, t.parent_node_ids, t.start_time, t.end_time, t.status, t.inputs, t.outputs, t.config, t.deleted, t.create_time, t.update_time
+            FROM
+                t_task_node_exec t
+                    JOIN cte s
+                         ON (FIND_IN_SET(t.node_id, s.parent_node_ids) > 0 or t.node_id=s.parent_node_ids)
+        )
+        -- 仅返回父节点的 node_id 结果需要去重
+        SELECT DISTINCT id, task_exec_id, node_id, parent_node_ids, start_time, end_time, status, inputs, outputs, config, deleted, create_time, update_time
+        FROM cte
+        WHERE node_id != #{nodeId};
+    </select>
+    <select id="getParentTaskNodeExec" resultType="com.fastx.ai.llm.domains.entity.TaskNodeExec">
+        SELECT t2.id, t2.task_exec_id, t2.node_id, t2.parent_node_ids, t2.start_time, t2.end_time, t2.status, t2.inputs, t2.outputs, t2.config, t2.deleted, t2.create_time, t2.update_time
+        FROM t_task_node_exec t1
+                 JOIN t_task_node_exec t2 ON
+            (FIND_IN_SET(t2.node_id, t1.parent_node_ids) > 0 OR t2.node_id = t1.parent_node_ids)
+        WHERE t1.node_id = #{nodeId}
+    </select>
 </mapper>

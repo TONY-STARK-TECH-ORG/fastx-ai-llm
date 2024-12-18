@@ -1,0 +1,10 @@
+spring:
+  data:
+    redis:
+      database: 3
+      host: 127.0.0.1
+      port: 6379
+      ssl:
+        enabled: false
+      connectTimeout: 30000
+      clientName: fastx-ai-llm-domain

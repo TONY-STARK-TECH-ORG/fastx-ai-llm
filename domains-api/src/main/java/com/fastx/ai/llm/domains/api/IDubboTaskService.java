@@ -150,4 +150,18 @@ public interface IDubboTaskService {
      * @param taskExecId task exec id
      */
     boolean deleteTaskNodeExecs(Long taskExecId);
+
+    /**
+     * 根据 nodeId 获取所有父链路节点
+     * @param nodeId
+     * @return
+     */
+    List<TaskNodeExecDTO> getParentChainTaskNodeExecByNodeId(String nodeId);
+
+    /**
+     * 判断所有父节点是否已经执行完成
+     * @param nodeId
+     * @return
+     */
+    boolean isParentTaskNodeFinished(String nodeId);
 }

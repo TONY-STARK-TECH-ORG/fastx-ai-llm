@@ -4,7 +4,7 @@ create table t_task_node_exec
         primary key,
     task_exec_id  bigint                                                       not null,
     node_id       varchar(255)                                                 not null,
-    next_node_ids text                                                         null,
+    parent_node_ids text                                                         null,
     start_time    timestamp                                                    null,
     end_time      timestamp                                                    null,
     status        enum ('wait', 'running', 'finish') default 'wait'            not null,

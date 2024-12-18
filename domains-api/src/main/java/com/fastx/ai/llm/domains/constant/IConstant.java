@@ -9,6 +9,7 @@ public interface IConstant {
     String RUNNING = "running";
     String COMPLETE = "complete";
     String ERROR = "error";
+    String FINISH = "finish";
 
     String ACTIVE = "active";
     String IN_ACTIVE = "inactive";
