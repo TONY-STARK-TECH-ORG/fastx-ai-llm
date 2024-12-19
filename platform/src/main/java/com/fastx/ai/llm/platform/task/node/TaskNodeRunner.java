@@ -43,7 +43,7 @@ public class TaskNodeRunner {
         PageDTO<TaskNodeExecDTO> nodeExecs =
                 taskService.getTaskNodeExecs(page, size, status, true);
 
-        if (0 == nodeExecs.getSize()) {
+        if (nodeExecs.getList().isEmpty()) {
             return ;
         }
 

@@ -2,9 +2,12 @@ package com.fastx.ai.llm.domains.api;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.util.AssertUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fastx.ai.llm.domains.config.lock.RedisLock;
 import com.fastx.ai.llm.domains.constant.IConstant;
 import com.fastx.ai.llm.domains.dto.KnowledgeBaseDTO;
 import com.fastx.ai.llm.domains.dto.KnowledgeBaseFileDTO;
+import com.fastx.ai.llm.domains.dto.PageDTO;
 import com.fastx.ai.llm.domains.entity.KnowledgeBase;
 import com.fastx.ai.llm.domains.entity.KnowledgeBaseFile;
 import com.fastx.ai.llm.domains.service.IKnowledgeBaseFileService;
@@ -16,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -126,6 +128,28 @@ public class DubboKnowledgeDubboBaseServiceImpl extends DubboBaseDomainService i
     public boolean batchDeleteKnowledgeBaseFiles(List<Long> ids) {
         Assert.notEmpty(ids, "ids is null");
         return knowledgeBaseFileService.removeByIds(ids);
+    }
+
+    @Override
+    @SentinelResource("kb.f.get")
+    public PageDTO<KnowledgeBaseFileDTO> getKnowledgeBaseByPage(Long page, Long size, String status) {
+        Assert.notNull(status, "status is null");
+        Assert.notNull(page, "page is null");
+        Assert.notNull(size, "size is null");
+
+        Page<KnowledgeBaseFile> pageDTO = knowledgeBaseFileService.getKnowledgeBaseByPage(page, size, status);
+        return PageDTO.of(pageDTO.getCurrent(), pageDTO.getSize(), pageDTO.getTotal(),
+                pageDTO.getRecords().stream().map(KnowledgeBaseFile::to).toList());
+    }
+
+    @Override
+    @SentinelResource("kb.f.update")
+    @RedisLock(key = "updateKnowledgeBaseLock::${#knowledgeBaseFileDTO.id}")
+    public Boolean updateKnowledgeBaseFile(KnowledgeBaseFileDTO knowledgeBaseFileDTO) {
+        isValidated(knowledgeBaseFileDTO);
+        Assert.notNull(knowledgeBaseFileDTO.getId(), "id is null");
+        KnowledgeBaseFile knowledgeBaseFile = KnowledgeBaseFile.of(knowledgeBaseFileDTO);
+        return knowledgeBaseFileService.updateById(knowledgeBaseFile);
     }
 
     private void isValidated(KnowledgeBaseDTO knowledgeBaseDTO) {

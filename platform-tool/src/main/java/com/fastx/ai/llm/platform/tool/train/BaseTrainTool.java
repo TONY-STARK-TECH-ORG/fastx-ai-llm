@@ -23,6 +23,11 @@ public abstract class BaseTrainTool implements IPlatformTool<TrainInput, TrainOu
     }
 
     @Override
+    public String getIcon() {
+        return "https://oss.fastx-ai.com/fastx-ai-llm/123/logo.png";
+    }
+
+    @Override
     public TrainOutput exec(TrainInput input) {
         throw new UnsupportedOperationException();
     }

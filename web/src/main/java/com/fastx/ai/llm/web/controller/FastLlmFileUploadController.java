@@ -1,10 +1,8 @@
 package com.fastx.ai.llm.web.controller;
 
 import com.fastx.ai.llm.platform.api.IPlatformKnowledgeService;
-import com.fastx.ai.llm.platform.api.IPlatformOrgService;
 import com.fastx.ai.llm.platform.dto.KnowledgeDTO;
 import com.fastx.ai.llm.platform.dto.KnowledgeFileDTO;
-import com.fastx.ai.llm.platform.dto.OrgTaskDTO;
 import com.fastx.ai.llm.web.controller.entity.Response;
 import com.fastx.ai.llm.web.controller.entity.WorkspaceFileUploadRequest;
 import com.fastx.ai.llm.web.service.OssUploadService;
@@ -17,10 +15,8 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author stark
@@ -34,9 +30,6 @@ public class FastLlmFileUploadController {
 
     @Autowired
     IPlatformKnowledgeService platformKnowledgeService;
-
-    @Autowired
-    IPlatformOrgService platformOrgService;
 
     @PostMapping(value = "/uploadToWorkSpace", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
@@ -59,24 +52,6 @@ public class FastLlmFileUploadController {
                 fileDTO.setDownloadUrl(upload);
                 fileDTO.setKnowledgeBaseId(workspaceId);
                 knowledgeFiles = platformKnowledgeService.createKnowledgeFile(List.of(fileDTO));
-            }
-            try {
-                if (knowledgeFiles != null) {
-                    OrgTaskDTO taskDTO = new OrgTaskDTO();
-                    taskDTO.setName(knowledgeById.getName() + "::FileProcess");
-                    taskDTO.setDescription(Arrays.stream(files).map(f -> StringUtils.defaultIf(f.getOriginalFilename(), f.getName())).collect(Collectors.joining(",")));
-                    taskDTO.setCron("-1");
-                    taskDTO.setOrganizationId(knowledgeById.getOrganizationId());
-                    // system workflow (process file)
-                    // @TODO (stark) 组织增加配置项，可以配置默认的数据处理 workflow
-                    // @TODO (stark) create task auto in platform inner service.
-                    taskDTO.setWorkflowVersionId(99999999999990L);
-                    taskDTO.setType("knowledge");
-                    platformOrgService.createTask(taskDTO);
-                }
-            } catch (Exception e) {
-                return Response.error(
-                        "file upload success, but create task failed! you need manual create file process task.");
             }
             return Response.success(Lists.createWhenNull(knowledgeFiles));
         } catch (Exception e) {

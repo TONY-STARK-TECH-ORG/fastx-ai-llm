@@ -42,7 +42,7 @@ public class AppTaskRunner {
         PageDTO<TaskExecDTO> taskExecs =
                 taskService.getTaskExecs(page, size, status, type);
 
-        if (0 == taskExecs.getSize()) {
+        if (taskExecs.getList().isEmpty()) {
             return ;
         }
 

@@ -37,6 +37,8 @@ public class ToolDTO implements Serializable {
 
     private String type;
 
+    private Boolean needConfig;
+
     public String getIcon() {
         return icon;
     }
@@ -107,5 +109,13 @@ public class ToolDTO implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Boolean getNeedConfig() {
+        return needConfig;
+    }
+
+    public void setNeedConfig(Boolean needConfig) {
+        this.needConfig = needConfig;
     }
 }

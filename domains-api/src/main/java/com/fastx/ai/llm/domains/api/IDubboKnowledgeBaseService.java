@@ -2,6 +2,7 @@ package com.fastx.ai.llm.domains.api;
 
 import com.fastx.ai.llm.domains.dto.KnowledgeBaseDTO;
 import com.fastx.ai.llm.domains.dto.KnowledgeBaseFileDTO;
+import com.fastx.ai.llm.domains.dto.PageDTO;
 
 import java.util.List;
 
@@ -88,4 +89,20 @@ public interface IDubboKnowledgeBaseService {
      * @return true or false
      */
     boolean batchDeleteKnowledgeBaseFiles(List<Long> ids);
+
+    /**
+     * get file list by page
+     * @param page page
+     * @param size size
+     * @param status status
+     * @return page data
+     */
+    PageDTO<KnowledgeBaseFileDTO> getKnowledgeBaseByPage(Long page, Long size, String status);
+
+    /**
+     * update file
+     * @param knowledgeBaseFileDTO file
+     * @return true or false
+     */
+    Boolean updateKnowledgeBaseFile(KnowledgeBaseFileDTO knowledgeBaseFileDTO);
 }

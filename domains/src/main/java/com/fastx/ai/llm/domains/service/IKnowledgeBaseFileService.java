@@ -1,5 +1,6 @@
 package com.fastx.ai.llm.domains.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fastx.ai.llm.domains.entity.KnowledgeBaseFile;
 
@@ -28,4 +29,13 @@ public interface IKnowledgeBaseFileService extends IService<KnowledgeBaseFile> {
      * @return true or false
      */
     boolean removeFilesByKnowledgeBaseId(Long knowledgeId);
+
+    /**
+     * get files by page
+     * @param page page
+     * @param size size
+     * @param status status
+     * @return return
+     */
+    Page<KnowledgeBaseFile> getKnowledgeBaseByPage(Long page, Long size, String status);
 }
