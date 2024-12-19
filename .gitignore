@@ -44,3 +44,7 @@ web-ui/.env
 
 web/src/main/resources/application-upload.yaml
 /seata-server/application.yml
+knowledge-base-embedding/myenv
+knowledge-base-embedding/nohup.out
+knowledge-base-embedding/process
+knowledge-base-embedding/static
