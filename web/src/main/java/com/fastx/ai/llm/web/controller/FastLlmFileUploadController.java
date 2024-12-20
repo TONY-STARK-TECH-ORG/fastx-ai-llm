@@ -48,6 +48,8 @@ public class FastLlmFileUploadController {
                 String upload = ossUploadService.upload(file, String.valueOf(workspaceId));
                 KnowledgeFileDTO fileDTO = new KnowledgeFileDTO();
                 fileDTO.setName(fileName);
+                // @TODO (stark) need file extension need pdf, doc, txt.
+                // now this has a bug: store the full name for this file.
                 fileDTO.setExtension(fileName.contains(".") ? StringUtils.defaultIf(fileName.substring(fileName.indexOf(".") + 1), "-") : "-");
                 fileDTO.setDownloadUrl(upload);
                 fileDTO.setKnowledgeBaseId(workspaceId);

@@ -51,27 +51,39 @@ def embedding_file(id: str):
             fi.write(r.content)
         print("download file success: " + file_name)
         ##################################
-        ### embedding file.
+        ###      embedding file        ###
         ##################################
-        print("will embedding file: " + file_name)
-        elements = partition_pdf(
-            filename=file_name,
-            strategy="hi_res",
-            extract_images_in_pdf=True,
-            extract_image_block_types=["Image", "Table"],
-            extract_image_block_to_payload=False,
-            extract_image_block_output_dir="process/"
-        )
-        # change to chunk
-        chunks = chunk_elements(elements)
-        for chunk in chunks:
-            s = clean_non_ascii_chars(chunk.text)
-            s = remove_punctuation(s)
-            print(s)
+        print(f"will embedding file: {file_name}, extension: {ff.extension}")
+        embedding_result = None
+        if ff.extension == "txt":
+            from text2vec import text_to_bert_vector
+            inner_file = open(file_name, "r")
+            try:
+                inner_text = inner_file.read()
+                embedding_result = text_to_bert_vector(inner_text)
+            finally:
+                inner_file.close()
+        elif ff.extension in ["png", "jpg", "jpeg"]:
+            from image2vec import image_to_vector_resnet
+            embedding_result = image_to_vector_resnet(file_name)
+        elif ff.extension == "pdf":
+            # parse pdf
+            raise ValueError("we don't support pdf now: " + ff.extension)
+        elif ff.extension in ["docx", "doc", "ppt", "pptx", "xls", "xlsx"]:
+            # parse document
+            raise ValueError("we don't support office file now: " + ff.extension)
+        else:
+            raise ValueError("unsupported file extension: " + ff.extension)
         # call self api with embedding result.
-        print("end embedding with result: ")
+        print(f"end embedding with result: {embedding_result}")
+        # TODO update this vector to milvus
+
+        # set file status to success
+        ff.status = "active"
+        ff.save()
         # clean local file
         os.remove(file_name)
+        print(f"clean workspace: {file_name}")
     except Exception as e:
         # reset file status to wait.
         ff.status = "wait"
