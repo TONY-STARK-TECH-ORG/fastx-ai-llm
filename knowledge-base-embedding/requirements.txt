@@ -1,2 +1,21 @@
 fastapi
 uvicorn
+requests
+# brew install libmagic
+python-magic
+numpy==1.26.4
+torchvision
+torchaudio
+torch
+peewee
+playhouse
+transformers
+# python3 -m pip install paddlepaddle -i https://www.paddlepaddle.org.cn/packages/stable/cpu/
+paddlepaddle
+paddleocr
+paddleclas
+pymysql
+PyMuPDF
+pymilvus
+premailer
+openpyxl

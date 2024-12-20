@@ -8,7 +8,7 @@ import shutil
 # create uvicorn application.
 app = FastAPI()
 # mysql db connection string.
-mysql_conn_str = "mysql://root:123456@172.17.0.4:3306/fast-llm"
+mysql_conn_str = "mysql://root:123456@127.0.0.1:3306/fast-llm"
 # db connection.
 db = connect(mysql_conn_str)
 
