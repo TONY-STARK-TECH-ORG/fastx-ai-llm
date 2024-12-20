@@ -51,3 +51,5 @@ knowledge-base-embedding/nohup.out
 knowledge-base-embedding/process
 knowledge-base-embedding/static
 knowledge-base-embedding/output
+
+.DS_Store
