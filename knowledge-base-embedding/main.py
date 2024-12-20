@@ -75,7 +75,7 @@ class MilvusData:
             padded_vector[:current_length] = vector
             d_i["image_content"] = self.image_content
         else:
-            raise ValueError("unsupported file extension: " + extension)
+            raise ValueError("unsupported file extension: " + self.extension)
         return [d_i]
 
 @app.get("/")
