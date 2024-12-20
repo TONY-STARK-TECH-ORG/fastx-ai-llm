@@ -52,4 +52,5 @@ knowledge-base-embedding/process
 knowledge-base-embedding/static
 knowledge-base-embedding/output
 
+.mvn
 .DS_Store
