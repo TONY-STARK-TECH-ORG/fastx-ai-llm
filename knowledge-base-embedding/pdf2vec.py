@@ -1,121 +1,84 @@
-import fitz  # PyMuPDF
-import json
 import os
-import cv2
-import numpy as np
-from PIL import Image
-import pytesseract  # OCR文字识别
-import pix2tex  # 数学公式识别
-import camelot  # 表格识别
+import torch
+from transformers import BertTokenizer, BertModel
 
-class PDFParser:
-    def __init__(self, pdf_path):
-        self.pdf_path = pdf_path
-        self.doc = fitz.open(pdf_path)
-        self.output_dir = "output"
-        os.makedirs(self.output_dir, exist_ok=True)
+tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+model = BertModel.from_pretrained("bert-base-uncased")
 
-    def parse_pdf(self):
-        result = []
+def process_pdf_vec(file_path, output_path):
+    result = os.system("paddleocr --image_dir=" + file_path + " --type=structure --recovery=true --recovery_to_markdown=true --output=" + output_path)
+    if result == 0:
+        file_name_o = output_path + file_path.split("/")[-1].split(".")[0] + "_ocr.md"
+        print(f"process pdf success, now start structure md file {file_name_o}")
+        # read md file
+        max_chunk_size = 500
+        markdown_content = read_markdown_file(file_name_o)
+        chunks = split_markdown(markdown_content, max_chunk_size, tokenizer)
 
-        for page_num in range(len(self.doc)):
-            page = self.doc[page_num]
-            page_dict = {
-                "page_num": page_num + 1,
-                "text": [],
-                "images": [],
-                "tables": [],
-                "formulas": [],
-                "page_image": f"page_{page_num+1}.png"
-            }
+        embedding_result = []
+        for chunk in chunks:
+            text_inner = chunk
+            from text2vec import text_to_bert_vector
+            er = text_to_bert_vector(text_inner)
+            embedding_result.append(er)
+        return embedding_result, chunks
+    else:
+        print("process failed")
+        return [], []
 
-            # 1. 保存页面图片
-            self.save_page_image(page, page_num)
+def read_markdown_file(file_path):
+    """读取 markdown 文件内容"""
+    with open(file_path, 'r', encoding='utf-8') as file:
+        return file.read()
 
-            # 2. 提取文本
-            text_blocks = self.extract_text(page)
-            page_dict["text"] = text_blocks
+def split_markdown(content, max_chunk_tokens, tokenizer):
+    chunks = []  # 用于存储分块的结果
+    current_chunk = ""  # 当前块
 
-            # 3. 提取图片
-            images = self.extract_images(page)
-            page_dict["images"] = images
+    for line in content.splitlines(keepends=True):  # 保留换行符
+        # 如果是标题行（逻辑分块依据，如 #, ##, ###）
+        if line.strip().startswith(('#', '##', '###', '-', '*', '>')):
+            # 如果当前块不为空，则优先将当前块保存
+            if current_chunk:
+                chunks.append(current_chunk)
+                current_chunk = ""
 
-            # 4. 提取表格
-            tables = self.extract_tables(page_num)
-            page_dict["tables"] = tables
+        # 临时添加新行，检查块的 token 长度是否会超标
+        temp_chunk = current_chunk + line
+        tokenized = tokenizer(temp_chunk, add_special_tokens=False, return_attention_mask=False, return_tensors=None)
+        if len(tokenized["input_ids"]) > max_chunk_tokens:
+            # 如果超出 token 限制，保存当前块
+            if current_chunk:  # 先保存当前块（确保为空行不加入 chunks）
+                chunks.append(current_chunk)
+            current_chunk = line  # 将当前行作为下一个新块的开头
+        else:
+            # 否则继续追加当前行到块
+            current_chunk = temp_chunk
 
-            # 5. 识别数学公式
-            formulas = self.extract_formulas(page)
-            page_dict["formulas"] = formulas
+    # 将剩余内容保存为最后一个块
+    if current_chunk:
+        chunks.append(current_chunk)
 
-            result.append(page_dict)
+    # 逐个处理超过 max_chunk_tokens 的块，进行拆分
+    def split_large_chunk(chunk):
+        tokenized = tokenizer(chunk, add_special_tokens=False, return_attention_mask=False, return_tensors=None)
+        input_ids = tokenized["input_ids"]
 
-        # 保存结构化数据
-        self.save_json(result)
-        return result
+        # 按 max_chunk_tokens 分割
+        sub_chunks = [input_ids[i:i + max_chunk_tokens] for i in range(0, len(input_ids), max_chunk_tokens)]
 
-    def save_page_image(self, page, page_num):
-        pix = page.get_pixmap()
-        img_path = os.path.join(self.output_dir, f"page_{page_num+1}.png")
-        pix.save(img_path)
+        # 解码成文本
+        return [tokenizer.decode(sub_chunk, skip_special_tokens=True) for sub_chunk in sub_chunks]
 
-    def extract_text(self, page):
-        text_blocks = []
-        blocks = page.get_text("blocks")
-        for block in blocks:
-            if block[6] == 0:  # 文本类型
-                text_blocks.append({
-                    "text": block[4],
-                    "bbox": block[:4]
-                })
-        return text_blocks
+    final_chunks = []
+    for chunk in chunks:
+        tokenized = tokenizer(chunk, add_special_tokens=False, return_attention_mask=False, return_tensors=None)
+        if len(tokenized["input_ids"]) > max_chunk_tokens:
+            # 如果块仍然过大，进一步拆分此块
+            final_chunks.extend(split_large_chunk(chunk))
+        else:
+            final_chunks.append(chunk)
 
-    def extract_images(self, page):
-        images = []
-        image_list = page.get_images(full=True)
-        for img_index, img in enumerate(image_list):
-            xref = img[0]
-            base_image = self.doc.extract_image(xref)
-            image_path = os.path.join(self.output_dir, f"image_{page.number+1}_{img_index+1}.png")
+    return final_chunks
 
-            with open(image_path, "wb") as f:
-                f.write(base_image["image"])
-
-            images.append({
-                "image_path": image_path,
-                "bbox": img[1]  # 图片位置信息
-            })
-        return images
-
-    def extract_tables(self, page_num):
-        tables = []
-        # 使用camelot提取表格
-        tables_found = camelot.read_pdf(self.pdf_path, pages=str(page_num+1))
-
-        for idx, table in enumerate(tables_found):
-            tables.append({
-                "table_id": idx + 1,
-                "data": table.data.tolist(),
-                "bbox": table._bbox
-            })
-        return tables
-
-    def extract_formulas(self, page):
-        formulas = []
-        # 使用pix2tex识别数学公式
-        # 这里需要先识别可能包含公式的区域，然后进行公式识别
-        # 实现略复杂，这里只是示例
-        return formulas
-
-    def save_json(self, result):
-        output_path = os.path.join(self.output_dir, "structure.json")
-        with open(output_path, "w", encoding="utf-8") as f:
-            json.dump(result, f, ensure_ascii=False, indent=2)
-
-def main():
-    pdf_parser = PDFParser("process/2412.09618v1.pdf")
-    result = pdf_parser.parse_pdf()
-    print("PDF解析完成!")
-
-if __name__ == "__main__":
-    main()
+# process_pdf_vec("process/29-2412.09618v1.pdf", "process/29/")
