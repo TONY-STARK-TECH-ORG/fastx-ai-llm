@@ -1,14 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
-from typing import Annotated
 import requests, os
 from peewee import *
 from playhouse.db_url import connect
-from unstructured.partition.pdf import partition_pdf
-# process
-from unstructured.cleaners.core import clean_non_ascii_chars
-from unstructured.cleaners.core import remove_punctuation
-# chunk
-from unstructured.chunking.basic import chunk_elements
 import numpy as np
 import shutil
 
