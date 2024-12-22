@@ -31,12 +31,6 @@ The Fastx-AI LLM RAG System is built on a modular architecture, allowing for eas
 
 We are excited for you to deploy our application! Below are the steps to get started:
 
-### Jar Deploy
-
-1. **Download the JAR File**: Download the latest JAR file from the releases page.
-2. **Configure the Application**: Edit the `application.yml` file to configure the necessary settings.
-3. **Run the Application**: Use the following command to start the application:
-   
 ### Prerequisites
 
 - **MySQL**: Ensure you are using the latest version of MySQL, as the project utilizes features like `JSON` and `ENUM`.
