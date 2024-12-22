@@ -107,7 +107,7 @@ Content-Type: application/json
 
 ###
 POST http://localhost:8082/tool/platform/tool/exec
-Authorization: Bearer x.y.z.jwt.token generate by login or auth
+satoken: x.y.z.jwt.token generate by login or auth
 Content-Type: application/json
 
 {

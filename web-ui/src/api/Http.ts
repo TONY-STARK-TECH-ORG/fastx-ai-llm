@@ -93,14 +93,14 @@ class Http {
         if (!userStorage) {
             return {
                 'Content-Type': 'application/json',
-                'Authorization': ''
+                'satoken': ''
             }
         }
 
         const userState = JSON.parse(userStorage);
         return {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + userState.state.token!!
+            'satoken': userState.state.token!!
         }
     }
 
@@ -108,13 +108,13 @@ class Http {
         const userStorage = localStorage.getItem("user-storage")
         if (!userStorage) {
             return {
-                'Authorization': ''
+                'satoken': ''
             }
         }
 
         const userState = JSON.parse(userStorage);
         return {
-            'Authorization': 'Bearer ' + userState.state.token!!
+            'satoken': userState.state.token!!
         }
     }
 }

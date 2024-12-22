@@ -1,5 +1,6 @@
 package com.fastx.ai.llm.web.controller;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.fastx.ai.llm.platform.api.IPlatformBasicInfoService;
 import com.fastx.ai.llm.web.controller.entity.Response;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -12,11 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/info")
-public class FastLlmApplicationInfoController {
+public class VersionController {
 
     @DubboReference
     IPlatformBasicInfoService basicInfoService;
 
+    @SaIgnore
     @GetMapping("/version")
     public Response<String> info() {
         return Response.success(

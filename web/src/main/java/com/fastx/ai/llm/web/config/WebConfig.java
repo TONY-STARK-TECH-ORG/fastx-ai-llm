@@ -1,8 +1,10 @@
 package com.fastx.ai.llm.web.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -10,16 +12,28 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class WebConfig {
+
+    @Autowired
+    LoginInterceptor loginInterceptor;
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")  // 匹配所有路径
-                        .allowedOrigins("http://localhost:5173", "http://localhost")  // 允许来自特定域的请求
-                        .allowedMethods("*")  // 允许的HTTP方法
-                        .allowedHeaders("*")  // 允许的请求头
-                        .allowCredentials(true);  // 允许发送凭据
+                registry.addMapping("/**")
+                        .allowCredentials(true)
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedOrigins("http://localhost:5173")
+                        .maxAge(86400000)
+                        .allowedHeaders("*");
+            }
+
+            @Override
+            public void addInterceptors(InterceptorRegistry registry) {
+                registry.addInterceptor(loginInterceptor)
+                        .addPathPatterns("/**")
+                        .excludePathPatterns("/auth/user/createWithEmail", "/auth/user/createWithAuth", "/auth/user/loginWithEmail", "/auth/user/loginWitAuth");
             }
         };
     }

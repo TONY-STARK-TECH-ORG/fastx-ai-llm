@@ -1,13 +1,12 @@
 package com.fastx.ai.llm.web.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.fastx.ai.llm.platform.api.IPlatformOrgService;
 import com.fastx.ai.llm.platform.api.IPlatformUserService;
 import com.fastx.ai.llm.platform.dto.OrgDTO;
 import com.fastx.ai.llm.platform.dto.UserInfoDTO;
 import com.fastx.ai.llm.web.controller.entity.Response;
-import com.fastx.ai.llm.web.service.JwtService;
 import org.apache.dubbo.config.annotation.DubboReference;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,14 +25,12 @@ public class FastLlmUserController {
     @DubboReference
     IPlatformOrgService platformOrgService;
 
-    @Autowired
-    private JwtService jwtService;
-
     @PostMapping("/createWithEmail")
     public Response<UserInfoDTO> createWithEmail(@RequestBody UserInfoDTO userInfoDTO) {
         UserInfoDTO user = platformUserService.createUser("email", userInfoDTO);
         Assert.notNull(user, "sign in failed");
-        user.setToken(jwtService.generateToken(user.getEmail()));
+        StpUtil.login(user.getId());
+        user.setToken(StpUtil.getTokenValue());
         return Response.success(user);
     }
 
@@ -41,7 +38,8 @@ public class FastLlmUserController {
     public Response<UserInfoDTO> createWithAuth(@RequestBody UserInfoDTO userInfoDTO) {
         UserInfoDTO user = platformUserService.createUser("auth", userInfoDTO);
         Assert.notNull(user, "sign in failed");
-        user.setToken(jwtService.generateToken(user.getEmail()));
+        StpUtil.login(user.getId());
+        user.setToken(StpUtil.getTokenValue());
         return Response.success(user);
     }
 
@@ -49,7 +47,8 @@ public class FastLlmUserController {
     public Response<UserInfoDTO> loginWithEmail(@RequestBody UserInfoDTO userInfoDTO) {
         UserInfoDTO user = platformUserService.login(userInfoDTO.getEmail(), userInfoDTO.getPassword());
         Assert.notNull(user, "sign in failed");
-        user.setToken(jwtService.generateToken(user.getEmail()));
+        StpUtil.login(user.getId());
+        user.setToken(StpUtil.getTokenValue());
         return Response.success(user);
     }
 
@@ -57,8 +56,16 @@ public class FastLlmUserController {
     public Response<UserInfoDTO> loginWitAuth(@RequestBody UserInfoDTO userInfoDTO) {
         UserInfoDTO user = platformUserService.loginByAuth(userInfoDTO.getAuthProvider(), userInfoDTO.getAuthOpenId());
         Assert.notNull(user, "sign in failed");
-        user.setToken(jwtService.generateToken(user.getEmail()));
+        StpUtil.login(user.getId());
+        user.setToken(StpUtil.getTokenValue());
         return Response.success(user);
+    }
+
+    @PostMapping("/logout")
+    public Response<Boolean> logout(@RequestBody UserInfoDTO userInfoDTO) {
+        Assert.notNull(userInfoDTO.getId(), "logout should have user id!");
+        StpUtil.logout(userInfoDTO.getId());
+        return Response.success(true);
     }
 
     @GetMapping("/getUserinfo")

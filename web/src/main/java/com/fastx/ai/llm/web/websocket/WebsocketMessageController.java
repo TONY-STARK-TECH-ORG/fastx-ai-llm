@@ -1,14 +1,12 @@
 package com.fastx.ai.llm.web.websocket;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.fastx.ai.llm.platform.api.IPlatformUserService;
-import com.fastx.ai.llm.platform.dto.UserInfoDTO;
 import com.fastx.ai.llm.web.config.WebsocketConfig;
-import com.fastx.ai.llm.web.service.JwtService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tio.core.ChannelContext;
 import org.tio.core.Tio;
@@ -31,25 +29,18 @@ public class WebsocketMessageController implements IWsMsgHandler {
     @DubboReference
     private IPlatformUserService platformUserService;
 
-    @Autowired
-    private JwtService jwtService;
-
     @Override
     public HttpResponse handshake(HttpRequest httpRequest, HttpResponse httpResponse, ChannelContext channelContext) throws Exception {
         // String clientIp = httpRequest.getClientIp();
-        String token = httpRequest.getParam("token");
-        if (StringUtils.isEmpty(token)) {
+        String userId = httpRequest.getParam("user_id");
+        if (StringUtils.isEmpty(userId)) {
             Tio.close(channelContext, "token not validated!");
             return httpResponse;
         }
-        // token validated
-        String username = jwtService.extractUsername(token);
-        // load user info with token
-        UserInfoDTO userInfoDTO = platformUserService.loadUserByEmail(username);
         // Validate token and set authentication
-        if (jwtService.validateToken(token, userInfoDTO)) {
+        if (StpUtil.isLogin(userId)) {
             // auth success ! bind userId to this socket channel context.
-            Tio.bindUser(channelContext, String.valueOf(userInfoDTO.getId()));
+            Tio.bindUser(channelContext, String.valueOf(StpUtil.getLoginId()));
         } else {
             // auth failed !
             Tio.close(channelContext, "token not validated!");

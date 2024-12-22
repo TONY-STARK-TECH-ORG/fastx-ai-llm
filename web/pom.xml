@@ -19,6 +19,7 @@
         <jwt.version>0.12.6</jwt.version>
         <tio.version>3.8.6.v20240801-RELEASE</tio.version>
         <oss.version>3.18.1</oss.version>
+        <sa.version>1.39.0</sa.version>
     </properties>
 
     <dependencies>
@@ -43,25 +44,6 @@
             <artifactId>curator-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>${jwt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <version>${jwt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
-            <version>${jwt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.t-io</groupId>
             <artifactId>tio-core</artifactId>
             <version>${tio.version}</version>
@@ -75,6 +57,20 @@
             <groupId>com.aliyun.oss</groupId>
             <artifactId>aliyun-sdk-oss</artifactId>
             <version>${oss.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-spring-boot3-starter</artifactId>
+            <version>${sa.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-redis</artifactId>
+            <version>${sa.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
         </dependency>
     </dependencies>
 
