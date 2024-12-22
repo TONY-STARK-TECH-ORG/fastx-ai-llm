@@ -52,7 +52,7 @@ public class PdfExtractToMarkdownProcessTool extends BasePreTrainTool {
             EmbeddingInput pyInput = JSON.parseObject(input.getInputs(), EmbeddingInput.class);
             Assert.isTrue(!StringUtils.isEmpty(pyInput.getInput()), "input can not be empty");
 
-            ProcessBuilder processBuilder = new ProcessBuilder("python", "platform-tool/src/main/resources/python-script/pdf2vec.py", pyInput.getInput());
+            ProcessBuilder processBuilder = new ProcessBuilder("python", "platform-tool/src/main/resources/python-script/pdf2md.py", pyInput.getInput());
             processBuilder.redirectErrorStream(true);
 
             Process process = processBuilder.start();

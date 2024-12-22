@@ -138,14 +138,14 @@ Content-Type: application/json
 
 ## Others
 
-1. if you meet git ignored file not worked, please try
+#### 1. if you meet git ignored file not worked, please try
 
 ```shell
 git rm -r --cached .
 git add .
 ```
 
-2. now we only support storage with S3 protocol, so you need to config your minio or s3 server with the following:
+#### 2. now we only support storage with S3 protocol, so you need to config your minio or s3 server with the following:
 
 ```yaml
 file:
@@ -159,3 +159,17 @@ file:
 ```
 
 and modified `web/src/main/resources/application-upload-example.yaml` to `application-upload.yaml`.
+
+#### 3.about JAVA call python
+
+you should follow this steps to setup env first.
+
+```shell
+1. open `knowledge-base-embedding` folder
+2. create a conda enviroment use: conda create --name kbe python==3.12
+3. pip install -r requirements.txt
+4. open `platform-tool` folder, change workdir to `src/main/resources/python-script`
+5. run: python image2vec.py "http://xxx.png"  to check image2vec
+6. run: python text2vec.py "Hello World"  to check text2vec
+7. run: python pdf2md.py "http://xxx.pdf" to check pdf2markdown
+```
