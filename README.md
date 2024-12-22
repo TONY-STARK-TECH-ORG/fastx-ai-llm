@@ -1,5 +1,7 @@
 # Fastx-AI LLM RAG System
 
+![alt gif from: dailydoseofds](./resources/agents.gif "gif from: dailydoseofds")
+
 ## Introduction
 
 In the rapidly evolving landscape of artificial intelligence, knowledge bases have emerged as a critical component for driving innovation and enabling intelligent decision-making. The **Fastx-AI LLM RAG System** is an open-source project designed to build a flexible, scalable, and easily accessible platform that provides robust support for developers and researchers.
@@ -173,3 +175,5 @@ you should follow this steps to setup env first.
 6. run: python text2vec.py "Hello World"  to check text2vec
 7. run: python pdf2md.py "http://xxx.pdf" to check pdf2markdown
 ```
+
+> noticed that we use `/opt/anaconda3/envs/kbe/bin/paddleocr` in `pdf2md.py`, if your paddleocr executable file not in this path, you should change this path in `pdf2md.py` manually.  
