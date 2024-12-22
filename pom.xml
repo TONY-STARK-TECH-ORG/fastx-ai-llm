@@ -173,7 +173,6 @@
                 <artifactId>dubbo-zookeeper-spring-boot-starter</artifactId>
                 <version>${dubbo.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-client</artifactId>

@@ -24,20 +24,6 @@ server:
   tomcat:
     max-swallow-size: 150MB
 
-logging:
-  level:
-    root: error
-  pattern:
-    console: '[%X{traceId:-}, %X{spanId:-}] %date %green(%level) %yellow([%thread]) %cyan(%logger{10}) [%file:%line] %msg%n'
-  logback:
-    rollingpolicy:
-      max-file-size: 100MB
-      total-size-cap: 1GB
-      max-history: 1
-      archive: true
-      clean-history-on-start: true
-      file-name-pattern: ./logs/fastx-llm-web.%d{yyyy-MM-dd}.%i.gz.log
-
 sa-token:
   token-name: satoken
   timeout: -1
