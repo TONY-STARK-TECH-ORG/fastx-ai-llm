@@ -1,6 +1,7 @@
 # Fastx-AI LLM RAG System
 
-![alt gif from: dailydoseofds](./resources/agents.gif "gif from: dailydoseofds")
+![alt gif from: dailydoseofds](./resources/agents.gif)
+<p align="center" style="color: #eeeeee">RAG build on agents; gif: dailydoseofds</p>
 
 ## Introduction
 
