@@ -20,12 +20,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
  * @author stark
  */
-public class TextBertEmbeddingProcessTool extends BasePreTrainTool {
+public class ImageResNetEmbeddingProcessTool extends BasePreTrainTool {
 
     static Prototype _prototype = new Prototype();
 
@@ -33,7 +34,7 @@ public class TextBertEmbeddingProcessTool extends BasePreTrainTool {
         List<Fields> config = new ArrayList<>();
         // for inputs.
         List<Fields> inputs = new ArrayList<>();
-        inputs.add(Fields.of("input", String.class, "hello world"));
+        inputs.add(Fields.of("input", String.class, "https://oss.fastx-ai.com/fastx-ai-llm/123/logo.png"));
 
         // for outputs.
         List<Fields> outputs = new ArrayList<>();
@@ -51,23 +52,24 @@ public class TextBertEmbeddingProcessTool extends BasePreTrainTool {
             EmbeddingInput pyInput = JSON.parseObject(input.getInputs(), EmbeddingInput.class);
             Assert.isTrue(!StringUtils.isEmpty(pyInput.getInput()), "input can not be empty");
 
-            ProcessBuilder processBuilder = new ProcessBuilder("python", "platform-tool/src/main/resources/python-script/text2vec.py", pyInput.getInput());
+            ProcessBuilder processBuilder = new ProcessBuilder("python", "platform-tool/src/main/resources/python-script/image2vec.py", pyInput.getInput());
             processBuilder.redirectErrorStream(true);
 
             Process process = processBuilder.start();
             List<String> results = readOutput(process.getInputStream());
 
-            // @TODO (stark) remove this print!
-            System.out.println(results);
-            System.out.println(results.size());
-
             if (CollectionUtils.isEmpty(results) || results.size() != 1) {
-                throw new ToolExecException("text embedding process fail!");
+                throw new ToolExecException("image embedding process fail!");
             }
 
             String floatEmbeddingResult =  results.getFirst().trim();
             int exitCode = process.waitFor();
             Assert.isTrue(0 == exitCode, "Python process exited with code " + exitCode);
+
+            String pattern = "\\[(.*)\\]";
+            if (!Pattern.matches(pattern, floatEmbeddingResult)) {
+                throw new ToolExecException("embedding result is illegal!");
+            }
 
             List<Double> embeddingList = Arrays.asList(
                     floatEmbeddingResult.replace("[", "").replace("]", "").split(",")
@@ -109,8 +111,8 @@ public class TextBertEmbeddingProcessTool extends BasePreTrainTool {
 
     public static void main(String[] args) {
         TrainInput input = new TrainInput();
-        input.setInputs(JSON.toJSONString(Map.of("input", "Hello World!")));
-        TextBertEmbeddingProcessTool tool = new TextBertEmbeddingProcessTool();
+        input.setInputs(JSON.toJSONString(Map.of("input", "https://oss.fastx-ai.com/fastx-ai-llm/123/logo.png")));
+        ImageResNetEmbeddingProcessTool tool = new ImageResNetEmbeddingProcessTool();
         System.out.println(JSON.toJSONString(tool.exec(input)));
     }
 }

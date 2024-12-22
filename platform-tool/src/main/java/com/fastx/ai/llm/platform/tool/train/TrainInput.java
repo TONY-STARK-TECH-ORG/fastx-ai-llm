@@ -9,7 +9,7 @@ import java.io.OutputStream;
  */
 public class TrainInput implements IPlatformToolInput {
 
-    private String data;
+    private String inputs;
 
     private String config;
 
@@ -35,11 +35,11 @@ public class TrainInput implements IPlatformToolInput {
 
     @Override
     public void setInputs(String inputs) {
-        this.data = inputs;
+        this.inputs = inputs;
     }
 
     @Override
     public String getInputs() {
-        return data;
+        return inputs;
     }
 }

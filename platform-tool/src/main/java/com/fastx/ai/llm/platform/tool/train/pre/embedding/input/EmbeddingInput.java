@@ -1,4 +1,4 @@
-package com.fastx.ai.llm.platform.tool.train.pre.file;
+package com.fastx.ai.llm.platform.tool.train.pre.embedding.input;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -6,7 +6,7 @@ import java.io.Serializable;
 /**
  * @author stark
  */
-public class PythonInput implements Serializable {
+public class EmbeddingInput implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

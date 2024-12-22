@@ -1,4 +1,4 @@
-package com.fastx.ai.llm.platform.tool.train.pre.file;
+package com.fastx.ai.llm.platform.tool.train.pre.embedding;
 
 import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.platform.tool.entity.Fields;
@@ -7,6 +7,7 @@ import com.fastx.ai.llm.platform.tool.exception.ToolExecException;
 import com.fastx.ai.llm.platform.tool.train.TrainInput;
 import com.fastx.ai.llm.platform.tool.train.TrainOutput;
 import com.fastx.ai.llm.platform.tool.train.pre.BasePreTrainTool;
+import com.fastx.ai.llm.platform.tool.train.pre.embedding.input.EmbeddingInput;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -47,7 +49,7 @@ public class TextBertEmbeddingProcessTool extends BasePreTrainTool {
     @Override
     public TrainOutput exec(TrainInput input) {
         try {
-            PythonInput pyInput = JSON.parseObject(input.getInputs(), PythonInput.class);
+            EmbeddingInput pyInput = JSON.parseObject(input.getInputs(), EmbeddingInput.class);
             Assert.isTrue(!StringUtils.isEmpty(pyInput.getInput()), "input can not be empty");
 
             ProcessBuilder processBuilder = new ProcessBuilder("python", "platform-tool/src/main/resources/python-script/text2vec.py", pyInput.getInput());
@@ -56,10 +58,6 @@ public class TextBertEmbeddingProcessTool extends BasePreTrainTool {
             Process process = processBuilder.start();
             List<String> results = readOutput(process.getInputStream());
 
-            // @TODO (stark) remove this print!
-            System.out.println(results);
-            System.out.println(results.size());
-
             if (CollectionUtils.isEmpty(results) || results.size() != 1) {
                 throw new ToolExecException("text embedding process fail!");
             }
@@ -67,6 +65,11 @@ public class TextBertEmbeddingProcessTool extends BasePreTrainTool {
             String floatEmbeddingResult =  results.getFirst().trim();
             int exitCode = process.waitFor();
             Assert.isTrue(0 == exitCode, "Python process exited with code " + exitCode);
+
+            String pattern = "\\[(.*)\\]";
+            if (!Pattern.matches(pattern, floatEmbeddingResult)) {
+                throw new ToolExecException("embedding result is illegal!");
+            }
 
             List<Double> embeddingList = Arrays.asList(
                     floatEmbeddingResult.replace("[", "").replace("]", "").split(",")
