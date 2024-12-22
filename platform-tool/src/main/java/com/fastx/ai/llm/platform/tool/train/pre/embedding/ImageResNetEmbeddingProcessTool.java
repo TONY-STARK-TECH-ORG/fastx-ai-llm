@@ -4,10 +4,12 @@ import com.alibaba.fastjson2.JSON;
 import com.fastx.ai.llm.platform.tool.entity.Fields;
 import com.fastx.ai.llm.platform.tool.entity.Prototype;
 import com.fastx.ai.llm.platform.tool.exception.ToolExecException;
+import com.fastx.ai.llm.platform.tool.spi.IPlatformTool;
 import com.fastx.ai.llm.platform.tool.train.TrainInput;
 import com.fastx.ai.llm.platform.tool.train.TrainOutput;
 import com.fastx.ai.llm.platform.tool.train.pre.BasePreTrainTool;
 import com.fastx.ai.llm.platform.tool.train.pre.embedding.input.EmbeddingInput;
+import com.google.auto.service.AutoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 /**
  * @author stark
  */
+@AutoService(IPlatformTool.class)
 public class ImageResNetEmbeddingProcessTool extends BasePreTrainTool {
 
     static Prototype _prototype = new Prototype();
@@ -96,12 +99,12 @@ public class ImageResNetEmbeddingProcessTool extends BasePreTrainTool {
 
     @Override
     public String getDescription() {
-        return "Process file like ocr, embedding, split, etc.";
+        return "Process Image To <Vec> use ResNet.";
     }
 
     @Override
     public String getCode() {
-        return "train.pre.file";
+        return "train.pre.file.image.embedding";
     }
 
     @Override
