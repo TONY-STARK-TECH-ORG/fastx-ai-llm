@@ -76,7 +76,8 @@ Join us and let the Fastx-AI LLM RAG System become the cornerstone of your next 
 
 ## API Reference
 
-The Fastx-AI LLM RAG System provides a RESTful API for seamless integration with other systems. The API endpoints are documented using Swagger, allowing developers to easily explore and interact with the system.
+<details>
+<summary>The Fastx-AI LLM RAG System provides a RESTful API for seamless integration with other systems. The API endpoints are documented using Swagger, allowing developers to easily explore and interact with the system.</summary>
 
 ```shell
 ###
@@ -132,6 +133,7 @@ Content-Type: application/json
   }
 }
 ```
+</details>
 
 ## Others
 
