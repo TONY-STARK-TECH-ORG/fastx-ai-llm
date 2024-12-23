@@ -90,12 +90,12 @@ public class ChunkingProcessTool extends BasePreTrainTool {
 
     @Override
     public String getDescription() {
-        return "Process TextInput like 'Hello world' to <Vec> use Bert tokenizer (only support plain text now, max(512) tokens!).";
+        return "Chunk TextInput like 'Hello world' to [A, B, C].";
     }
 
     @Override
     public String getCode() {
-        return "train.pre.file.text.embedding";
+        return "train.pre.file.text.chunk";
     }
 
     @Override
