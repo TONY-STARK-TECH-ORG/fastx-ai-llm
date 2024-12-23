@@ -17,9 +17,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -52,7 +50,14 @@ public class PdfExtractToMarkdownProcessTool extends BasePreTrainTool {
             EmbeddingInput pyInput = JSON.parseObject(input.getInputs(), EmbeddingInput.class);
             Assert.isTrue(!StringUtils.isEmpty(pyInput.getInput()), "input can not be empty");
 
-            ProcessBuilder processBuilder = new ProcessBuilder("python", "platform-tool/src/main/resources/python-script/pdf2md.py", pyInput.getInput());
+            // @TODO java process filename and then send to python processor.
+            // because we need process pdf to markdown with image later. (it's a new tool!)
+
+            String ext = Arrays.asList(pyInput.getInput().split("\\.")).getLast();
+            String randomPath = UUID.randomUUID().toString();
+            String randomName = randomPath + "." + ext;
+
+            ProcessBuilder processBuilder = new ProcessBuilder("python", "platform-tool/src/main/resources/python-script/pdf2md.py", pyInput.getInput(), randomName, randomPath);
             processBuilder.redirectErrorStream(true);
 
             Process process = processBuilder.start();

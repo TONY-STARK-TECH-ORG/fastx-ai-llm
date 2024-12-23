@@ -66,8 +66,9 @@ def image_to_vector_resnet(image_path):
 
 def main():
     image_url = sys.argv[1]
-    download_and_verify_image(image_url, "./process.png")
-    print(image_to_vector_resnet("./process.png"))
+    file_temp_name = sys.argv[2]
+    download_and_verify_image(image_url, "./process-workdir/" + file_temp_name)
+    print(image_to_vector_resnet("./process-workdir/" + file_temp_name))
 
 if __name__ == "__main__":
     main()

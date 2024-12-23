@@ -31,13 +31,16 @@ def read_markdown_file(file_path):
 
 def main():
     pdf_url = sys.argv[1]
-    download_pdf(pdf_url, "./process.pdf")
-    md_path = process_pdf_vec("./process.pdf", "./process-temp/")
+    file_temp_name = sys.argv[2]
+    file_temp_path = sys.argv[3]
+
+    download_pdf(pdf_url, "./process-workdir/" + file_temp_name)
+    md_path = process_pdf_vec("./process-workdir/" + file_temp_name, "./process-workdir/process-temp/" + file_temp_path + "/")
     print("---FAST-LLM-START---")
     print(read_markdown_file(md_path))
     print("---FAST-LLM-END---")
-    os.remove("./process.pdf")
-    shutil.rmtree("./process-temp/")
+    os.remove("./process-workdir/" + file_temp_name)
+    shutil.rmtree("./process-workdir/process-temp/" + file_temp_path + "/")
 
 if __name__ == "__main__":
     main()

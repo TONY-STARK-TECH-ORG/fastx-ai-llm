@@ -18,10 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -55,7 +52,13 @@ public class ImageResNetEmbeddingProcessTool extends BasePreTrainTool {
             EmbeddingInput pyInput = JSON.parseObject(input.getInputs(), EmbeddingInput.class);
             Assert.isTrue(!StringUtils.isEmpty(pyInput.getInput()), "input can not be empty");
 
-            ProcessBuilder processBuilder = new ProcessBuilder("python", "platform-tool/src/main/resources/python-script/image2vec.py", pyInput.getInput());
+            // @TODO java process filename and then send to python processor!
+            // we need use this tool in distribution!
+
+            String ext = Arrays.asList(pyInput.getInput().split("\\.")).getLast();
+            String randomName = UUID.randomUUID().toString() + "." + ext;
+
+            ProcessBuilder processBuilder = new ProcessBuilder("python", "platform-tool/src/main/resources/python-script/image2vec.py", pyInput.getInput(), randomName);
             processBuilder.redirectErrorStream(true);
 
             Process process = processBuilder.start();
