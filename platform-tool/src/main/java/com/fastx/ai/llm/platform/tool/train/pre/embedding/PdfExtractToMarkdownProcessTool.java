@@ -50,9 +50,6 @@ public class PdfExtractToMarkdownProcessTool extends BasePreTrainTool {
             EmbeddingInput pyInput = JSON.parseObject(input.getInputs(), EmbeddingInput.class);
             Assert.isTrue(!StringUtils.isEmpty(pyInput.getInput()), "input can not be empty");
 
-            // @TODO java process filename and then send to python processor.
-            // because we need process pdf to markdown with image later. (it's a new tool!)
-
             String ext = Arrays.asList(pyInput.getInput().split("\\.")).getLast();
             String randomPath = UUID.randomUUID().toString();
             String randomName = randomPath + "." + ext;

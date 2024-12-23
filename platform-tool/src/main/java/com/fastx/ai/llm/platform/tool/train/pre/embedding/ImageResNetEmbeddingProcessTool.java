@@ -52,9 +52,6 @@ public class ImageResNetEmbeddingProcessTool extends BasePreTrainTool {
             EmbeddingInput pyInput = JSON.parseObject(input.getInputs(), EmbeddingInput.class);
             Assert.isTrue(!StringUtils.isEmpty(pyInput.getInput()), "input can not be empty");
 
-            // @TODO java process filename and then send to python processor!
-            // we need use this tool in distribution!
-
             String ext = Arrays.asList(pyInput.getInput().split("\\.")).getLast();
             String randomName = UUID.randomUUID().toString() + "." + ext;
 
