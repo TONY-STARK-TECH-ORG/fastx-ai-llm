@@ -81,7 +81,6 @@ public class PdfExtractToMarkdownProcessTool extends BasePreTrainTool {
 
             return TrainOutput.of(JSON.toJSONString(Map.of("markdown", markdown)), null);
         } catch (Exception e) {
-            e.printStackTrace();
             return TrainOutput.of(null, e.getMessage());
         }
     }

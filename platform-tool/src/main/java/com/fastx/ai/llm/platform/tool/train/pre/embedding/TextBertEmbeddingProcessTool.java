@@ -80,7 +80,6 @@ public class TextBertEmbeddingProcessTool extends BasePreTrainTool {
 
             return TrainOutput.of(JSON.toJSONString(Map.of("embeddings", embeddingList)), null);
         } catch (Exception e) {
-            e.printStackTrace();
             return TrainOutput.of(null, e.getMessage());
         }
     }
