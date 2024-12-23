@@ -93,7 +93,7 @@ public class TextBertEmbeddingProcessTool extends BasePreTrainTool {
 
     @Override
     public String getName() {
-        return "File Process";
+        return "Text Embedding (Bert)";
     }
 
     @Override

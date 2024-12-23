@@ -93,7 +93,7 @@ public class ImageResNetEmbeddingProcessTool extends BasePreTrainTool {
 
     @Override
     public String getName() {
-        return "File Process";
+        return "Image Embedding (ResNet)";
     }
 
     @Override

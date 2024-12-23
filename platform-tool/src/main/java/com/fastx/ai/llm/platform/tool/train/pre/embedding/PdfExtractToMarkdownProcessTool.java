@@ -91,7 +91,7 @@ public class PdfExtractToMarkdownProcessTool extends BasePreTrainTool {
 
     @Override
     public String getName() {
-        return "File Process";
+        return "Pdf to Markdown";
     }
 
     @Override

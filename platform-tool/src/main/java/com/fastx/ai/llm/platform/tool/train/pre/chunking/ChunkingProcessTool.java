@@ -85,7 +85,7 @@ public class ChunkingProcessTool extends BasePreTrainTool {
 
     @Override
     public String getName() {
-        return "File Process";
+        return "Text Chunk";
     }
 
     @Override
